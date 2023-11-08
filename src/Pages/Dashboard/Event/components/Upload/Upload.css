@@ -1,0 +1,141 @@
+
+/* Customize the button */
+.upload_button_container {
+  position: relative;
+  width: 27em;
+  height: 13rem;
+  margin: auto;
+  border-radius: 1rem;
+  border: 2px dashed #1890ff;
+  scale: 1;
+  transition: scale 200ms ease-in-out;
+}
+.upload_button_container.active {
+  scale: 1.021;
+  transition: scale 100ms ease-in-out;
+}
+.upload_button_container input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  border-radius: 1rem;
+  cursor: pointer;
+}
+.upload_button_container .upload_button {
+  padding: 1rem 2rem;
+  background-color: var(--primary-color);
+  border-radius: 1rem;
+  color: var(--panel-color);
+  font-weight: 700;
+  cursor: pointer;
+  scale: 1;
+  transition: scale 200ms;
+}
+
+.upload_button_container:hover .upload_button {
+  transition: scale 150ms;
+  scale: 1.05;
+}
+
+/* Upload Loader */
+
+.uploading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #0074d9; /* Blue color for the spinner */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Uploaded Items */
+
+.upload-list-item {
+  width: 100%;
+  position: relative;
+  height: 66px;
+  padding: 1rem 2rem;
+  margin: 0rem 1rem;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+}
+
+.upload-list-item .upload-item-name {
+  width: 80%;
+}
+.upload-list-item.upload-item-uploading {
+  border-style: dashed;
+}
+.upload-list-item.upload-item-uploaded {
+  border-style: solid;
+}
+
+.upload-list-item .item-thumbnail span {
+  font-size: 30px;
+  color: #1677ff;
+  display: inline-flex;
+  align-items: center;
+  font-style: normal;
+  line-height: 0;
+  text-align: center;
+  text-transform: none;
+  vertical-align: -0.125em;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.upload-list-item .item-thumbnail .icon-spin svg {
+  animation: rotate 1s infinite linear;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* progress bar */
+
+.upload-item-progress {
+  bottom: 12px;
+  width: calc(100% - 50px);
+  margin-top: 0;
+  right: 20px;
+  position: absolute;
+  padding-inline-start: 22px;
+  font-size: 14px;
+  line-height: 0;
+  pointer-events: none;
+}
+.upload-item-progress .progress-inner {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  overflow: hidden;
+  vertical-align: middle;
+  background-color: rgba(0, 0, 0, 0.06);
+  border-radius: 100px;
+}
+.upload-item-progress .progress-inner .progress-bg {
+  position: relative;
+  background-color: #1677ff;
+  border-radius: 100px;
+  transition: all 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86);
+}
+

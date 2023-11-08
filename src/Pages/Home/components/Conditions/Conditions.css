@@ -1,0 +1,105 @@
+/* ################ Rules ################ */
+
+.conditions .container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.conditions .container .title {
+  margin-bottom: 30px;
+}
+
+.conditions .container .title h1 {
+  font-size: 35px;
+  font-family: "Poppins", sans-serif;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.conditions .container .rules {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-direction: column;
+  margin: 0 40px;
+}
+
+.conditions .container .rules .rule {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  background: var(--card-color);
+  padding: 40px;
+}
+
+.conditions .container .rules .rule:nth-child(2) {
+  flex-direction: row-reverse;
+  background: none;
+}
+
+.conditions .container .rules .rule .rule-data {
+  height: 275px;
+  display: flex;
+  position: revert;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: flex-start;
+}
+
+.conditions .container .rules .rule .rule-title {
+  font-size: 25px;
+  text-decoration: none;
+  font-family: "Poppins", sans-serif;
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.conditions .container .rules .rule-description {
+  font-size: 14px;
+  text-decoration: none;
+  font-family: "Poppins", sans-serif;
+  color: var(--text-color);
+  font-weight: 400;
+}
+
+.conditions .container .rules .rule .rule-img img {
+  width: 400px;
+}
+
+@media (max-width: 1024px) {
+  .conditions .container .rules .rule .rule-img img {
+    width: 350px;
+  }
+}
+
+@media (max-width: 900px) {
+  .conditions .container .rules .rule .rule-img img {
+    width: 320px;
+  }
+}
+
+@media (max-width: 800px) {
+  .conditions .container .rules .rule .rule-img img {
+    width: 300px;
+  }
+}
+
+@media (max-width: 700px) {
+  .conditions .container .rules .rule .rule-img img {
+    width: 200px;
+  }
+}
+
+@media (max-width: 900px) {
+  .conditions .container .rules {
+    margin: auto;
+  }
+}
+
+/* ################ Contact ################ */

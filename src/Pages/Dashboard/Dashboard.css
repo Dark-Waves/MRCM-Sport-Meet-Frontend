@@ -1,0 +1,160 @@
+
+/*  */
+.content {
+  padding-top: 50px;
+}
+
+button {
+  padding: 12px 20px;
+  font-size: 20px;
+  outline: none;
+  border: none;
+  background-color: #4070f4;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: #0e4bf1;
+}
+
+/* Notify Nav */
+
+.content.active {
+  display: block;
+}
+.dashboard {
+  position: relative;
+  left: 250px;
+  background-color: var(--panel-color);
+  min-height: 100vh;
+  width: calc(100% - 250px);
+  padding: 10px 14px;
+  transition: var(--tran-05);
+}
+nav.close ~ .dashboard {
+  left: 73px;
+  width: calc(100% - 73px);
+}
+.dashboard .top {
+  position: fixed;
+  top: 0;
+  left: 250px;
+  display: flex;
+  width: calc(100% - 250px);
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background-color: var(--panel-color);
+  transition: var(--tran-05);
+  z-index: 10;
+}
+nav.close ~ .dashboard .top {
+  left: 73px;
+  width: calc(100% - 73px);
+}
+.dashboard .top .sidebar-toggle {
+  font-size: 26px;
+  color: var(--text-color);
+  cursor: pointer;
+}
+.dashboard .top .search-box {
+  position: relative;
+  height: 45px;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 30px;
+}
+.top .search-box input {
+  position: absolute;
+  border: 1px solid var(--border-color);
+  background-color: var(--panel-color);
+  padding: 0 25px 0 50px;
+  border-radius: 5px;
+  height: 100%;
+  width: 100%;
+  color: var(--text-color);
+  font-size: 15px;
+  font-weight: 400;
+  outline: none;
+}
+.top .search-box i {
+  position: absolute;
+  left: 15px;
+  font-size: 22px;
+  z-index: 10;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--black-light-color);
+}
+.top img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+/* Loader Inner */
+
+/* Extra */
+
+#competitions {
+  margin: 15px;
+}
+
+#calender {
+  padding-top: 50px;
+}
+
+.modal-wrp {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.modal {
+  padding: 1.5rem;
+  max-width: 32ch;
+  display: grid;
+  gap: 1rem;
+  grid-template-areas:
+    "heading heading"
+    "body body"
+    "no yes";
+}
+
+.invisible {
+  display: none;
+}
+
+.modal h3 {
+  grid-area: heading;
+  color: var(--Dark-blue);
+}
+.modal button {
+  color: var(--White);
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: 500;
+}
+.modal p {
+  grid-area: body;
+  color: var(--Grayish-Blue);
+  line-height: 1.5;
+}
+.modal .yes {
+  grid-area: yes;
+  background-color: var(--Soft-Red);
+}
+.modal .no {
+  background-color: var(--Grayish-Blue);
+  grid-area: no;
+}

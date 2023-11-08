@@ -1,0 +1,55 @@
+.tab-pane .app-settings {
+  width: 100%;
+}
+
+.tab-pane .app-settings span {
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+.tab-pane .app-settings .select {
+  border-radius: 1rem;
+  position: relative;
+  width: 3rem;
+  background: var(--input-bg);
+  padding: 1rem 4rem;
+  display: flex;
+  margin-top: 20px;
+  align-items: center;
+  flex-direction: column;
+  transition: all 300ms;
+}
+
+.tab-pane .app-settings .select:hover {
+  background: var(--input-bg-hover);
+  cursor: pointer;
+}
+.tab-pane .app-settings .selection.active {
+  max-height: 100%;
+}
+
+.tab-pane .app-settings .selection {
+  border-radius: 1rem;
+  position: relative;
+  height: 0%;
+  width: 3rem;
+  padding: 0rem 4rem;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  transition: all 300ms;
+  max-height: 0;
+}
+
+.tab-pane .app-settings .selection div {
+  width: 3rem;
+  margin-top: 10px;
+  background: var(--input-bg);
+  padding: 1rem 4rem;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
+  border-radius: 1rem;
+  cursor: pointer;
+}

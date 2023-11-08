@@ -1,0 +1,12 @@
+.tab-pane .profile_account_form {
+  display: grid;
+  grid-template-columns: repeat(2, 2fr);
+  gap: 1rem;
+  width: 100%;
+}
+
+@media screen and (max-width: 800px) {
+  .tab-pane .profile_account_form {
+    grid-template-columns: repeat(1, 2fr);
+  }
+}

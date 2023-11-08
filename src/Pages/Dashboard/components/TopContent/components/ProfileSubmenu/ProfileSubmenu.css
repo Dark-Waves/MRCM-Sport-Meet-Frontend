@@ -1,0 +1,91 @@
+.submenu-wrap {
+  position: absolute;
+  top: 110%;
+  right: 50px;
+  width: 320px;
+  overflow: hidden;
+  transition: max-height 300ms;
+}
+
+.submenu-wrap .submenu {
+  max-height: 420px;
+  padding: 20px;
+  margin: 10px;
+  background: var(--panel-color);
+  border: solid 1px var(--border-color);
+}
+
+.submenu-wrap .submenu .user-details {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.submenu-wrap .submenu .user-details .logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+.submenu-wrap .submenu .user-details h3 {
+  font-weight: 600;
+  color: var(--text-color);
+  font-weight: 600;
+  color: var(--text-color);
+  max-width: 194px;
+  overflow-y: hidden;
+}
+
+.submenu-wrap .submenu hr {
+  border: 0;
+  width: 100%;
+  height: 1px;
+  background: #ccc;
+  margin: 15px 0 10px;
+}
+
+.submenu-wrap .submenu a {
+  display: flex;
+  color: var(--black-light-color);
+  align-items: center;
+  text-decoration: none;
+  margin: 12px 0;
+}
+
+.submenu-wrap .submenu a p {
+  width: 100%;
+}
+
+.submenu-wrap .submenu a .logo {
+  width: 40px;
+  border-radius: 50%;
+  background: #e5e5e5;
+  margin-right: 15px;
+  padding: 8px;
+}
+
+.submenu-wrap .submenu a .icon {
+  pointer-events: none;
+  color: var(--light-main-color);
+  font-size: 1.15rem;
+  margin-right: 15px;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.submenu-wrap .submenu a:hover .icon {
+  color: var(--toggle-color);
+}
+
+.submenu-wrap .submenu a span {
+  font-size: 22px;
+  transition: 300ms;
+}
+
+.submenu-wrap .submenu a:hover span {
+  transform: translateX(5px);
+}
+
+.submenu-wrap .submenu a:hover p {
+  font-weight: 600;
+}
