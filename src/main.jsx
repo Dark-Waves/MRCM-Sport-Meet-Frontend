@@ -17,6 +17,7 @@ import Logout from "./pages/Logout/Logout";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Home from "./pages/Home/Home";
 import ErrorPage from "./pages/Error/Error";
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(

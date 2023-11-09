@@ -1044,3 +1044,31 @@ textarea {
 
 
 
+section {
+  padding: 50px 0px;
+}
+
+a {
+  text-decoration: none;
+  color: unset;
+}
+
+a:hover {
+  color: unset;
+}
+
+ul {
+  list-style: none;
+}
+
+/* ============ reusable class =========*/
+.container {
+  width: 1140px;
+  padding: 0px 15px;
+  margin: auto;
+}
+
+.section__title {
+  color: var(--heading-color);
+  font-weight: 800;
+}
