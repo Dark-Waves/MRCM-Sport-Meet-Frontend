@@ -14,7 +14,7 @@ export default function ProfileSubmenu({
         <div className="submenu">
           <div className="user-details">
             <img
-              src={profile.profilePicture || defaultLogo}
+              src={profile && profile.profilePicture || defaultLogo}
               alt=""
               className="logo"
             />

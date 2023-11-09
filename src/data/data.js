@@ -109,3 +109,8 @@ export const profileLinks = [
     icon: "fa-right-from-bracket",
   },
 ];
+
+export const paths = {
+  path: "admin",
+  adminPaths: [{ path: "home", element: "Home" }],
+};

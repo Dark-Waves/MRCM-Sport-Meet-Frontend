@@ -1,20 +1,21 @@
 import "./Dashboard.css";
 import TopNav from "./components/TopContent/TopNav.jsx";
 import NavBar from "./components/NavBar/NavBar.jsx";
-import Home from "./Home/home.jsx"; // Update the path and filename accordingly
-import Profile from "./Profile/Profile.jsx";
-import Calender from "./Calender/Calender.jsx";
+// import Home from "./Home/home.jsx"; // Update the path and filename accordingly
+// import Profile from "./Profile/Profile.jsx";
+// import Calender from "./Calender/Calender.jsx";
 import ErrorPage from "./Error/Error.jsx";
 import Loader from "../../loader/Loader.jsx";
 import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
-import Competition from "./Competetion/Competition.jsx";
+// import Competition from "./Competetion/Competition.jsx";
 import { useEffect, useReducer, useRef } from "react";
 import DashboardContext from "./Context/DashboardContext.jsx";
 import useAuth from "../../hooks/useAuth.jsx";
 import socketio from "socket.io-client";
-import Event from "./Event/Event.jsx";
+// import Event from "./Event/Event.jsx";
 import axios from "axios";
 import { config, images } from "../../config.js";
+import { paths } from "../../data/data.js";
 const defaultLogo = images.Logo;
 const SiteName = config.SiteName;
 const APIURI = config.APIURI;
@@ -251,7 +252,7 @@ export default function Dashboard() {
     <div className="app" id="app">
       {status === "loading" && <Loader />}
       {status === "error" && <ErrorPage code={400} />}
-      {status === "ready" && (
+      {status !== "ready" && (
         <DashboardContext.Provider
           value={{ ...state, dispatch, defaultLogo, SiteName }}
         >
@@ -260,13 +261,22 @@ export default function Dashboard() {
             <TopNav />
             <div className="innnerUpdates">
               <Routes>
-                <Route path="home" element={<Home />} />
+                {/* <Route path="home" element={<Home />} />
                 <Route path="competitions/*" element={<Competition />} />
                 <Route path="profile/*" element={<Profile />} />
                 <Route path="calender" element={<Calender />} />
-                <Route path="event/:eventId" element={<Event />} />
+                <Route path="event/:eventId" element={<Event />} /> */}
                 <Route path="/" element={<Navigate to={"home"} />} />
                 <Route path="*" element={<ErrorPage code={404} />} />
+                {paths.path === "admin"
+                  ? paths.adminPaths.map((data, index) => (
+                      <Route
+                        key={index}
+                        path={data.path}
+                        element={<data.element />}
+                      />
+                    ))
+                  : ""}
               </Routes>
             </div>
           </section>
