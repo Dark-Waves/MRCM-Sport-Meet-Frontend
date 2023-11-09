@@ -1,0 +1,64 @@
+/* WebContent.css */
+
+
+.web-content-section h3 {
+  margin-top: 0;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.web-content-section input[type="text"],
+.web-content-section input[type="number"],
+.web-content-section input[type="password"],
+.web-content-section textarea,
+.web-content-section select,
+.web-content-section button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.web-content-section textarea {
+  resize: vertical;
+}
+
+.web-content-section .checkbox-label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.web-content-section .checkbox-label input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+.web-content-section .control-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.web-content-section .control-button.disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.web-content-section .log-entry {
+  padding: 5px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.web-content-section .performance-monitoring {
+  /* Add styles for performance monitoring here */
+}

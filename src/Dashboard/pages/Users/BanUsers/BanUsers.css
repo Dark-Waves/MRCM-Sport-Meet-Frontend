@@ -1,0 +1,59 @@
+/* BanUsers.css */
+.ban-users {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.ban-users h2 {
+  font-size: 32px;
+  color: #333;
+}
+
+.ban-users .user-list {
+  list-style: none;
+  padding: 0;
+}
+
+.ban-users .user-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.ban-users .user-card:hover {
+  transform: translateY(-5px);
+}
+
+.ban-users .user-info {
+  flex: 1;
+}
+
+.ban-users .user-info h3 {
+  font-size: 24px;
+  margin: 0;
+  color: #555;
+}
+
+.ban-users .user-info p {
+  color: #888;
+}
+
+.ban-users button {
+  background-color: #ff0000;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.ban-users button:hover {
+  background-color: #cc0000;
+}

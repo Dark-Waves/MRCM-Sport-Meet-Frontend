@@ -1,0 +1,15 @@
+.event-overview .card {
+    padding: 1rem;
+}
+.event-overview .card .card-image img{
+    width: 5rem;
+    height: 5rem;
+    margin: auto;
+}
+
+.event-overview .card .card-content h3.card-title{
+    font-size: 1.2rem;
+}
+.event-overview .card .card-content p.card-description {
+    font-size: 0.98rem;
+}

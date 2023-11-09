@@ -1,0 +1,161 @@
+/* Website.css */
+
+.config-section .logo-and-name {
+  display: flex;
+  align-items: center;
+}
+
+.config-section .logo {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  margin-right: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.config-section .logo-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.config-section .upload-label {
+  cursor: pointer;
+  color: #007bff;
+  margin-top: 5px;
+}
+
+.config-section .site-name-input {
+  width: 200px;
+  padding: 5px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.config-section .settings-panel {
+  margin-top: 20px;
+}
+
+.config-section h3 {
+  margin-top: 0;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.config-section label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.config-section input[type="color"],
+.config-section input[type="text"] {
+  width: 100%;
+  padding: 5px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.config-section .analytics {
+  margin-top: 20px;
+}
+
+.config-section .analytics h3 {
+  font-size: 16px;
+  margin-top: 0;
+}
+
+.config-section .analytics-data {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.config-section .analytics-metric {
+  flex-basis: calc(50% - 5px);
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.config-section .metric-label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.config-section .metric-value {
+  font-size: 18px;
+  margin-top: 5px;
+}
+
+.config-section .website-control-buttons {
+  margin-top: 20px;
+}
+
+.config-section .start-button,
+.config-section .stop-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+}
+
+.config-section .start-button.disabled,
+.config-section .stop-button.disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.config-section .console {
+  margin-top: 20px;
+}
+
+.config-section .log-entry {
+  padding: 5px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.config-section .performance-monitoring {
+  margin-top: 20px;
+}
+
+.config-section .performance-monitoring h3 {
+  font-size: 16px;
+  margin-top: 0;
+}
+
+.config-section .performance-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.config-section .metric {
+  flex-basis: calc(50% - 5px);
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.config-section .metric-label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.config-section .metric-value {
+  font-size: 18px;
+  margin-top: 5px;
+}

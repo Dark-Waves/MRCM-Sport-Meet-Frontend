@@ -1,49 +1,33 @@
 {
-  "name": "skill-swap-client-app",
+  "name": "dashboard-ui",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
-    "react-router-dom": "^6.16.0",
-    "@ant-design/icons": "^5.2.6",
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
     "@fortawesome/free-regular-svg-icons": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "@iconscout/react-unicons": "^2.0.2",
-    "antd": "^5.9.0",
-    "socket.io": "^4.7.2",
-    "socket.io-client": "^4.7.2",
-    "swiper": "^10.2.0",
-    "uuid": "^9.0.1",
-    "axios": "^1.4.0",
-    "dayjs": "^1.11.9",
-    "http-proxy-middleware": "^2.0.6",
+    "babel-plugin-macros": "^3.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "rollup-plugin-node-builtins": "^2.1.2",
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "aos": "^3.0.0-beta.6",
-    "react-scripts": "5.0.1",
-    "remixicon": "^2.5.0",
-    "web-vitals": "^2.1.4"
+    "react-router-dom": "^6.15.0",
+    "socket.io-client": "^4.7.2"
   },
   "devDependencies": {
-    "@types/react": "^18.2.15",
-    "@types/react-dom": "^18.2.7",
-    "@vitejs/plugin-react-swc": "^3.3.2",
-    "eslint": "^8.45.0",
+    "@types/react": "^18.0.37",
+    "@types/react-dom": "^18.0.11",
+    "@vitejs/plugin-react": "^4.0.0",
+    "eslint": "^8.38.0",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.3",
-    "vite": "^4.4.5"
+    "eslint-plugin-react-refresh": "^0.3.4",
+    "vite": "^4.3.9"
   }
 }

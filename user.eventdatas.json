@@ -1,0 +1,120 @@
+[{
+  "_id": {
+    "$oid": "64aa81a09638824234a799e2"
+  },
+  "eventName": "Test Event 1",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id tellus a nisl hendrerit ullamcorper. Aenean pretium nisi nec ex sagittis, quis rutrum est finibus. Proin urna turpis, aliquet vel interdum sed, rutrum at nisi. Sed nec fringilla tellus, ac feugiat eros. Aliquam et erat turpis. Vestibulum aliquet orci et augue imperdiet dignissim. Praesent eu efficitur neque, sed placerat orci. Quisque vulputate turpis vel dui tristique venenatis.\n\nCurabitur id risus nisi. Aliquam nec venenatis lectus. Cras eu enim nec odio euismod maximus. Vestibulum consequat ut eros et aliquam. Ut accumsan rhoncus tempus. Donec eget congue augue. In hac habitasse platea.",
+  "SubmitUID": "64aa821e9638824234a799e4",
+  "startTime": "03:00",
+  "started": false,
+  "eventPicture": "https://as1.ftcdn.net/v2/jpg/05/04/28/96/1000_F_504289605_zehJiK0tCuZLP2MdfFBpcJdOVxKLnXg1.jpg",
+  "startDate": "2023-07-11",
+  "Requirements": "",
+  "Rules": "",
+  "SourcesSupply": "",
+  "WhatToDo": "dark waves"
+},
+{
+  "_id": {
+    "$oid": "64ab99ce2567b0c84401857e"
+  },
+  "eventName": "Test Event 2",
+  "description": "dark waves",
+  "SubmitUID": "64aa821e9638824234a799e4",
+  "startTime": "01:30",
+  "started": true,
+  "eventPicture": "https://as1.ftcdn.net/v2/jpg/05/04/28/96/1000_F_504289605_zehJiK0tCuZLP2MdfFBpcJdOVxKLnXg1.jpg",
+  "startDate": "2023-07-11",
+  "Requirements": "",
+  "Rules": "",
+  "WhatToDo": "dark waves",
+  "SourcesSupply": ""
+},
+{
+  "_id": {
+    "$oid": "64ab99de2567b0c84401857f"
+  },
+  "eventName": "Test Event 3",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id tellus a nisl hendrerit ullamcorper. Aenean pretium nisi nec ex sagittis, quis rutrum est finibus. Proin urna turpis, aliquet vel interdum sed, rutrum at nisi. Sed nec fringilla tellus, ac feugiat eros. Aliquam et erat turpis. Vestibulum aliquet orci et augue imperdiet dignissim. Praesent eu efficitur neque, sed placerat orci. Quisque vulputate turpis vel dui tristique venenatis.\n\nCurabitur id risus nisi. Aliquam nec venenatis lectus. Cras eu enim nec odio euismod maximus. Vestibulum consequat ut eros et aliquam. Ut accumsan rhoncus tempus. Donec eget congue augue. In hac habitasse platea.",
+  "SubmitUID": "64aa821e9638824234a799e4",
+  "startTime": "02:30",
+  "started": true,
+  "eventPicture": "uploads\\competitions\\64a4f4ff2c397a719e384ee8.jpeg",
+  "startDate": "2023-07-09"
+},
+{
+  "_id": {
+    "$oid": "64ab99e42567b0c844018580"
+  },
+  "eventName": "Test Event 4",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id tellus a nisl hendrerit ullamcorper. Aenean pretium nisi nec ex sagittis, quis rutrum est finibus. Proin urna turpis, aliquet vel interdum sed, rutrum at nisi. Sed nec fringilla tellus, ac feugiat eros. Aliquam et erat turpis. Vestibulum aliquet orci et augue imperdiet dignissim. Praesent eu efficitur neque, sed placerat orci. Quisque vulputate turpis vel dui tristique venenatis.\n\nCurabitur id risus nisi. Aliquam nec venenatis lectus. Cras eu enim nec odio euismod maximus. Vestibulum consequat ut eros et aliquam. Ut accumsan rhoncus tempus. Donec eget congue augue. In hac habitasse platea.",
+  "SubmitUID": "64aa821e9638824234a799e4",
+  "startTime": "04:00",
+  "started": true,
+  "eventPicture": "uploads\\competitions\\64a4f4ff2c397a719e384ee8.jpeg",
+  "startDate": "2023-07-07"
+},
+{
+  "_id": {
+    "$oid": "64acf17a793e1ae66463679d"
+  },
+  "eventName": "Test Event 5",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id tellus a nisl hendrerit ullamcorper. Aenean pretium nisi nec ex sagittis, quis rutrum est finibus. Proin urna turpis, aliquet vel interdum sed, rutrum at nisi. Sed nec fringilla tellus, ac feugiat eros. Aliquam et erat turpis. Vestibulum aliquet orci et augue imperdiet dignissim. Praesent eu efficitur neque, sed placerat orci. Quisque vulputate turpis vel dui tristique venenatis.\n\nCurabitur id risus nisi. Aliquam nec venenatis lectus. Cras eu enim nec odio euismod maximus. Vestibulum consequat ut eros et aliquam. Ut accumsan rhoncus tempus. Donec eget congue augue. In hac habitasse platea.",
+  "SubmitUID": "64aa821e9638824234a799e4",
+  "startTime": "04:30",
+  "started": true,
+  "eventPicture": "uploads\\competitions\\64a4f4ff2c397a719e384ee8.jpeg",
+  "startDate": "2023-07-11"
+},
+{
+  "_id": {
+    "$oid": "64b2b29b0527372d27a139c5"
+  },
+  "eventName": "Test Event 6",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id tellus a nisl hendrerit ullamcorper. Aenean pretium nisi nec ex sagittis, quis rutrum est finibus. Proin urna turpis, aliquet vel interdum sed, rutrum at nisi. Sed nec fringilla tellus, ac feugiat eros. Aliquam et erat turpis. Vestibulum aliquet orci et augue imperdiet dignissim. Praesent eu efficitur neque, sed placerat orci. Quisque vulputate turpis vel dui tristique venenatis.\n\nCurabitur id risus nisi. Aliquam nec venenatis lectus. Cras eu enim nec odio euismod maximus. Vestibulum consequat ut eros et aliquam. Ut accumsan rhoncus tempus. Donec eget congue augue. In hac habitasse platea.",
+  "SubmitUID": "64aa821e9638824234a799e4",
+  "startTime": "03:00",
+  "started": true,
+  "eventPicture": "uploads\\competitions\\64a4f4ff2c397a719e384ee8.jpeg",
+  "startDate": "2023-07-11"
+},
+{
+  "_id": {
+    "$oid": "64b2b35e0527372d27a139c6"
+  },
+  "eventName": "Test Event 7",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id tellus a nisl hendrerit ullamcorper. Aenean pretium nisi nec ex sagittis, quis rutrum est finibus. Proin urna turpis, aliquet vel interdum sed, rutrum at nisi. Sed nec fringilla tellus, ac feugiat eros. Aliquam et erat turpis. Vestibulum aliquet orci et augue imperdiet dignissim. Praesent eu efficitur neque, sed placerat orci. Quisque vulputate turpis vel dui tristique venenatis.\n\nCurabitur id risus nisi. Aliquam nec venenatis lectus. Cras eu enim nec odio euismod maximus. Vestibulum consequat ut eros et aliquam. Ut accumsan rhoncus tempus. Donec eget congue augue. In hac habitasse platea.",
+  "SubmitUID": "64aa821e9638824234a799e4",
+  "startTime": "03:00",
+  "started": false,
+  "eventPicture": "uploads\\competitions\\64a4f4ff2c397a719e384ee8.jpeg",
+  "startDate": "2023-07-11"
+},
+{
+  "_id": {
+    "$oid": "64b42ad34ca4f83c5f9366ac"
+  },
+  "eventName": "Test Event 8",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus id tellus a nisl hendrerit ullamcorper. Aenean pretium nisi nec ex sagittis, quis rutrum est finibus. Proin urna turpis, aliquet vel interdum sed, rutrum at nisi. Sed nec fringilla tellus, ac feugiat eros. Aliquam et erat turpis. Vestibulum aliquet orci et augue imperdiet dignissim. Praesent eu efficitur neque, sed placerat orci. Quisque vulputate turpis vel dui tristique venenatis.\n\nCurabitur id risus nisi. Aliquam nec venenatis lectus. Cras eu enim nec odio euismod maximus. Vestibulum consequat ut eros et aliquam. Ut accumsan rhoncus tempus. Donec eget congue augue. In hac habitasse platea.",
+  "SubmitUID": "64aa821e9638824234a799e4",
+  "startTime": "03:00",
+  "started": true,
+  "eventPicture": "uploads\\competitions\\64a4f4ff2c397a719e384ee8.jpeg",
+  "startDate": "2023-07-11"
+},
+{
+  "_id": {
+    "$oid": "64b42c484ca4f83c5f9366ad"
+  },
+  "eventName": "Updated Event Name 9",
+  "description": "dark waves ofc",
+  "SubmitUID": "64aa821e9638824234a799e4",
+  "startTime": "03:00",
+  "started": true,
+  "eventPicture": "uploads\\competitions\\64a4f4ff2c397a719e384ee8.jpeg",
+  "startDate": "2023-07-11",
+  "Requirements": "",
+  "Rules": "dark waves",
+  "WhatToDo": "dark waves",
+  "SourcesSupply": "dark waves sources"
+}]

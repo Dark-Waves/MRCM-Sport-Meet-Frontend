@@ -1,0 +1,6 @@
+.btn__website {
+    padding: 1rem 1rem;
+    background: var(--main-color);
+    border-radius: 1rem;
+    font-weight: 600;
+}

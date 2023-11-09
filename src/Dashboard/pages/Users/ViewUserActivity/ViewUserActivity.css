@@ -1,0 +1,62 @@
+/* ViewUserActivity.css */
+.view-user-activity {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.view-user-activity h2 {
+  font-size: 32px;
+  color: #333;
+}
+
+.view-user-activity .user-list {
+  list-style: none;
+  padding: 0;
+}
+
+.view-user-activity .user-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.view-user-activity .user-card:hover {
+  transform: translateY(-5px);
+}
+
+.view-user-activity .user-info {
+  flex: 1;
+}
+
+.view-user-activity .user-info h3 {
+  font-size: 24px;
+  margin: 0;
+  color: #555;
+}
+
+.view-user-activity .user-info p {
+  color: #888;
+}
+
+.view-user-activity button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.view-user-activity button:hover {
+  background-color: #0056b3;
+}
+
+/* BanUsers.css */
+/* Apply similar styles as above for BanUsers component */

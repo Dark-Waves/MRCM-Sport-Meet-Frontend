@@ -1,0 +1,52 @@
+/* Overview.css */
+
+.overview-section h3 {
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.overview-section .website-settings,
+.overview-section .content-settings {
+  margin-bottom: 20px;
+}
+.overview-section .color__view {
+  gap: 10px;
+}
+.overview-section .color__box {
+  width: 10px;
+  height: 10px;
+}
+
+.overview-section .website__img {
+  gap: 10px;
+}
+
+.overview-section .website__img img {
+  width: 2rem;
+  height: 2rem;
+}
+.overview-section .website__img img.banner {
+  width: 4rem;
+  height: 2rem;
+}
+.overview-section .website-settings h4,
+.overview-section .content-settings h4 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.overview-section .logo-and-name,
+.overview-section .banner-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.overview-section .logo-and-name p,
+.overview-section .banner-section p {
+  width: 48%;
+  margin-bottom: 10px;
+}
+
+/* Add more specific styling as needed */
