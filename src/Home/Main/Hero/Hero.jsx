@@ -27,7 +27,7 @@ export default function Hero() {
       </div>
       <div className="right-content flex-row">
         <img
-          src="../../../../public/logo/logo.png"
+          src="/logo/logo.png"
           alt="MRCM LOGO"
           className="w-90 m-auto"
         />

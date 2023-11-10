@@ -9,7 +9,7 @@
 .hero .right-content {
   width: 50%;
 }
-@media (max-width: 800px) {
+@media (max-width: 850px) {
   .hero {
     display: flex;
     flex-direction: column-reverse;
