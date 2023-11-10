@@ -49,7 +49,7 @@ export default function Header() {
                 <span className="font-md font-weight-700">{link.name}</span>
               </Link>
             ))}
-            <Link to={"#"}>
+            <Link to={"/auth"}>
               <span className="font-md font-weight-700 p-3 bg-main rounded-md">
                 Admin/Staff
               </span>
@@ -68,7 +68,7 @@ export default function Header() {
               <span className="font-md font-weight-700">{link.name}</span>
             </Link>
           ))}
-          <Link to={"#"}>
+          <Link to={"/auth"}>
             <span className="font-md font-weight-700 p-3 bg-main rounded-md">
               Admin/Staff
             </span>
