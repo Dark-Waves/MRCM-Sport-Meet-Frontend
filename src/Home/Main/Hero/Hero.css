@@ -1,0 +1,62 @@
+.hero {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.hero .left-content {
+  width: 50%;
+}
+.hero .right-content {
+  width: 50%;
+}
+@media (max-width: 800px) {
+  .hero {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+  .hero .left-content {
+    margin-top: 2rem;
+    width: 100%;
+  }
+  .hero .right-content {
+    width: 100%;
+  }
+  .hero .left-content h1 {
+    text-align: center;
+    font-size: 41px;
+  }
+  .hero .hero-buttons {
+    margin-top: 1rem;
+    justify-content: space-evenly;
+  }
+}
+
+@media (max-width: 500px) {
+  .hero .left-content h1 {
+    font-size: 30px;
+  }
+}
+
+.hero .hero-btn {
+  padding: 1rem 2rem;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 20px 25px -5px,
+    rgba(0, 0, 0, 0.04) 0px 10px 10px -5px;
+  border-radius: 1rem;
+  margin-top: 1rem;
+  font-family: "Poppins", sans-serif;
+  transition: all 300ms;
+}
+
+.hero .hero-btn:hover {
+  box-shadow: rgba(29, 28, 28, 0.199) 0px 20px 25px -5px,
+    rgba(46, 44, 44, 0.199) 0px 10px 10px -5px;
+}
+
+.hero .main-btn {
+  background: var(--main-color);
+}
+
+.hero .second-btn {
+  background: var(--color-primary);
+}

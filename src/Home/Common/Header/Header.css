@@ -1,0 +1,27 @@
+
+.nav-links.visible {
+ transition: min-height 300ms;
+ min-height: 238px;
+}
+
+/* Style the menu icon button */
+.menu-icon {
+  display: none; /* Hidden by default */
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+/* Media query to adjust styles for mobile/tablet screens */
+@media (max-width: 768px) {
+  .menu-icon {
+    display: block; /* Show the menu icon */
+  }
+
+  .nav-links {
+    min-height: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: min-height 300ms;  }
+}

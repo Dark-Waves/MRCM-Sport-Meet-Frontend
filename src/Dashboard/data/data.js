@@ -3,12 +3,12 @@ import { iconsImgs } from "../utils/images";
 import { personsImgs } from "../utils/images";
 
 export const user = {
-  role: "staff",
+  role: "admin",
 };
 
 export const navigationLinks = {
   admin: [
-    { id: 1, title: "Home", icon: "fa-house", url: "/Home" },
+    { id: 1, title: "Home", icon: "fa-house", url: "/Home",path: "/home", },
     {
       id: 2,
       title: "Events",

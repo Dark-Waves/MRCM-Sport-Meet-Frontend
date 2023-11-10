@@ -3,10 +3,12 @@ import "./ContentTop.css";
 import { useContext } from "react";
 import { SidebarContext } from "../../context/sidebarContext";
 import { useLocation } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 const ContentTop = () => {
   const location = useLocation();
-  const path = location.pathname
+  const path = location.pathname;
   const pathName = path.substring(1);
   const { toggleSidebar } = useContext(SidebarContext);
   return (
@@ -17,7 +19,7 @@ const ContentTop = () => {
           className="sidebar-toggler"
           onClick={() => toggleSidebar()}
         >
-          <img src={iconsImgs.menu} alt="" />
+          <FontAwesomeIcon icon={faBars} />
         </button>
         <h3 className="content-top-title">{pathName}</h3>
       </div>

@@ -65,7 +65,7 @@ const Sidebar = () => {
                 <li
                   className={`nav-item ${
                     location.pathname.startsWith(
-                      "/Dashboard" + "/Dashboard" + navigationLink.url
+                      "/Dashboard" + navigationLink.url
                     ) || location.pathname === "/Dashboard" + navigationLink.url
                       ? "active"
                       : ""

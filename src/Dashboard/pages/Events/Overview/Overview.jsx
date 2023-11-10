@@ -6,7 +6,7 @@ export default function Overview() {
     <div className="event-overview content-grid-one main-content-holder">
       {events.map((event) => (
         <div className="grid-common card flex-col" key={event.id}>
-          <div className="card-image">
+          <div className="card-image flex-row-center">
             <img src={event.pic} alt={`Event ${event.id}`} />
           </div>
           <div className="card-content flex-col">
