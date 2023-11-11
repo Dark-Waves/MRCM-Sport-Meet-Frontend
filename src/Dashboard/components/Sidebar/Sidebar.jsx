@@ -6,10 +6,12 @@ import { useContext } from "react";
 import { SidebarContext } from "../../context/sidebarContext";
 import { NavLink, useLocation } from "react-router-dom"; // Import useLocation
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { AuthContext } from "../../../context/AuthContext";
 
 const Sidebar = () => {
   const [sidebarClass, setSidebarClass] = useState("");
   const { isSidebarOpen } = useContext(SidebarContext);
+  const { userRole } = useContext(AuthContext);
 
   // Get the current location using useLocation
   const location = useLocation();
@@ -60,7 +62,7 @@ const Sidebar = () => {
       </div>
       <nav className="navigation">
         <ul className="nav-list">
-          {user.role === "admin"
+          {userRole === "admin"
             ? navigationLinks.admin.map((navigationLink) => (
                 <li
                   className={`nav-item ${
@@ -89,7 +91,7 @@ const Sidebar = () => {
                     renderSubMenu(navigationLink.subMenu)}
                 </li>
               ))
-            : user.role === "staff"
+            : userRole === "staff"
             ? navigationLinks.staff.map((navigationLink) => (
                 <li
                   className={`nav-item ${

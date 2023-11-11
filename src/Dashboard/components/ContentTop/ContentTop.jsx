@@ -2,22 +2,25 @@ import { iconsImgs } from "../../utils/images";
 import "./ContentTop.css";
 import { useContext } from "react";
 import { SidebarContext } from "../../context/sidebarContext";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { AuthContext } from "../../../context/AuthContext";
+import Cookies from "js-cookie";
 
 const ContentTop = () => {
   const location = useLocation();
   const path = location.pathname;
   const pathName = path.substring(1);
   const { toggleSidebar } = useContext(SidebarContext);
+  const navigate = useNavigate();
 
-  const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
+  const { isLoggedIn } = useContext(AuthContext);
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    setIsLoggedIn(false);
+    Cookies.remove("token");
+    // setIsLoggedIn(false);
+    navigate("/");
     // Redirect to login page or update the state
   };
 

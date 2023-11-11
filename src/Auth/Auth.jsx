@@ -1,10 +1,22 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./Auth.css";
 import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 export default function Auth() {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  // const { isLoggedIn } = useContext(AuthContext);
+
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (token) {
+      navigate("/dashboard");
+    }
+  }, [ navigate]);
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -21,10 +33,12 @@ export default function Auth() {
       // Check if the login is successful
       if (response.status === 200 && response.data.message === "ok") {
         // Redirect to dashboard
-        // window.location.href = "/dashboard/home";
-        localStorage.setItem("authToken", response.data.token);
+        // localStorage.setItem("authToken", response.data.token);
         console.log(response);
-            }
+        Cookies.set("token", response.data.token, { expires: 7 }); // Set a cookie named 'token' that expires in 7 days
+
+        navigate("/dashboard");
+      }
     } catch (error) {
       console.error("Login failed:", error);
       // Handle login failure (e.g., display an error message)
@@ -56,7 +70,7 @@ export default function Auth() {
                     autoComplete="off"
                     required=""
                     value={userName} // Bind input value to state
-                    onChange={(e) => setUserName(e.target.value)} // Update state on change        
+                    onChange={(e) => setUserName(e.target.value)} // Update state on change
                   />
                   <label>Name</label>
                 </div>
@@ -68,7 +82,7 @@ export default function Auth() {
                     autoComplete="off"
                     required=""
                     value={password} // Bind input value to state
-                    onChange={(e) => setPassword(e.target.value)} // Update state on change        
+                    onChange={(e) => setPassword(e.target.value)} // Update state on change
                   />
                   <label>Password</label>
                 </div>

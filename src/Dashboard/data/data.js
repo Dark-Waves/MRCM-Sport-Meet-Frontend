@@ -8,7 +8,7 @@ export const user = {
 
 export const navigationLinks = {
   admin: [
-    { id: 1, title: "Home", icon: "fa-house", url: "/Home",path: "/home", },
+    { id: 1, title: "Home", icon: "fa-house", url: "/Home", path: "/home" },
     {
       id: 2,
       title: "Events",
@@ -102,7 +102,7 @@ export const navigationLinks = {
     },
   ],
   staff: [
-    { id: 1, title: "Home", icon: "fa-house", url: "/Home" },
+    { id: 1, title: "Home", icon: "fa-house", url: "/Home", path: "/home" },
     {
       id: 2,
       title: "Events",
