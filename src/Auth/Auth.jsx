@@ -22,8 +22,9 @@ export default function Auth() {
       if (response.status === 200 && response.data.message === "ok") {
         // Redirect to dashboard
         // window.location.href = "/dashboard/home";
-        console.log(response)
-      }
+        localStorage.setItem("authToken", response.data.token);
+        console.log(response);
+            }
     } catch (error) {
       console.error("Login failed:", error);
       // Handle login failure (e.g., display an error message)
