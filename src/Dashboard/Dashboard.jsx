@@ -5,6 +5,7 @@ import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import Loader from "../Components/Loader/Loader";
 
 export default function Dashboard() {
   const { isLoggedIn, setUserRole, isLoading, setIsLoading } =
@@ -79,7 +80,7 @@ export default function Dashboard() {
   }, [isLoggedIn, navigate, setUserRole, setIsLoading, setReady]);
 
   if (isLoading) {
-    return <div>Loading...</div>; // Simple loading text, replace with your loader component if needed
+    return <Loader />; // Simple loading text, replace with your loader component if needed
   }
 
   return (

@@ -4,7 +4,8 @@ import "./utils/icons.js";
 import Home from "./Home/Home.jsx";
 import Dashboard from "./Dashboard/Dashboard.jsx";
 import Auth from "./Auth/Auth.jsx";
-import Error from "./Error/Error.jsx";
+import Error from "./Components/Error/Error.jsx";
+import Loader from "./Components/Loader/Loader.jsx";
 
 function App() {
   return (

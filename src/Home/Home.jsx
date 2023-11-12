@@ -6,7 +6,7 @@ import Main from "./Main/Main";
 import Live from "./Live/Live";
 import Events from "./Events/Events";
 import Houses from "./Houses/Houses";
-import ErrorPage from "../Error/Error";
+import ErrorPage from "../Components/Error/Error";
 
 export default function Home() {
   return (
