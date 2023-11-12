@@ -37,7 +37,7 @@
   --color-scarlet-v1: rgb(254, 30, 0, 0.79);
   --color-green: #00fe93;
   --color-yellow: #fec80a;
-  --color-jet: #f1f1f1;
+  --color-jet: #c2c2c2;
   --color-peach: #ffc397;
   --font-family-bai: "Bai Jamjuree", sans-serif;
   --transition-default: all 300ms ease-in-out;
@@ -213,7 +213,7 @@ button {
   justify-content: flex-start;
 }
 .flex-end {
-  display: flex!important !important;
+  display: flex!important;
   justify-content: flex-end;
 }
 .flex-top {

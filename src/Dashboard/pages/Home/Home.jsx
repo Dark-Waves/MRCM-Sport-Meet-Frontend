@@ -5,7 +5,6 @@ import Report from "./Usage/Usage";
 import Info from "./Info/Info";
 import Broadcast from "./Broadcast/Broadcast";
 import System from "./System/System";
-import Loans from "./Loans/Loans";
 import Financial from "./Financial/Financial";
 
 const Home = () => {

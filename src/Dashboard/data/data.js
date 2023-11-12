@@ -1,5 +1,3 @@
-import { useLinkClickHandler } from "react-router-dom";
-import { iconsImgs } from "../utils/images";
 import { personsImgs } from "../utils/images";
 
 export const user = {
@@ -125,6 +123,33 @@ export const navigationLinks = {
       ],
     },
     { id: 3, title: "Broadcast", icon: "fa-bullhorn", url: "/Broadcast" },
+    {
+      id: 5,
+      title: "Website",
+      icon: "fa-pager",
+      path: "/website/*",
+      url: "/Website",
+      subMenu: [
+        {
+          id: 1,
+          title: "Website Content",
+          url: "/Website/Content",
+          icon: "fa-bars-progress",
+        },
+        {
+          id: 2,
+          title: "Website Settings",
+          url: "/Website/Settings",
+          icon: "fa-sliders",
+        },
+        {
+          id: 3,
+          title: "Website Configuration",
+          url: "/Website/Configuration",
+          icon: "fa-sliders",
+        },
+      ],
+    },
   ],
 };
 
