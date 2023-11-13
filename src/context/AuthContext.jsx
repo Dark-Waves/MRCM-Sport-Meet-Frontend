@@ -6,7 +6,7 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState("");
-  const [isLoading, setIsLoading] = useState(true); // New loading state
+  const [currentUser, setUser] = useState({});
 
   useEffect(() => {
     const token = Cookies.get("token");
@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
       setIsLoggedIn(true);
     }
   }, []);
-
+  console.log(currentUser);
   return (
     <AuthContext.Provider
       value={{
@@ -23,8 +23,8 @@ export const AuthProvider = ({ children }) => {
         setIsLoggedIn,
         userRole,
         setUserRole,
-        isLoading,
-        setIsLoading,
+        currentUser,
+        setUser,
       }}
     >
       {children}

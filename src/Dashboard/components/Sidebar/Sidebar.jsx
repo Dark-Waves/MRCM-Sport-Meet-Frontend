@@ -62,65 +62,35 @@ const Sidebar = () => {
       </div>
       <nav className="navigation">
         <ul className="nav-list">
-          {userRole === "admin"
-            ? navigationLinks.admin.map((navigationLink) => (
-                <li
-                  className={`nav-item ${
-                    location.pathname.startsWith(
-                      "/Dashboard" + navigationLink.url
-                    ) || location.pathname === "/Dashboard" + navigationLink.url
-                      ? "active"
-                      : ""
-                  }`}
-                  key={navigationLink.id}
+          {userRole &&
+            navigationLinks[userRole].map((navigationLink) => (
+              <li
+                className={`nav-item ${
+                  location.pathname.startsWith(
+                    "/Dashboard" + "/Dashboard" + navigationLink.url
+                  ) || location.pathname === "/Dashboard" + navigationLink.url
+                    ? "active"
+                    : ""
+                }`}
+                key={navigationLink.id}
+              >
+                <NavLink
+                  activeclassname="active"
+                  to={"/Dashboard" + navigationLink.url}
                 >
-                  <NavLink
-                    activeclassname="active"
-                    to={"/Dashboard" + navigationLink.url}
-                  >
-                    <h2 className="nav-link">
-                      <FontAwesomeIcon
-                        icon={"nav-link-icon fa-solid " + navigationLink.icon}
-                      />
-                      <span className="nav-link-text">
-                        {navigationLink.title}
-                      </span>
-                    </h2>
-                  </NavLink>
-                  {navigationLink.subMenu &&
-                    renderSubMenu(navigationLink.subMenu)}
-                </li>
-              ))
-            : userRole === "staff"
-            ? navigationLinks.staff.map((navigationLink) => (
-                <li
-                  className={`nav-item ${
-                    location.pathname.startsWith(
-                      "/Dashboard" + "/Dashboard" + navigationLink.url
-                    ) || location.pathname === "/Dashboard" + navigationLink.url
-                      ? "active"
-                      : ""
-                  }`}
-                  key={navigationLink.id}
-                >
-                  <NavLink
-                    activeclassname="active"
-                    to={"/Dashboard" + navigationLink.url}
-                  >
-                    <h2 className="nav-link">
-                      <FontAwesomeIcon
-                        icon={"nav-link-icon fa-solid " + navigationLink.icon}
-                      />
-                      <span className="nav-link-text">
-                        {navigationLink.title}
-                      </span>
-                    </h2>
-                  </NavLink>
-                  {navigationLink.subMenu &&
-                    renderSubMenu(navigationLink.subMenu)}
-                </li>
-              ))
-            : "you don't have access"}
+                  <h2 className="nav-link">
+                    <FontAwesomeIcon
+                      icon={"nav-link-icon fa-solid " + navigationLink.icon}
+                    />
+                    <span className="nav-link-text">
+                      {navigationLink.title}
+                    </span>
+                  </h2>
+                </NavLink>
+                {navigationLink.subMenu &&
+                  renderSubMenu(navigationLink.subMenu)}
+              </li>
+            ))}
         </ul>
       </nav>
     </div>

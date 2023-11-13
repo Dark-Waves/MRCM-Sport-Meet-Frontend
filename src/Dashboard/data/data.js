@@ -29,54 +29,7 @@ export const navigationLinks = {
       ],
     },
     { id: 3, title: "Broadcast", icon: "fa-bullhorn", url: "/Broadcast" },
-    {
-      id: 4,
-      title: "Users",
-      icon: "fa-users",
-      path: "/user/*",
-      url: "/User",
-      subMenu: [
-        {
-          id: 1,
-          title: "User Activities",
-          url: "/User/Activity",
-          icon: "fa-bars-progress",
-        },
-        {
-          id: 2,
-          title: "Ban Users",
-          url: "/User/Ban",
-          icon: "fa-sliders",
-        },
-      ],
-    },
-    {
-      id: 5,
-      title: "Website",
-      icon: "fa-pager",
-      path: "/website/*",
-      url: "/Website",
-      subMenu: [
-        {
-          id: 1,
-          title: "Website Content",
-          url: "/Website/Content",
-          icon: "fa-bars-progress",
-        },
-        {
-          id: 2,
-          title: "Website Settings",
-          url: "/Website/Settings",
-          icon: "fa-sliders",
-        },
-        {
-          id: 3,
-          title: "Website Configuration",
-          url: "/Website/Configuration",
-          icon: "fa-sliders",
-        },
-      ],
-    },
+
     {
       id: 6,
       title: "Settings",
@@ -149,6 +102,100 @@ export const navigationLinks = {
           icon: "fa-sliders",
         },
       ],
+    },
+  ],
+  owner: [
+    { id: 1, title: "Home", icon: "fa-house", url: "/Home", path: "/home" },
+    {
+      id: 2,
+      title: "Events",
+      icon: "fa-calendar",
+      path: "/events/*",
+      url: "/Events",
+      subMenu: [
+        {
+          id: 1,
+          title: "Event Manager",
+          url: "/Events/Manager",
+          icon: "fa-bars-progress",
+        },
+        {
+          id: 2,
+          title: "Event Controller",
+          url: "/Events/Controller",
+          icon: "fa-sliders",
+        },
+      ],
+    },
+    { id: 3, title: "Broadcast", icon: "fa-bullhorn", url: "/Broadcast" },
+    {
+      id: 4,
+      title: "Users",
+      icon: "fa-users",
+      path: "/user/*",
+      url: "/User",
+      subMenu: [
+        {
+          id: 1,
+          title: "User Roles",
+          url: "/User/Role",
+          icon: "fa-bars-progress",
+        },
+        {
+          id: 2,
+          title: "Ban Users",
+          url: "/User/Ban",
+          icon: "fa-sliders",
+        },
+      ],
+    },
+    {
+      id: 5,
+      title: "Website",
+      icon: "fa-pager",
+      path: "/website/*",
+      url: "/Website",
+      subMenu: [
+        {
+          id: 1,
+          title: "Website Content",
+          url: "/Website/Content",
+          icon: "fa-bars-progress",
+        },
+        {
+          id: 2,
+          title: "Website Settings",
+          url: "/Website/Settings",
+          icon: "fa-sliders",
+        },
+        {
+          id: 3,
+          title: "Website Configuration",
+          url: "/Website/Configuration",
+          icon: "fa-sliders",
+        },
+      ],
+    },
+    {
+      id: 6,
+      title: "Settings",
+      icon: "fa-gear",
+      path: "/settings/*",
+      url: "/Settings",
+    },
+    {
+      id: 7,
+      title: "Server",
+      icon: "fa-server",
+      path: "/server/*",
+      url: "/Server",
+    },
+    {
+      id: 9,
+      title: "Account",
+      icon: "fa-user",
+      path: "/account/*",
+      url: "/Account",
     },
   ],
 };

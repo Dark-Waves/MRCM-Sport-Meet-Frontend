@@ -37,12 +37,9 @@ const ContentTop = () => {
         <h3 className="content-top-title">{pathName}</h3>
       </div>
       <div className="content-top-btns">
-        <button type="button" className="search-btn content-top-btn">
-          <img src={iconsImgs.search} alt="" />
-        </button>
         <button className="notification-btn content-top-btn">
           {isLoggedIn && (
-            <FontAwesomeIcon onClick={handleLogout} icon={faRightFromBracket} />
+            <FontAwesomeIcon onClick={handleLogout} icon={faRightFromBracket} className="font-md" />
           )}
         </button>
       </div>

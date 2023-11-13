@@ -6,22 +6,32 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import Loader from "../Components/Loader/Loader";
+import "./Dashboard.css";
 
 export default function Dashboard() {
-  const { isLoggedIn, setUserRole, isLoading, setIsLoading } =
-    useContext(AuthContext);
-  const [ready, setReady] = useState(false);
+  const { isLoggedIn, setUserRole, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Centralized error handling and navigation
 
   useEffect(() => {
     const token = Cookies.get("token");
-    if (!token) {
+
+    // If no token or not logged in, redirect to auth page
+    if (!isLoggedIn || !token) {
       navigate("/auth");
       return;
     }
-
+    const handleError = (error) => {
+      navigate("/error", {
+        state: {
+          error: error,
+        },
+      });
+    };
+    // Function to fetch user data
     const findUser = async () => {
-      setIsLoading(true); // Set loading to true at the start of the request
       try {
         const response = await axios.get(
           "http://localhost:8080/api/v1/user/@me",
@@ -32,65 +42,44 @@ export default function Dashboard() {
 
         if (response.status === 200 && response.data.message === "ok") {
           console.log(response.data.userData);
-          // setRole("staff");
-          const role = "staff";
+          const role = response.data.userData.role;
           setUserRole(role);
-          if (!(role === "staff" || role === "admin" || role === "owner")) {
-            navigate("/error", {
-              state: {
-                error: {
-                  code: "Permission_Error",
-                  message: "You Don't have access to dashboard",
-                },
-              },
+          setUser(response.data.userData);
+
+          // Redirect if the role is not staff, admin, or owner
+          if (!["staff", "admin", "owner"].includes(role)) {
+            handleError({
+              code: "Permission_Error",
+              message: "You don't have access to the dashboard",
             });
           }
-          setReady(true);
         } else {
-          // Handle non-200 responses
-          console.error("Error: Unexpected response from the server");
-          setReady(false);
-          navigate("/error", {
-            state: {
-              error: {
-                code: "API_ERROR",
-                message: "Failed to fetch user data.",
-              },
-            },
+          handleError({
+            code: "API_ERROR",
+            message: "Failed to fetch user data.",
           });
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
-        navigate("/error", {
-          state: {
-            error: {
-              code: "400",
-              message: "API_ERROR : Failed to fetch user data.",
-            },
-          },
+        handleError({
+          code: "400",
+          message: "API_ERROR : Failed to fetch user data.",
         });
       } finally {
-        setIsLoading(false); // Set loading to false after processing the response or catching an error
+        setIsLoading(false);
       }
     };
 
-    if (isLoggedIn) {
-      findUser();
-    }
-  }, [isLoggedIn, navigate, setUserRole, setIsLoading, setReady]);
+    findUser();
+  }, [isLoggedIn, navigate, setUserRole]);
 
   if (isLoading) {
-    return <Loader />; // Simple loading text, replace with your loader component if needed
+    return <Loader />;
   }
 
   return (
     <>
-      {!isLoading && ready && (
-        <>
-          <Sidebar />
-          <Content />
-        </>
-      )}
+      <Sidebar />
+      <Content />
     </>
   );
 }
