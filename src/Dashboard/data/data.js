@@ -28,7 +28,13 @@ export const navigationLinks = {
         },
       ],
     },
-    { id: 3, title: "Broadcast", icon: "fa-bullhorn", url: "/Broadcast" },
+    {
+      id: 3,
+      title: "Broadcast",
+      icon: "fa-bullhorn",
+      url: "/Broadcast",
+      path: "/broadcast/*",
+    },
 
     {
       id: 6,
@@ -75,7 +81,6 @@ export const navigationLinks = {
         },
       ],
     },
-    { id: 3, title: "Broadcast", icon: "fa-bullhorn", url: "/Broadcast" },
     {
       id: 5,
       title: "Website",
@@ -388,8 +393,7 @@ export const Broadcast = [
     id: 2,
     message: "We have only 10 minutes",
     filter: [{ type: "staff" }, { type: "admin" }],
-    content:
-      "All admins and Staff members get ready!",
+    content: "All admins and Staff members get ready!",
   },
 ];
 
