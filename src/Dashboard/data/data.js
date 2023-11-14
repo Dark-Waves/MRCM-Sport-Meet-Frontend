@@ -127,7 +127,13 @@ export const navigationLinks = {
         },
       ],
     },
-    { id: 3, title: "Broadcast", icon: "fa-bullhorn", url: "/Broadcast" },
+    {
+      id: 3,
+      title: "Broadcast",
+      icon: "fa-bullhorn",
+      url: "/Broadcast",
+      path: "/broadcast/*",
+    },
     {
       id: 4,
       title: "Users",
@@ -374,9 +380,16 @@ export const Broadcast = [
   {
     id: 1,
     message: "message 1",
-    filter: [{ grade: [6, 7, 8] }, { events: [2, 6, 3] }, { School: "all" }],
+    filter: [{ type: "all" }],
     content:
       "Event , Event 3 ,Event 6, will be satrt after 5 minutes get ready",
+  },
+  {
+    id: 2,
+    message: "We have only 10 minutes",
+    filter: [{ type: "staff" }, { type: "admin" }],
+    content:
+      "All admins and Staff members get ready!",
   },
 ];
 

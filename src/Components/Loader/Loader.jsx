@@ -1,10 +1,12 @@
 import React from "react";
-import "./Loader.css";
 
 export default function Loader() {
   return (
-    <div className="loader wrapper">
-      <div className="box-wrap">
+    <div
+      className="position-absolute h-100 w-100"
+      style={{ top: 0, left: 0, zIndex: 1111, background: "#fff" }}
+    >
+      <div className="box-wrap loader wrapper">
         <div className="box one"></div>
         <div className="box two"></div>
         <div className="box three"></div>

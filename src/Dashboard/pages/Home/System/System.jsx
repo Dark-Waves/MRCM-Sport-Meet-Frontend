@@ -1,9 +1,21 @@
-import { system } from "../../../data/data";
-import { iconsImgs, personsImgs } from "../../../utils/images";
+import { iconsImgs } from "../../../utils/images";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./System.css";
+import { useEffect, useState } from "react";
+import { io } from "socket.io-client";
 
 const System = () => {
+  const [systemData, setSystemData] = useState([]);
+  const socket = io("ws://localhost:8080/v1/home");
+  useEffect(() => {
+    socket.on("system-specs", (data) => {
+      setSystemData(data); // Update state with received data
+      // console.log(data);
+    });
+
+    return () => socket.off("system-specs");
+  }, [socket]);
+
   return (
     <div className="system subgrid-two-item grid-common grid-c6">
       <div className="grid-c-title">
@@ -14,7 +26,7 @@ const System = () => {
       </div>
       <div className="grid-c6-content">
         <div className="grid-items">
-          {system.map((system) => (
+          {systemData.map((system) => (
             <div className="grid-item" key={system.id}>
               <div className="grid-item-top">
                 <div className="grid-item-top-l">

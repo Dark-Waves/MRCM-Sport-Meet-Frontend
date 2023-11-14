@@ -7,7 +7,7 @@ import Cookies from "js-cookie";
 
 export default function UserRole() {
   // Sample user data
-  const { isLoggedIn ,currentUser} = useContext(AuthContext);
+  const { isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState([]);
@@ -37,7 +37,6 @@ export default function UserRole() {
     getUserData();
   }, [isLoggedIn, navigate]);
 
-  console.log(currentUser)
   return (
     <div className="view-user-activity grid-common main-content-holder">
       <h2>User Roles</h2>
@@ -50,9 +49,9 @@ export default function UserRole() {
                 <p>{user.userName}</p>
               </div>
               <div className="role-editor">
-                {currentUser.editAcessRoles.map((data,index) => {
+                {/* {currentUser.editAcessRoles.map((data,index) => {
                   <div className="role-btn" key={index}>{data.roleType}</div>
-                })}
+                })} */}
               </div>
             </div>
           </li>

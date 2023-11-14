@@ -6,6 +6,8 @@ import Dashboard from "./Dashboard/Dashboard.jsx";
 import Auth from "./Auth/Auth.jsx";
 import Error from "./Components/Error/Error.jsx";
 import Loader from "./Components/Loader/Loader.jsx";
+import "./Components/Loader/Loader.css";
+
 
 function App() {
   return (

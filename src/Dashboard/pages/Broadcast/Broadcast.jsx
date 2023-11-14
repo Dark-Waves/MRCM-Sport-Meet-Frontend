@@ -1,28 +1,43 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./Broadcast.css";
 
-const initialFilters = {
-  grade: [],
-  events: [],
-  school: "all",
-};
-
-const initialMessage = {
-  message: "",
-  filter: { ...initialFilters },
-  content: "",
-};
-
 export default function Broadcast() {
+  const user = "staff";
+  let initialMessage;
+  if (user === "owner") {
+    initialMessage = {
+      message: "",
+      filter: [{ type: "public" }, { type: "admin" }, { type: "staff" }], // Adjusted for new filter format
+      content: "",
+    };
+  } else if (user === "admin") {
+    initialMessage = {
+      message: "",
+      filter: [{ type: "public" }, { type: "staff" }], // Adjusted for new filter format
+      content: "",
+    };
+  } else if (user === "staff") {
+    initialMessage = {
+      message: "",
+      filter: [{ type: "public" }, { type: "staff" }], // Adjusted for new filter format
+      content: "",
+    };
+  }
   const [messages, setMessages] = useState([
     {
       id: 1,
       message: "message 1",
-      filter: { grade: [6, 7, 8], events: [2, 6, 3], school: "all" },
+      filter: [{ type: "all" }],
       content:
-        "Event , Event 3 ,Event 6, will start after 5 minutes. Get ready!",
+        "Event, Event 3, Event 6, will start after 5 minutes. Get ready!",
     },
-    // Add more messages as needed
+    {
+      id: 2,
+      message: "We have only 10 minutes",
+      filter: [{ type: "staff" }, { type: "admin" }],
+      content: "All admins and Staff members get ready!",
+    },
+    // ... add more messages as needed
   ]);
 
   const [newMessage, setNewMessage] = useState({ ...initialMessage });
@@ -60,7 +75,7 @@ export default function Broadcast() {
             id="grade"
             type="text"
             placeholder="e.g., 6, 7, 8"
-            value={newMessage.filter.grade.join(", ")}
+            value={newMessage.filter.map()}
             onChange={(e) =>
               setNewMessage({
                 ...newMessage,
@@ -68,41 +83,6 @@ export default function Broadcast() {
                   ...newMessage.filter,
                   grade: e.target.value.split(", "),
                 },
-              })
-            }
-          />
-        </div>
-        <div className="ipt-content flex-col">
-          {" "}
-          <label htmlFor="event">Events</label>
-          <input
-            id="event"
-            type="text"
-            placeholder="e.g., 2, 6, 3"
-            value={newMessage.filter.events.join(", ")}
-            onChange={(e) =>
-              setNewMessage({
-                ...newMessage,
-                filter: {
-                  ...newMessage.filter,
-                  events: e.target.value.split(", "),
-                },
-              })
-            }
-          />
-        </div>
-        <div className="ipt-content flex-col">
-          {" "}
-          <label htmlFor="school">School</label>
-          <input
-            id="school"
-            type="text"
-            placeholder="all"
-            value={newMessage.filter.school}
-            onChange={(e) =>
-              setNewMessage({
-                ...newMessage,
-                filter: { ...newMessage.filter, school: e.target.value },
               })
             }
           />
