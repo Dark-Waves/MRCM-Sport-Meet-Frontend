@@ -9,15 +9,13 @@ import ErrorPage from "../Components/Error/Error.jsx";
 import Loader from "../Components/Loader/Loader";
 import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import { useEffect, useReducer, useRef } from "react";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import DashboardContext from "../Context/DashboardContext";
 import { navigationLinks } from "./data/data";
 import useAuth from "../hooks/useAuth.jsx";
 import socketio from "socket.io-client";
 import axios from "axios";
 import { config } from "./utils/config.js";
-import { siteImgs } from './utils/images.js'
+import { siteImgs } from "./utils/images.js";
 import Sidebar from "./components/Sidebar/Sidebar.jsx";
 const defaultLogo = siteImgs.Logo;
 const SiteName = config.SiteName;
@@ -25,195 +23,189 @@ import Cookies from "js-cookie";
 const APIURI = config.APIURI;
 
 const initialValue = {
-    status: "loading",
-    profileStatus: "loading",
-    profile: null,
-    sidebarOpen: true,
-    wsShoketAuthenticated: null,
-    socket: null,
-    // loading , error ,ready
+  status: "loading",
+  profileStatus: "loading",
+  profile: null,
+  sidebarOpen: true,
+  wsShoketAuthenticated: null,
+  socket: null,
+  // loading , error ,ready
 };
 const reducer = function (state, action) {
-    switch (action.type) {
-        case "setStatus": {
-            return { ...state, status: action.payload };
-        }
-        case "toggleSideBar": {
-            return { ...state, sidebarOpen: !state.sidebarOpen };
-        }
-        case "setProfile": {
-            return { ...state, profile: action.payload };
-        }
-        case "setProfileStatus": {
-            return { ...state, profileStatus: action.payload };
-        }
-        case "setWsAuth": {
-            return { ...state, wsShoketAuthenticated: action.payload };
-        }
-        case "setWs": {
-            return { ...state, socket: action.payload };
-        }
-        default:
-            return new Error("method not found");
+  switch (action.type) {
+    case "setStatus": {
+      return { ...state, status: action.payload };
     }
+    case "toggleSideBar": {
+      return { ...state, sidebarOpen: !state.sidebarOpen };
+    }
+    case "setProfile": {
+      return { ...state, profile: action.payload };
+    }
+    case "setProfileStatus": {
+      return { ...state, profileStatus: action.payload };
+    }
+    case "setWsAuth": {
+      return { ...state, wsShoketAuthenticated: action.payload };
+    }
+    case "setWs": {
+      return { ...state, socket: action.payload };
+    }
+    default:
+      return new Error("method not found");
+  }
 };
 
 const getPageComponent = (title) => {
-    // Map the title to the corresponding component
-    const pages = {
-        Home: Home,
-        Events: Events,
-        Broadcast: Broadcast,
-        Users: Users,
-        Website: Website,
-        // ... map other titles to components
-    };
+  // Map the title to the corresponding component
+  const pages = {
+    Home: Home,
+    Events: Events,
+    Broadcast: Broadcast,
+    Users: Users,
+    Website: Website,
+    // ... map other titles to components
+  };
 
-    return pages[title] || null; // Return the component or null if not found
+  return pages[title] || null; // Return the component or null if not found
 };
 
 const renderRoutes = (links) => {
-    return links.map((link) => {
-        const PageComponent = getPageComponent(link.title);
-        if (!PageComponent) return null; // Skip if no matching component
-        console.log(links);
-        return (
-            <Route key={link.id} path={link.path} element={<PageComponent />} />
-            // Note: If subMenu exists, you might want to handle nested routes here
-        );
-    });
+  return links.map((link) => {
+    const PageComponent = getPageComponent(link.title);
+    if (!PageComponent) return null; // Skip if no matching component
+    console.log(links);
+    return (
+      <Route key={link.id} path={link.path} element={<PageComponent />} />
+      // Note: If subMenu exists, you might want to handle nested routes here
+    );
+  });
 };
 export default function Dashboard() {
-    const [state, dispatch] = useReducer(reducer, initialValue);
-    const {
-        status,
-        profileStatus,
-        wsShoketAuthenticated,
-        profile,
-        socket,
-    } = state;
-    const [{ authenticated, status: authStatus }, dipatchAuth] = useAuth();
-    const navigate = useNavigate();
-    /**Client Updates Checking */
+  const [state, dispatch] = useReducer(reducer, initialValue);
+  const { status, profileStatus, wsShoketAuthenticated, profile, socket } =
+    state;
+  const [{ authenticated, status: authStatus }, dipatchAuth] = useAuth();
+  const navigate = useNavigate();
+  /**Client Updates Checking */
 
+  useEffect(function () {
+    document.title = `${SiteName} Dashboard`;
+  }, []);
 
+  useEffect(
+    function () {
+      if (authStatus !== "ready") return;
+      if (!authenticated) navigate("/auth");
+    },
+    [authenticated, navigate, authStatus]
+  );
 
-    useEffect(function () {
-        document.title = `${SiteName} Dashboard`;
-    }, []);
+  useEffect(
+    function () {
+      if (!authenticated) return;
+      if (!wsShoketAuthenticated) return;
+      if (!profile) return;
+      dispatch({ type: "setStatus", payload: "ready" });
+    },
+    [authenticated, wsShoketAuthenticated, profile]
+  );
 
-    useEffect(
-        function () {
-            if (authStatus !== "ready") return;
-            if (!authenticated) navigate("/auth");
-        },
-        [authenticated, navigate, authStatus]
-    );
+  useEffect(function () {
+    const socket = socketio(`${APIURI}/v1/home`, {
+      transports: ["websocket"],
+    });
+    dispatch({ type: "setWs", payload: socket });
+    socket.on("connect", () => {
+      console.log(socket);
+      socket.emit("client-message", {
+        type: "auth",
+        payload: Cookies.get("token"),
+      });
+    });
 
-    useEffect(
-        function () {
-            if (!authenticated) return;
-            if (!wsShoketAuthenticated) return;
-            if (!profile) return;
-            dispatch({ type: "setStatus", payload: "ready" });
-        },
-        [authenticated, wsShoketAuthenticated, profile]
-    );
+    return () => {
+      socket.close();
+    };
+  }, []);
 
-    useEffect(function () {
-        const socket = socketio(`${APIURI}/v1/home`, {
-            transports: ["websocket"],
-        });
-        dispatch({ type: "setWs", payload: socket });
-        socket.on("connect", () => {
-            console.log(socket)
+  /**Event handler */
+  useEffect(
+    function () {
+      if (!socket) return;
+      const handleSocket = async function (args) {
+        const { type, payload } = args;
+        switch (type) {
+          case "auth": {
+            if (payload.success) dispatch({ type: "setWsAuth", payload: true });
+            else dispatch({ type: "setWsAuth", payload: false });
+            return;
+          }
+          case "preflight": {
             socket.emit("client-message", {
-                type: "auth",
-                payload: Cookies.get("token"),
+              type: "preflight",
+              payload: {
+                sToken: payload.sToken,
+                token: Cookies.get("token"),
+              },
             });
-        });
+            return;
+          }
+        }
+      };
+      socket.on("server-message", handleSocket);
+      return function () {
+        socket.removeEventListener("server-message", handleSocket);
+      };
+    },
+    [socket, dipatchAuth]
+  );
+  useEffect(
+    function () {
+      const getData = async function () {
+        if (profileStatus !== "loading") return;
+        try {
+          const token = Cookies.get("token");
+          const { data = null } = await axios.get(
+            `${config.APIURI}/api/v1/user/@me`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          dispatch({ type: "setProfileStatus", payload: "ready" });
+          dispatch({ type: "setProfile", payload: data?.userData });
+        } catch (error) {
+          dispatch({ type: "setProfileStatus", payload: "error" });
+        }
+      };
+      getData();
+    },
+    [profileStatus]
+  );
 
-        return () => {
-            socket.close();
-        };
-    }, []);
-
-    /**Event handler */
-    useEffect(
-        function () {
-            if (!socket) return;
-            const handleSocket = async function (args) {
-                const { type, payload } = args;
-                switch (type) {
-                    case "auth": {
-                        if (payload.success) dispatch({ type: "setWsAuth", payload: true });
-                        else dispatch({ type: "setWsAuth", payload: false });
-                        return;
-                    }
-                    case "preflight": {
-                        socket.emit("client-message", {
-                            type: "preflight",
-                            payload: {
-                                sToken: payload.sToken,
-                                token: Cookies.get("token"),
-                            },
-                        });
-                        return;
-                    }
-
-                }
-            };
-            socket.on("server-message", handleSocket);
-            return function () {
-                socket.removeEventListener("server-message", handleSocket);
-            };
-        },
-        [socket, dipatchAuth]
-    );
-    useEffect(
-        function () {
-            const getData = async function () {
-                if (profileStatus !== "loading") return;
-                try {
-                    const token = Cookies.get("token");
-                    const { data = null } = await axios.get(`${config.APIURI}/api/v1/user/@me`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                    });
-                    dispatch({ type: "setProfileStatus", payload: "ready" });
-                    dispatch({ type: "setProfile", payload: data?.userData });
-
-                } catch (error) {
-                    dispatch({ type: "setProfileStatus", payload: "error" });
-                }
-            };
-            getData();
-        },
-        [profileStatus]
-    );
-
-    return (
-        <div className="app" id="app">
-            {status === "loading" && <Loader />}
-            {status === "error" && <ErrorPage code={400} />}
-            {status === "ready" && (
-                <DashboardContext.Provider
-                    value={{ ...state, dispatch, defaultLogo, SiteName }}
-                >
-                    <Sidebar />
-                    <div className="Dashboard main-content">
-                        <ContentTop />
-                        <Routes>
-                            {renderRoutes(navigationLinks[profile.role] || [])}
-                            <Route path="/" element={<Navigate to="/dashboard/home" />} />
-                            <Route path="*" element={<ErrorPage code={404} />} />
-                        </Routes>
-
-                    </div>
-
-                </DashboardContext.Provider>
-            )}
+  return (
+    <>
+      {status === "loading" && (
+        <div style={{ background: "#fff" }}>
+          <Loader />
         </div>
-    );
+      )}
+      {status === "error" && <ErrorPage code={400} />}
+      {status === "ready" && (
+        <DashboardContext.Provider
+          value={{ ...state, dispatch, defaultLogo, SiteName }}
+        >
+          <Sidebar />
+          <div className="Dashboard main-content">
+            <ContentTop />
+            <Routes>
+              {renderRoutes(navigationLinks[profile.role] || [])}
+              <Route path="/" element={<Navigate to="/dashboard/home" />} />
+              <Route path="*" element={<ErrorPage code={404} />} />
+            </Routes>
+          </div>
+        </DashboardContext.Provider>
+      )}
+    </>
+  );
 }
-
-

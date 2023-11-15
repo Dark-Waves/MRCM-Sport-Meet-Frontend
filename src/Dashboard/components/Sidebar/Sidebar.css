@@ -126,6 +126,9 @@
     display: flex;
     justify-content: center;
     margin-bottom: 18px;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 0px;
   }
   .nav-link {
     padding: 0;
@@ -142,6 +145,12 @@
     border-radius: 100%;
   }
   .nav-link-text {
+    display: none;
+  }
+  .nav-item.active .sub-menu {
+    margin-left: 0px;
+  }
+  .nav-item.active .sub-menu span {
     display: none;
   }
 }

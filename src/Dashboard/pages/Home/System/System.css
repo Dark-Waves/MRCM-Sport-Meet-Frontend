@@ -47,6 +47,10 @@
   margin-bottom: 1rem;
 }
 
+.system .grid-c6-content {
+  min-height: 300px;
+}
+
 .system .icon svg {
   font-size: 1.5rem;
 }

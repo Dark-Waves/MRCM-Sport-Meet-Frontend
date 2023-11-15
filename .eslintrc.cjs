@@ -11,9 +11,5 @@ module.exports = {
   plugins: ['react-refresh'],
   rules: {
     'react-refresh/only-export-components': 'warn',
-    "import/no-unresolved": [
-      "error",
-      { "caseSensitive": false }
-    ]
   },
 }

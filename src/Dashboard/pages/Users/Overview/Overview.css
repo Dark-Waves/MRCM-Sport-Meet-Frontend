@@ -1,4 +1,8 @@
 /* Overview.css */
+
+.user-overview {
+  min-height: 500px;
+}
 .user-overview .overview {
   font-family: Arial, sans-serif;
   padding: 20px;

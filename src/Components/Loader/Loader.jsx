@@ -4,7 +4,7 @@ export default function Loader() {
   return (
     <div
       className="position-absolute h-100 w-100"
-      style={{ top: 0, left: 0, zIndex: 1111, background: "#fff" }}
+      style={{ top: 0, left: 0, zIndex: 1111 }}
     >
       <div className="box-wrap loader wrapper">
         <div className="box one"></div>

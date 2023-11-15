@@ -4,37 +4,37 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../../../Components/Loader/Loader";
-
+import DashboardContext from "../../../../Context/DashboardContext";
 export default function Overview() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const [popupUser, setPopupUser] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
-  const { status } = useContext(DashboardContext)
+  const { status } = useContext(DashboardContext);
 
   useEffect(() => {
-
     if (!(status === "ready")) {
       navigate("/auth");
       return;
     }
 
-    // const getUserData = async () => {
-    //   setIsLoading(true);
-    //   try {
-    //     const response = await axios.get("http://localhost:8080/api/v1/role", {
-    //       headers: { Authorization: `Bearer ${token}` },
-    //     });
-    //     setUsers(response.data.lowerUsers);
-    //   } catch (error) {
-    //     console.error(error);
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-    // };
+    const getUserData = async () => {
+      const token = Cookies.get("token");
+      setIsLoading(true);
+      try {
+        const response = await axios.get("http://localhost:8080/api/v1/role", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUsers(response.data.lowerUsers);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    // getUserData();
+    getUserData();
   }, [navigate, status]);
 
   const handlePopUp = async (userId) => {
