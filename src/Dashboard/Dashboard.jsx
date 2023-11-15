@@ -1,80 +1,219 @@
-import { useCallback, useContext, useEffect, useState } from "react";
-import Sidebar from "./components/Sidebar/Sidebar";
-import Content from "./Routes/Routes";
-import { AuthContext } from "../context/AuthContext";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
-import Loader from "../Components/Loader/Loader";
 import "./Dashboard.css";
+import Home from "./pages/Home/Home";
+import Events from "./pages/Events/Events";
+import Broadcast from "./pages/Broadcast/Broadcast";
+import Users from "./pages/Users/Users";
+import Website from "./pages/Website/Website";
+import ContentTop from "./components/ContentTop/ContentTop"; // Heading
+import ErrorPage from "../Components/Error/Error.jsx";
+import Loader from "../Components/Loader/Loader";
+import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
+import { useEffect, useReducer, useRef } from "react";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import DashboardContext from "../Context/DashboardContext";
+import { navigationLinks } from "./data/data";
+import useAuth from "../hooks/useAuth.jsx";
+import socketio from "socket.io-client";
+import axios from "axios";
+import { config } from "./utils/config.js";
+import { siteImgs } from './utils/images.js'
+import Sidebar from "./components/Sidebar/Sidebar.jsx";
+const defaultLogo = siteImgs.Logo;
+const SiteName = config.SiteName;
+import Cookies from "js-cookie";
+const APIURI = config.APIURI;
 
-export default function Dashboard() {
-  const { setUserRole } = useContext(AuthContext);
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Centralized error handling and navigation
-  const handleError = useCallback(
-    (error) => {
-      navigate("/error", {
-        state: {
-          error: error,
-        },
-      });
-    },
-    [navigate]
-  );
-
-  useEffect(() => {
-    setIsLoading(true);
-    const token = Cookies.get("token");
-
-    // If no token or not logged in, redirect to auth page
-    const findUser = async () => {
-      if (token) {
-        setIsLoading(true); // Start loading only when starting the fetch
-        try {
-          const response = await axios.get(
-            "http://localhost:8080/api/v1/user/@me",
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-          if (response.status === 200 && response.data.message === "ok") {
-            console.log(response.data.userData);
-            const role = response.data.userData.role;
-            setUserRole(role);
-            // setUser(response.data.userData);
-
-            // Redirect if the role is not staff, admin, or owner
-            if (!["staff", "admin", "owner"].includes(role)) {
-              handleError({
-                code: "Permission_Error",
-                message: "You don't have access to the dashboard",
-              });
-            }
-          }
-        } catch (error) {
-          handleError({
-            code: "400",
-            message: "API_ERROR : Failed to fetch user data.",
-          });
-        } finally {
-          setIsLoading(false); // Stop loading on either success or failure
+const initialValue = {
+    status: "loading",
+    profileStatus: "loading",
+    profile: null,
+    sidebarOpen: true,
+    wsShoketAuthenticated: null,
+    socket: null,
+    // loading , error ,ready
+};
+const reducer = function (state, action) {
+    switch (action.type) {
+        case "setStatus": {
+            return { ...state, status: action.payload };
         }
-      } else {
-        navigate("/auth");
-      }
+        case "toggleSideBar": {
+            return { ...state, sidebarOpen: !state.sidebarOpen };
+        }
+        case "setProfile": {
+            return { ...state, profile: action.payload };
+        }
+        case "setProfileStatus": {
+            return { ...state, profileStatus: action.payload };
+        }
+        case "setWsAuth": {
+            return { ...state, wsShoketAuthenticated: action.payload };
+        }
+        case "setWs": {
+            return { ...state, socket: action.payload };
+        }
+        default:
+            return new Error("method not found");
+    }
+};
+
+const getPageComponent = (title) => {
+    // Map the title to the corresponding component
+    const pages = {
+        Home: Home,
+        Events: Events,
+        Broadcast: Broadcast,
+        Users: Users,
+        Website: Website,
+        // ... map other titles to components
     };
 
-    findUser();
-  }, [navigate, setUserRole, handleError]);
+    return pages[title] || null; // Return the component or null if not found
+};
 
-  return (
-    <>
-      <Sidebar />
-      <Content />
-      {isLoading && <Loader />}
-    </>
-  );
+const renderRoutes = (links) => {
+    return links.map((link) => {
+        const PageComponent = getPageComponent(link.title);
+        if (!PageComponent) return null; // Skip if no matching component
+        console.log(links);
+        return (
+            <Route key={link.id} path={link.path} element={<PageComponent />} />
+            // Note: If subMenu exists, you might want to handle nested routes here
+        );
+    });
+};
+export default function Dashboard() {
+    const [state, dispatch] = useReducer(reducer, initialValue);
+    const {
+        status,
+        profileStatus,
+        wsShoketAuthenticated,
+        profile,
+        socket,
+    } = state;
+    const [{ authenticated, status: authStatus }, dipatchAuth] = useAuth();
+    const navigate = useNavigate();
+    /**Client Updates Checking */
+
+
+
+    useEffect(function () {
+        document.title = `${SiteName} Dashboard`;
+    }, []);
+
+    useEffect(
+        function () {
+            if (authStatus !== "ready") return;
+            if (!authenticated) navigate("/auth");
+        },
+        [authenticated, navigate, authStatus]
+    );
+
+    useEffect(
+        function () {
+            if (!authenticated) return;
+            if (!wsShoketAuthenticated) return;
+            if (!profile) return;
+            dispatch({ type: "setStatus", payload: "ready" });
+        },
+        [authenticated, wsShoketAuthenticated, profile]
+    );
+
+    useEffect(function () {
+        const socket = socketio(`${APIURI}/v1/home`, {
+            transports: ["websocket"],
+        });
+        dispatch({ type: "setWs", payload: socket });
+        socket.on("connect", () => {
+            console.log(socket)
+            socket.emit("client-message", {
+                type: "auth",
+                payload: Cookies.get("token"),
+            });
+        });
+
+        return () => {
+            socket.close();
+        };
+    }, []);
+
+    /**Event handler */
+    useEffect(
+        function () {
+            if (!socket) return;
+            const handleSocket = async function (args) {
+                const { type, payload } = args;
+                switch (type) {
+                    case "auth": {
+                        if (payload.success) dispatch({ type: "setWsAuth", payload: true });
+                        else dispatch({ type: "setWsAuth", payload: false });
+                        return;
+                    }
+                    case "preflight": {
+                        socket.emit("client-message", {
+                            type: "preflight",
+                            payload: {
+                                sToken: payload.sToken,
+                                token: Cookies.get("token"),
+                            },
+                        });
+                        return;
+                    }
+
+                }
+            };
+            socket.on("server-message", handleSocket);
+            return function () {
+                socket.removeEventListener("server-message", handleSocket);
+            };
+        },
+        [socket, dipatchAuth]
+    );
+    useEffect(
+        function () {
+            const getData = async function () {
+                if (profileStatus !== "loading") return;
+                try {
+                    const token = Cookies.get("token");
+                    const { data = null } = await axios.get(`${config.APIURI}/api/v1/user/@me`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    dispatch({ type: "setProfileStatus", payload: "ready" });
+                    dispatch({ type: "setProfile", payload: data?.userData });
+
+                } catch (error) {
+                    dispatch({ type: "setProfileStatus", payload: "error" });
+                }
+            };
+            getData();
+        },
+        [profileStatus]
+    );
+
+    return (
+        <div className="app" id="app">
+            {status === "loading" && <Loader />}
+            {status === "error" && <ErrorPage code={400} />}
+            {status === "ready" && (
+                <DashboardContext.Provider
+                    value={{ ...state, dispatch, defaultLogo, SiteName }}
+                >
+                    <Sidebar />
+                    <div className="Dashboard main-content">
+                        <ContentTop />
+                        <Routes>
+                            {renderRoutes(navigationLinks[profile.role] || [])}
+                            <Route path="/" element={<Navigate to="/dashboard/home" />} />
+                            <Route path="*" element={<ErrorPage code={404} />} />
+                        </Routes>
+
+                    </div>
+
+                </DashboardContext.Provider>
+            )}
+        </div>
+    );
 }
+
+

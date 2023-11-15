@@ -6,34 +6,23 @@ import { useContext } from "react";
 import { SidebarContext } from "../../context/sidebarContext";
 import { NavLink, useLocation } from "react-router-dom"; // Import useLocation
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { AuthContext } from "../../../context/AuthContext";
+import DashboardContext from "../../../Context/DashboardContext";
 
 const Sidebar = () => {
-  const [sidebarClass, setSidebarClass] = useState("");
-  const { isSidebarOpen } = useContext(SidebarContext);
-  const { userRole } = useContext(AuthContext);
-
+  const { sidebarOpen, profile } = useContext(DashboardContext)
   // Get the current location using useLocation
   const location = useLocation();
 
-  useEffect(() => {
-    if (isSidebarOpen) {
-      setSidebarClass("sidebar-change");
-    } else {
-      setSidebarClass("");
-    }
-  }, [isSidebarOpen]);
 
   const renderSubMenu = (subMenuItems) => {
     return (
       <ul className="sub-menu">
         {subMenuItems.map((subMenuItem) => (
           <li
-            className={`sub-menu-item flex-row-start ${
-              location.pathname === "/Dashboard" + subMenuItem.url
-                ? "active"
-                : ""
-            }`} // Check if the current location matches the sub-menu item's URL
+            className={`sub-menu-item flex-row-start ${location.pathname === "/Dashboard" + subMenuItem.url
+              ? "active"
+              : ""
+              }`} // Check if the current location matches the sub-menu item's URL
             key={subMenuItem.id}
           >
             <NavLink
@@ -53,7 +42,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className={`sidebar ${sidebarClass}`}>
+    <div className={`sidebar ${sidebarOpen ? '' : "sidebar-change"}`}>
       <div className="user-info">
         <div className="info-img img-fit-cover">
           <img src={personsImgs.person_two} alt="profile image" />
@@ -62,35 +51,33 @@ const Sidebar = () => {
       </div>
       <nav className="navigation">
         <ul className="nav-list">
-          {userRole &&
-            navigationLinks[userRole].map((navigationLink) => (
-              <li
-                className={`nav-item ${
-                  location.pathname.startsWith(
-                    "/Dashboard" + "/Dashboard" + navigationLink.url
-                  ) || location.pathname === "/Dashboard" + navigationLink.url
-                    ? "active"
-                    : ""
+          {navigationLinks[profile.role] && navigationLinks[profile.role].map((navigationLink) => (
+            <li
+              className={`nav-item ${location.pathname.startsWith(
+                "/Dashboard" + "/Dashboard" + navigationLink.url
+              ) || location.pathname === "/Dashboard" + navigationLink.url
+                ? "active"
+                : ""
                 }`}
-                key={navigationLink.id}
+              key={navigationLink.id}
+            >
+              <NavLink
+                activeclassname="active"
+                to={"/Dashboard" + navigationLink.url}
               >
-                <NavLink
-                  activeclassname="active"
-                  to={"/Dashboard" + navigationLink.url}
-                >
-                  <h2 className="nav-link">
-                    <FontAwesomeIcon
-                      icon={"nav-link-icon fa-solid " + navigationLink.icon}
-                    />
-                    <span className="nav-link-text">
-                      {navigationLink.title}
-                    </span>
-                  </h2>
-                </NavLink>
-                {navigationLink.subMenu &&
-                  renderSubMenu(navigationLink.subMenu)}
-              </li>
-            ))}
+                <h2 className="nav-link">
+                  <FontAwesomeIcon
+                    icon={"nav-link-icon fa-solid " + navigationLink.icon}
+                  />
+                  <span className="nav-link-text">
+                    {navigationLink.title}
+                  </span>
+                </h2>
+              </NavLink>
+              {navigationLink.subMenu &&
+                renderSubMenu(navigationLink.subMenu)}
+            </li>
+          ))}
         </ul>
       </nav>
     </div>

@@ -16,7 +16,7 @@ import search from "../assets/icons/search.svg";
 import user from "../assets/icons/user.svg";
 import wallet from "../assets/icons/wallet.svg";
 import wealth from "../assets/icons/wealth.svg";
-
+import Logo from "../assets/images/person_one.jpg";
 // person images
 import person_one from "../assets/images/person_one.jpg";
 import person_two from "../assets/images/person_two.jpg";
@@ -31,3 +31,6 @@ export const personsImgs = {
     person_one, person_two, person_three, person_four
 };
 
+export const siteImgs = {
+    Logo
+}

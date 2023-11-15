@@ -1,19 +1,20 @@
 import { iconsImgs } from "../../../utils/images";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./System.css";
-import { useEffect, useState } from "react";
-import { io } from "socket.io-client";
+import { useContext, useEffect, useState } from "react";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import DashboardContext from "../../../../Context/DashboardContext";
+
 
 const System = () => {
   const [systemData, setSystemData] = useState([]);
-  const socket = io("ws://localhost:8080/v1/home");
+  const { socket } = useContext(DashboardContext)
   useEffect(() => {
-    socket.on("system-specs", (data) => {
-      setSystemData(data); // Update state with received data
-      // console.log(data);
-    });
-
-    return () => socket.off("system-specs");
+    socket.on("server-message", (args) => {
+      if (!(args.type === "systemInfo")) return
+      setSystemData(args.payload)
+    })
   }, [socket]);
 
   return (

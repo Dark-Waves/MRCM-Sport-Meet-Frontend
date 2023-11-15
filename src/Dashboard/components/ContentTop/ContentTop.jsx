@@ -5,17 +5,16 @@ import { SidebarContext } from "../../context/sidebarContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
-import { AuthContext } from "../../../context/AuthContext";
 import Cookies from "js-cookie";
+import DashboardContext from "../../../Context/DashboardContext";
 
 const ContentTop = () => {
   const location = useLocation();
   const path = location.pathname;
   const pathName = path.substring(1);
-  const { toggleSidebar } = useContext(SidebarContext);
-  const navigate = useNavigate();
 
-  const { isLoggedIn } = useContext(AuthContext);
+  const { dispatch, status } = useContext(DashboardContext)
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     Cookies.remove("token");
@@ -30,7 +29,7 @@ const ContentTop = () => {
         <button
           type="button"
           className="sidebar-toggler"
-          onClick={() => toggleSidebar()}
+          onClick={() => dispatch({ type: "toggleSideBar" })}
         >
           <FontAwesomeIcon icon={faBars} />
         </button>
@@ -38,7 +37,7 @@ const ContentTop = () => {
       </div>
       <div className="content-top-btns">
         <button className="notification-btn content-top-btn">
-          {isLoggedIn && (
+          {status === "ready" && (
             <FontAwesomeIcon onClick={handleLogout} icon={faRightFromBracket} className="font-md" />
           )}
         </button>

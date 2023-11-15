@@ -1,21 +1,20 @@
 import { useContext, useEffect, useState } from "react";
 import "./UserRole.css"; // CSS file for styling
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../../../context/AuthContext";
 import axios from "axios";
 import Cookies from "js-cookie";
 
 export default function UserRole() {
   // Sample user data
-  const { isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState([]);
+  const { status } = useContext(DashboardContext)
 
   useEffect(() => {
     const token = Cookies.get("token");
 
-    if (!isLoggedIn || !token) {
+    if (!(status === "ready") || !token) {
       navigate("/auth");
       return;
     }
