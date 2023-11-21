@@ -1,5 +1,4 @@
 import { personsImgs } from "../../utils/images";
-import { navigationLinks } from "../../data/data";
 import "./Sidebar.css";
 import { useContext } from "react";
 import { NavLink, useLocation } from "react-router-dom"; // Import useLocation
@@ -7,7 +6,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DashboardContext from "../../../Context/DashboardContext";
 
 const Sidebar = () => {
-  const { sidebarOpen, profile } = useContext(DashboardContext);
+  const { sidebarOpen, navigationLinks } =
+    useContext(DashboardContext);
   // Get the current location using useLocation
   const location = useLocation();
   console.log(location.pathname);
@@ -22,7 +22,7 @@ const Sidebar = () => {
                 ? "active"
                 : ""
             }`} // Check if the current location matches the sub-menu item's URL
-            key={subMenuItem.id}
+            key={subMenuItem._id}
           >
             <NavLink
               to={"/Dashboard" + subMenuItem.url}
@@ -50,8 +50,8 @@ const Sidebar = () => {
       </div>
       <nav className="navigation">
         <ul className="nav-list">
-          {navigationLinks[profile.role] &&
-            navigationLinks[profile.role].map((navigationLink) => (
+          {navigationLinks &&
+            navigationLinks.map((navigationLink) => (
               <li
                 className={`nav-item ${
                   location.pathname.startsWith(
@@ -60,7 +60,7 @@ const Sidebar = () => {
                     ? "active"
                     : ""
                 }`}
-                key={navigationLink.id}
+                key={navigationLink._id}
               >
                 <NavLink
                   activeclassname="active"

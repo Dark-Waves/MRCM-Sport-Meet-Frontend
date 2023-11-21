@@ -80,7 +80,7 @@ const renderRoutes = (links) => {
     if (!PageComponent) return null; // Skip if no matching component
     console.log(links);
     return (
-      <Route key={link.id} path={link.path} element={<PageComponent />} />
+      <Route key={link._id} path={link.path} element={<PageComponent />} />
       // Note: If subMenu exists, you might want to handle nested routes here
     );
   });
@@ -177,42 +177,40 @@ export default function Dashboard() {
         if (profileStatus !== "loading") return;
         try {
           const token = Cookies.get("token");
-          const { data = null } = await axios.get(
+          const { data: userData } = await axios.get(
             `${config.APIURI}/api/v1/user/@me`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }
           );
+          dispatch({ type: "setProfile", payload: userData?.userData });
 
-          dispatch({ type: "setProfile", payload: data?.userData });
+          if (userData && userData.userData && userData.userData.role) {
+            const { data: navigationLinks } = await axios.get(
+              `${config.APIURI}/api/v1/dashboard/${userData.userData.role}`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
 
-          if (profile) {
-            try {
-              const { navData = null } = await axios.get(
-                `${config.APIURI}/api/v1/dashboard/${profile.role}`,
-                {
-                  headers: { Authorization: `Bearer ${token}` },
-                }
-              );
-              console.log(navData);
-              dispatch({
-                type: "setNavigationsLinks",
-                payload: navData?.dashboardSchema,
-              });
-            } catch (error) {
-              dispatch({ type: "setProfileStatus", payload: "error" });
-            }
+            dispatch({
+              type: "setNavigationsLinks",
+              payload: navigationLinks?.data.navigationLinks,
+            });
+
+            dispatch({ type: "setProfileStatus", payload: "ready" });
+          } else {
+            dispatch({ type: "setProfileStatus", payload: "error" });
           }
-          dispatch({ type: "setProfileStatus", payload: "ready" });
         } catch (error) {
+          console.log("Error fetching data:", error);
           dispatch({ type: "setProfileStatus", payload: "error" });
         }
       };
       getData();
     },
-    [profileStatus, navigationLinks, profile]
+    [profileStatus] // Only trigger when profileStatus changes
   );
-
   return (
     <>
       {status === "loading" && (
