@@ -35,7 +35,6 @@ export const navigationLinks = {
       url: "/Broadcast",
       path: "/broadcast/*",
     },
-
     {
       id: 6,
       title: "Settings",

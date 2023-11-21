@@ -8,9 +8,9 @@ import ContentTop from "./components/ContentTop/ContentTop"; // Heading
 import ErrorPage from "../Components/Error/Error.jsx";
 import Loader from "../Components/Loader/Loader";
 import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
-import { useEffect, useReducer, useRef } from "react";
+import { useEffect, useReducer } from "react";
 import DashboardContext from "../Context/DashboardContext";
-import { navigationLinks } from "./data/data";
+// import { navigationLinks } from "./data/data";
 import useAuth from "../hooks/useAuth.jsx";
 import socketio from "socket.io-client";
 import axios from "axios";
@@ -45,6 +45,9 @@ const reducer = function (state, action) {
     case "setProfileStatus": {
       return { ...state, profileStatus: action.payload };
     }
+    case "setNavigationsLinks": {
+      return { ...state, navigationLinks: action.payload };
+    }
     case "setWsAuth": {
       return { ...state, wsShoketAuthenticated: action.payload };
     }
@@ -71,6 +74,7 @@ const getPageComponent = (title) => {
 };
 
 const renderRoutes = (links) => {
+  console.log(links);
   return links.map((link) => {
     const PageComponent = getPageComponent(link.title);
     if (!PageComponent) return null; // Skip if no matching component
@@ -83,8 +87,14 @@ const renderRoutes = (links) => {
 };
 export default function Dashboard() {
   const [state, dispatch] = useReducer(reducer, initialValue);
-  const { status, profileStatus, wsShoketAuthenticated, profile, socket } =
-    state;
+  const {
+    status,
+    profileStatus,
+    wsShoketAuthenticated,
+    profile,
+    socket,
+    navigationLinks,
+  } = state;
   const [{ authenticated, status: authStatus }, dipatchAuth] = useAuth();
   const navigate = useNavigate();
   /**Client Updates Checking */
@@ -160,6 +170,7 @@ export default function Dashboard() {
     },
     [socket, dipatchAuth]
   );
+
   useEffect(
     function () {
       const getData = async function () {
@@ -172,15 +183,34 @@ export default function Dashboard() {
               headers: { Authorization: `Bearer ${token}` },
             }
           );
-          dispatch({ type: "setProfileStatus", payload: "ready" });
+
           dispatch({ type: "setProfile", payload: data?.userData });
+
+          if (profile) {
+            try {
+              const { navData = null } = await axios.get(
+                `${config.APIURI}/api/v1/dashboard/${profile.role}`,
+                {
+                  headers: { Authorization: `Bearer ${token}` },
+                }
+              );
+              console.log(navData);
+              dispatch({
+                type: "setNavigationsLinks",
+                payload: navData?.dashboardSchema,
+              });
+            } catch (error) {
+              dispatch({ type: "setProfileStatus", payload: "error" });
+            }
+          }
+          dispatch({ type: "setProfileStatus", payload: "ready" });
         } catch (error) {
           dispatch({ type: "setProfileStatus", payload: "error" });
         }
       };
       getData();
     },
-    [profileStatus]
+    [profileStatus, navigationLinks, profile]
   );
 
   return (
@@ -199,7 +229,7 @@ export default function Dashboard() {
           <div className="Dashboard main-content">
             <ContentTop />
             <Routes>
-              {renderRoutes(navigationLinks[profile.role] || [])}
+              {navigationLinks ? renderRoutes(navigationLinks) : ""}
               <Route path="/" element={<Navigate to="/dashboard/home" />} />
               <Route path="*" element={<ErrorPage code={404} />} />
             </Routes>
