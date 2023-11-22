@@ -10,7 +10,6 @@ import Loader from "../Components/Loader/Loader";
 import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import { useEffect, useReducer } from "react";
 import DashboardContext from "../Context/DashboardContext";
-// import { navigationLinks } from "./data/data";
 import useAuth from "../hooks/useAuth.jsx";
 import socketio from "socket.io-client";
 import axios from "axios";

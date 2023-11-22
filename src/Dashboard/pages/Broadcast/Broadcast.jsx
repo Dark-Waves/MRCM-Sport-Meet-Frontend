@@ -11,7 +11,7 @@ const Broadcast = () => {
   const [receivedMessages, setReceivedMessages] = useState([]);
   const [error, setError] = useState("");
   const { socket } = useContext(DashboardContext);
-  const [isLoading, setIsLoading] = useState(true);
+  const [setIsLoading] = useState(true);
 
   const handleSend = () => {
     const message = { content: messageContent, type: messageType };
@@ -53,7 +53,7 @@ const Broadcast = () => {
         }
       });
     },
-    [socket]
+    [socket, setIsLoading]
   );
 
   return (

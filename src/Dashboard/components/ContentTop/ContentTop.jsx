@@ -1,7 +1,5 @@
-import { iconsImgs } from "../../utils/images";
 import "./ContentTop.css";
 import { useContext } from "react";
-import { SidebarContext } from "../../context/sidebarContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
