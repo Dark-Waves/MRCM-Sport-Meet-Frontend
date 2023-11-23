@@ -203,6 +203,10 @@ export default function Dashboard() {
           }
         } catch (error) {
           console.log("Error fetching data:", error);
+          if (error.response.data.error) {
+            Cookies.remove("token")
+            navigate("/auth")
+          }
           dispatch({ type: "setProfileStatus", payload: "error" });
         }
       };

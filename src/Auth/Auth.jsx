@@ -22,10 +22,14 @@ export default function Auth() {
     e.preventDefault();
     setLoading(true);
     try {
+      const token = Cookies.get("token")
       const response = await axios.post(
         "http://localhost:8080/api/v1/user/auth",
         {
           loginData: { userName, password },
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
