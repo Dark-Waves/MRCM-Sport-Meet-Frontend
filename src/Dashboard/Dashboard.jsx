@@ -23,7 +23,8 @@ const APIURI = config.APIURI;
 
 const initialValue = {
   status: "loading",
-  navigation: null,
+  navigationLinks: null,
+  navigationStatus: "loading",
   profileStatus: "loading",
   profile: null,
   sidebarOpen: true,
@@ -44,8 +45,11 @@ const reducer = function (state, action) {
     }
     case "setProfileStatus": {
       return { ...state, profileStatus: action.payload };
+
+    } case "setNavigationStatus": {
+      return { ...state, navigationStatus: action.payload };
     }
-    case "setNavigationsLinks": {
+    case "setNavigationLinks": {
       return { ...state, navigationLinks: action.payload };
     }
     case "setWsAuth": {
@@ -94,6 +98,7 @@ export default function Dashboard() {
     profile,
     socket,
     navigationLinks,
+    navigationStatus
   } = state;
   const [{ authenticated, status: authStatus }, dipatchAuth] = useAuth();
   const navigate = useNavigate();
@@ -115,10 +120,11 @@ export default function Dashboard() {
     function () {
       if (!authenticated) return;
       if (!wsShoketAuthenticated) return;
+      if (!navigationLinks) return
       if (!profile) return;
       dispatch({ type: "setStatus", payload: "ready" });
     },
-    [authenticated, wsShoketAuthenticated, profile]
+    [authenticated, wsShoketAuthenticated, profile, navigationLinks]
   );
 
   useEffect(function () {
@@ -184,30 +190,8 @@ export default function Dashboard() {
             }
           );
           dispatch({ type: "setProfile", payload: userData?.userData });
-
-          if (userData && userData.userData && userData.userData.role) {
-            const { data: navigationLinks } = await axios.get(
-              `${config.APIURI}/api/v1/dashboard/${userData.userData.role}`,
-              {
-                headers: { Authorization: `Bearer ${token}` },
-              }
-            );
-
-            dispatch({
-              type: "setNavigationsLinks",
-              payload: navigationLinks?.data.navigationLinks,
-            });
-
-            dispatch({ type: "setProfileStatus", payload: "ready" });
-          } else {
-            dispatch({ type: "setProfileStatus", payload: "error" });
-          }
+          dispatch({ type: "setProfileStatus", payload: "ready" });
         } catch (error) {
-          console.log("Error fetching data:", error);
-          if (error.response.data.error) {
-            Cookies.remove("token")
-            navigate("/auth")
-          }
           dispatch({ type: "setProfileStatus", payload: "error" });
         }
       };
@@ -215,6 +199,35 @@ export default function Dashboard() {
     },
     [profileStatus] // Only trigger when profileStatus changes
   );
+
+  useEffect(function () {
+    const getData = async function () {
+      if (navigationStatus !== "loading") return
+      if (!profile) return;
+      try {
+        const token = Cookies.get("token");
+        const { data: navigationLinks } = await axios.get(
+          `${config.APIURI}/api/v1/dashboard/${profile.role}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        dispatch({
+          type: "setNavigationLinks",
+          payload: navigationLinks?.data.navigationLinks,
+        });
+
+        dispatch({ type: "setNavigationStatus", payload: "ready" });
+
+      } catch (error) {
+        dispatch({ type: "setNavigationStatus", payload: "error" });
+      }
+    }
+
+    getData()
+
+  }, [profile, navigationStatus])
   return (
     <>
       {status === "loading" && (
