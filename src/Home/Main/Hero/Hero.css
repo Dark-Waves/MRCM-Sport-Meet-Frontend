@@ -30,11 +30,38 @@
     margin-top: 1rem;
     justify-content: space-evenly;
   }
+  .hero .House__box {
+    align-items: center !important;
+  }
+  .hero .House_Chart__Container {
+    align-items: center !important;
+  }
+  .hero .House__Container {
+    margin: 4rem 0;
+  }
+  .house-overview {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
 }
 
 @media (max-width: 500px) {
   .hero .left-content h1 {
     font-size: 30px;
+  }
+  .house-overview {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .house-overview {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media screen and (max-width: 326px) {
+  .house-overview {
+    grid-template-columns: repeat(1, 1fr) !important;
   }
 }
 
@@ -59,4 +86,28 @@
 
 .hero .second-btn {
   background: var(--color-primary);
+}
+
+/* Houses Overwiew */
+
+.hero .House_Chart__Container {
+  height: 100px;
+  justify-content: start;
+  align-items: start;
+}
+
+.hero .House_Chart__Bar {
+  background: var(--main-color);
+  width: 61px;
+  border-radius: 0px 0px 20px 20px;
+  transition: height 300ms ease;
+}
+
+.hero .House__box {
+  align-items: start;
+}
+.house-overview {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 20px;
 }
