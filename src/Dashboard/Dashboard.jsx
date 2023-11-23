@@ -23,6 +23,7 @@ const APIURI = config.APIURI;
 
 const initialValue = {
   status: "loading",
+  navigation: null,
   profileStatus: "loading",
   profile: null,
   sidebarOpen: true,
