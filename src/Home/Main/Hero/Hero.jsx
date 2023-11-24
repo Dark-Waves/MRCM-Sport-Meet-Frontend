@@ -12,17 +12,6 @@ const houseData = [
 
 export default function Hero() {
   const highestScore = Math.max(...houseData.map((data) => data.HouseScore));
-  const [startAnimation, setStartAnimation] = useState(false);
-
-  useEffect(() => {
-    const handleLoad = () => {
-      setStartAnimation(true);
-    };
-    window.onload = handleLoad;
-    return () => {
-      window.onload = null;
-    };
-  }, []);
 
   const getScoreHeight = function (score) {
     const scorePercentage = (score / highestScore) * 100;
@@ -48,9 +37,7 @@ export default function Hero() {
                 <div
                   className="House_Chart__Bar"
                   style={{
-                    height: startAnimation
-                      ? getScoreHeight(data.HouseScore)
-                      : "0",
+                    height: getScoreHeight(data.HouseScore),
                   }}
                 ></div>
               </div>

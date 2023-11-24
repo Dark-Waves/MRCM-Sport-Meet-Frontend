@@ -19,6 +19,8 @@ import Sidebar from "./components/Sidebar/Sidebar.jsx";
 const defaultLogo = siteImgs.Logo;
 const SiteName = config.SiteName;
 import Cookies from "js-cookie";
+import Approves from "./pages/Approves/Approves.jsx";
+import Submits from "./pages/Submits/Submits.jsx";
 const APIURI = config.APIURI;
 
 const initialValue = {
@@ -45,8 +47,8 @@ const reducer = function (state, action) {
     }
     case "setProfileStatus": {
       return { ...state, profileStatus: action.payload };
-
-    } case "setNavigationStatus": {
+    }
+    case "setNavigationStatus": {
       return { ...state, navigationStatus: action.payload };
     }
     case "setNavigationLinks": {
@@ -71,6 +73,8 @@ const getPageComponent = (title) => {
     Broadcast: Broadcast,
     Users: Users,
     Website: Website,
+    Approves: Approves,
+    Submit: Submits,
     // ... map other titles to components
   };
 
@@ -98,7 +102,7 @@ export default function Dashboard() {
     profile,
     socket,
     navigationLinks,
-    navigationStatus
+    navigationStatus,
   } = state;
   const [{ authenticated, status: authStatus }, dipatchAuth] = useAuth();
   const navigate = useNavigate();
@@ -120,7 +124,7 @@ export default function Dashboard() {
     function () {
       if (!authenticated) return;
       if (!wsShoketAuthenticated) return;
-      if (!navigationLinks) return
+      if (!navigationLinks) return;
       if (!profile) return;
       dispatch({ type: "setStatus", payload: "ready" });
     },
@@ -200,34 +204,35 @@ export default function Dashboard() {
     [profileStatus] // Only trigger when profileStatus changes
   );
 
-  useEffect(function () {
-    const getData = async function () {
-      if (navigationStatus !== "loading") return
-      if (!profile) return;
-      try {
-        const token = Cookies.get("token");
-        const { data: navigationLinks } = await axios.get(
-          `${config.APIURI}/api/v1/dashboard/${profile.role}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+  useEffect(
+    function () {
+      const getData = async function () {
+        if (navigationStatus !== "loading") return;
+        if (!profile) return;
+        try {
+          const token = Cookies.get("token");
+          const { data: navigationLinks } = await axios.get(
+            `${config.APIURI}/api/v1/dashboard/${profile.role}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
 
-        dispatch({
-          type: "setNavigationLinks",
-          payload: navigationLinks?.data.navigationLinks,
-        });
+          dispatch({
+            type: "setNavigationLinks",
+            payload: navigationLinks?.data.navigationLinks,
+          });
 
-        dispatch({ type: "setNavigationStatus", payload: "ready" });
+          dispatch({ type: "setNavigationStatus", payload: "ready" });
+        } catch (error) {
+          dispatch({ type: "setNavigationStatus", payload: "error" });
+        }
+      };
 
-      } catch (error) {
-        dispatch({ type: "setNavigationStatus", payload: "error" });
-      }
-    }
-
-    getData()
-
-  }, [profile, navigationStatus])
+      getData();
+    },
+    [profile, navigationStatus]
+  );
   return (
     <>
       {status === "loading" && (
