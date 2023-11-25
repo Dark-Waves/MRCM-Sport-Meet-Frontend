@@ -3,13 +3,17 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import { config } from "../../utils/config";
 import DashboardContext from "../../../Context/DashboardContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 
 export default function Submits() {
   const [events, setEvents] = useState([]);
   const { socket } = useContext(DashboardContext);
   const [selectedEvent, setSelectedEvent] = useState({});
+  const [submitedEvent, setSubmitedEvent] = useState({});
   const [isPopUp, setIsPopUp] = useState(false);
   const [admissionNumbers, setAdmissionNumbers] = useState([]);
+  const [error, setError] = useState([]);
 
   useEffect(() => {
     const getData = async () => {
@@ -30,7 +34,7 @@ export default function Submits() {
     setSelectedEvent(data);
     setIsPopUp(true);
     setAdmissionNumbers(
-      Array(data.places.length).fill({ inputSubmission: 0, place: "" })
+      Array(data.places.length).fill({ inputAdmission: 0, place: "" })
     );
   };
 
@@ -38,6 +42,7 @@ export default function Submits() {
     setIsPopUp(false);
     setSelectedEvent({});
     setAdmissionNumbers([]);
+    setSubmitedEvent({});
   };
 
   const handleInputChange = (index, value, place) => {
@@ -45,7 +50,7 @@ export default function Submits() {
       const updatedAdmissions = [...prevAdmissions];
       updatedAdmissions[index] = {
         ...updatedAdmissions[index],
-        inputSubmission: parseInt(value), // Ensure the input is parsed as a number
+        inputAdmission: parseInt(value), // Ensure the input is parsed as a number
         place: place,
       };
       return updatedAdmissions;
@@ -65,30 +70,13 @@ export default function Submits() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log(response);
+      if (response.data.error) {
+        return setError(response.data.data);
+      }
+      setSelectedEvent(null);
+      setSubmitedEvent(response.data.submitedEvent);
       setAdmissionNumbers([]);
-      setIsPopUp(false);
-      setSelectedEvent({});
-      // Add logic to handle the response if needed
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
-  const handleCheck = async () => {
-    try {
-      const token = Cookies.get("token");
-      const response = await axios.post(
-        `${config.APIURI}/api/v1/event/${selectedEvent._id}/check`,
-        {
-          inputMarks: selectedEvent.inputMarks, // Add other data as needed
-          inputSubmission: admissionNumbers,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      console.log(response);
       // Add logic to handle the response if needed
     } catch (error) {
       console.log(error);
@@ -117,30 +105,77 @@ export default function Submits() {
             <span className="close-popup" onClick={closePopup}>
               &times;
             </span>
-            <h2>Submit Event {selectedEvent.name}</h2>
-            <form onSubmit={handleSubmit}>
-              {selectedEvent.places &&
-                selectedEvent.places.map((place, index) => (
-                  <div className="score__submit flex-row-aro" key={index}>
-                    <span>{place.place} Place</span>
-                    <input
-                      type="number"
-                      placeholder="Admission Number"
-                      value={admissionNumbers[index]?.inputSubmission || ""}
-                      onChange={(e) =>
-                        handleInputChange(index, e.target.value, place.place)
-                      }
-                    />
-                  </div>
-                ))}
+            {selectedEvent ? (
+              <>
+                <h2>Submit Event {selectedEvent.name}</h2>
+                <form onSubmit={handleSubmit}>
+                  {selectedEvent.places &&
+                    selectedEvent.places.map((place, index) => (
+                      <div
+                        className="score__submit flex-row-aro position-relative"
+                        key={index}
+                      >
+                        <span>{place.place} Place</span>
+                        <input
+                          type="number"
+                          placeholder="Admission Number"
+                          value={admissionNumbers[index]?.inputAdmission || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              index,
+                              e.target.value,
+                              place.place
+                            )
+                          }
+                        />
 
-              <div className="buttons flex-row-eve g-3">
-                <button type="button" onClick={handleCheck}>
-                  Check
-                </button>
-                <button type="submit">Submit</button>
-              </div>
-            </form>
+                        {error.find((err) => err.place === place.place) ? (
+                          <span
+                            title={
+                              error.find((err) => err.place === place.place)
+                                .message
+                            }
+                            className="position-absolute"
+                            style={{ right: 0 }}
+                          >
+                            <FontAwesomeIcon icon={faCircleExclamation} />
+                          </span>
+                        ) : (
+                          ""
+                        )}
+                      </div>
+                    ))}
+
+                  <div className="buttons flex-row-eve g-3">
+                    <button type="submit">Submit</button>
+                  </div>
+                </form>
+              </>
+            ) : submitedEvent ? (
+              <>
+                <h2>{submitedEvent.name}</h2>
+                <div className="submitted_content">
+                  {submitedEvent.places.map((data, index) => (
+                    <span className="flex-row-bet" key={index}>
+                      <span className="place">{data.place}</span>
+                      <span className="place__score">{data.minimumMarks}</span>
+                      <span className="place__name">
+                        {data.name} - {data.inputAdmission}
+                      </span>
+                      <span className="place__house">{data.house}</span>
+                    </span>
+                  ))}
+                  <span>
+                    If you are not satisfied with these data? contact admin.
+                  </span>
+                  <div className="buttons flex-row-eve g-3">
+                    <button onClick={closePopup}>Ok</button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              "Undefined..."
+            )}
           </div>
         </div>
       )}
