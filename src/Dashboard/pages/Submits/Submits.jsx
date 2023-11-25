@@ -4,7 +4,13 @@ import axios from "axios";
 import { config } from "../../utils/config";
 import DashboardContext from "../../../Context/DashboardContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCircle,
+  faCircleCheck,
+  faCircleExclamation,
+  faCircleXmark,
+  faHourglass,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function Submits() {
   const [events, setEvents] = useState([]);
@@ -15,6 +21,43 @@ export default function Submits() {
   const [admissionNumbers, setAdmissionNumbers] = useState([]);
   const [error, setError] = useState([]);
 
+  useEffect(() => {
+    const handleSocketMessage = (message) => {
+      if (message.type === "eventApproves") {
+        // Assuming event ID is sent in payload
+        if (message.payload.type === "approved") {
+          const eventId = message.payload.event._id;
+          setEvents((prevEvents) =>
+            prevEvents.map((event) =>
+              event._id === eventId ? { ...event, state: "approved" } : event
+            )
+          );
+        } else if (message.payload.type === "reject") {
+          const eventId = message.payload.event;
+          setEvents((prevEvents) =>
+            prevEvents.map((event) =>
+              event._id === eventId ? { ...event, state: "rejected" } : event
+            )
+          );
+        }
+      } else if (message.type === "eventSubmits") {
+        const eventId = message.payload.event._id; // Assuming event ID is sent in payload
+        setEvents((prevEvents) =>
+          prevEvents.map((event) =>
+            event._id === eventId ? { ...event, state: "pending" } : event
+          )
+        );
+      }
+    };
+
+    socket.on("server-message", handleSocketMessage);
+
+    return () => {
+      socket.off("server-message", handleSocketMessage);
+    };
+  }, [socket]);
+
+  console.log(events);
   useEffect(() => {
     const getData = async () => {
       try {
@@ -89,14 +132,29 @@ export default function Submits() {
       <p>Submit Event</p>
       {events.map((data, index) => (
         <div
-          className="event cursor-pointer p-4 bg-main"
+          className={`event ${
+            data.state === "rejected" || data.state === "notSubmitted"
+              ? "cursor-pointer"
+              : ""
+          } p-4 bg-main`}
           key={index}
-          onClick={() => {
-            handlePopup(data);
-          }}
+          onClick={
+            data.state === "rejected" || data.state === "notSubmitted"
+              ? () => handlePopup(data)
+              : undefined
+          }
         >
           {data.name}
           {data.description}
+          {data.state === "approved" ? (
+            <FontAwesomeIcon title={data.state} icon={faCircleCheck} />
+          ) : data.state === "rejected" ? (
+            <FontAwesomeIcon title={data.state} icon={faCircleXmark} />
+          ) : data.state === "pending" ? (
+            <FontAwesomeIcon title={data.state} icon={faCircle} />
+          ) : (
+            <FontAwesomeIcon title={data.state} icon={faHourglass} />
+          )}
         </div>
       ))}
       {isPopUp && (

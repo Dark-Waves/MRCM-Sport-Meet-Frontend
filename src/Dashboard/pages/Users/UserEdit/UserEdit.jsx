@@ -1,15 +1,16 @@
 import { useContext, useEffect, useState } from "react";
-import "./UserRole.css"; // CSS file for styling
+import "./UserEdit.css"; // CSS file for styling
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
+import DashboardContext from "../../../../Context/DashboardContext";
 
-export default function UserRole() {
+export default function UserEdit() {
   // Sample user data
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState([]);
-  const { status } = useContext(DashboardContext)
+  const { status } = useContext(DashboardContext);
 
   useEffect(() => {
     const token = Cookies.get("token");
@@ -34,11 +35,11 @@ export default function UserRole() {
     };
 
     getUserData();
-  }, [isLoggedIn, navigate]);
+  }, [navigate, status]);
 
   return (
     <div className="view-user-activity grid-common main-content-holder">
-      <h2>User Roles</h2>
+      <h2>User UserEdit</h2>
       <ul className="user-list">
         {users.map((user) => (
           <li key={user._id}>

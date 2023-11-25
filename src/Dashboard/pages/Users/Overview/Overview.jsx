@@ -11,14 +11,8 @@ export default function Overview() {
   const [users, setUsers] = useState([]);
   const [popupUser, setPopupUser] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
-  const { status } = useContext(DashboardContext);
 
   useEffect(() => {
-    if (!(status === "ready")) {
-      navigate("/auth");
-      return;
-    }
-
     const getUserData = async () => {
       const token = Cookies.get("token");
       setIsLoading(true);
@@ -35,7 +29,7 @@ export default function Overview() {
     };
 
     getUserData();
-  }, [navigate, status]);
+  }, []);
 
   const handlePopUp = async (userId) => {
     const token = Cookies.get("token");

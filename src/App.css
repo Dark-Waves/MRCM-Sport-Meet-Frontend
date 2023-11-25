@@ -96,6 +96,19 @@ button {
 .bg-main {
   background-color: var(--main-color);
 }
+.bg-second {
+  background-color: var(--color-secondary);
+}
+.bg-primary {
+  background-color: var(--color-primary);
+}
+
+.bg-scarlet-1 {
+  background-color: var(--color-scarlet-v1);
+}
+.bg-scarlet {
+  background-color: var(--color-scarlet);
+}
 
 .text-sm {
   font-size: 14px;
@@ -213,7 +226,7 @@ button {
   justify-content: flex-start;
 }
 .flex-end {
-  display: flex!important;
+  display: flex !important;
   justify-content: flex-end;
 }
 .flex-top {
@@ -1046,4 +1059,31 @@ textarea {
 }
 .g-8 {
   gap: var(--space-8);
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th,
+td {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+@media (max-width: 768px) {
+  th,
+  td {
+    font-size: 14px;
+  }
 }
