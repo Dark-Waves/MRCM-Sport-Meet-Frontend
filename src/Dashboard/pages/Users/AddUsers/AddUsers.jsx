@@ -36,7 +36,7 @@ export default function AddMembers() {
       // Assuming an API call like axios.post('/api/addMembers', membersData)
       // This is a placeholder; replace it with your API endpoint
       const response = await axios.put(
-        `${config.APIURI}/api/v1//members/add`,
+        `${config.APIURI}/api/v1/members/add`,
         { members: membersData },
         {
           headers: { Authorization: `Bearer ${token}` },
