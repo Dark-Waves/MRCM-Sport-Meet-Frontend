@@ -3,7 +3,7 @@ import "./Sidebar.css";
 import { useContext } from "react";
 import { NavLink, useLocation } from "react-router-dom"; // Import useLocation
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import DashboardContext from "../../../Context/DashboardContext";
+import DashboardContext from "../../../context/DashboardContext";
 
 const Sidebar = () => {
   const { sidebarOpen, navigationLinks } =

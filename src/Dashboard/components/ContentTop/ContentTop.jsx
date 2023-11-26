@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import Cookies from "js-cookie";
-import DashboardContext from "../../../Context/DashboardContext";
+import DashboardContext from "../../../context/DashboardContext";
 
 const ContentTop = () => {
   const location = useLocation();

@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import "./Broadcast.css";
-import DashboardContext from "../../../Context/DashboardContext";
+import DashboardContext from "../../../context/DashboardContext";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { config } from "../../../../config";

@@ -3,7 +3,7 @@ import "./UserEdit.css"; // CSS file for styling
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
-import DashboardContext from "../../../../Context/DashboardContext";
+import DashboardContext from "../../../../context/DashboardContext";
 
 export default function UserEdit() {
   // Sample user data

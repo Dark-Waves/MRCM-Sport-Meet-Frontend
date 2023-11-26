@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { config } from "../../utils/config";
-import DashboardContext from "../../../Context/DashboardContext";
+import DashboardContext from "../../../context/DashboardContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircle,

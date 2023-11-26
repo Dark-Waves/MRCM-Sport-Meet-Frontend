@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import DashboardContext from "../../../Context/DashboardContext";
+import DashboardContext from "../../../context/DashboardContext";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { config } from "../../../../config";
