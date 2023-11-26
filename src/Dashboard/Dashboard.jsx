@@ -23,6 +23,7 @@ import Approves from "./pages/Approves/Approves.jsx";
 import Submits from "./pages/Submits/Submits.jsx";
 import Members from "./pages/Members/Members.jsx";
 import { SnackbarProvider } from "notistack";
+import Houses from "./pages/Houses/Houses.jsx";
 const APIURI = config.APIURI;
 
 const initialValue = {
@@ -78,6 +79,7 @@ const getPageComponent = (title) => {
     Approves: Approves,
     Submit: Submits,
     Members: Members,
+    Houses: Houses,
     // ... map other titles to components
   };
 

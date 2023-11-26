@@ -1,0 +1,8 @@
+.houses__container .inputs {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(200px, 1fr)
+  ); /* Responsive columns */
+  gap: 20px; /* Gap between grid items */
+}

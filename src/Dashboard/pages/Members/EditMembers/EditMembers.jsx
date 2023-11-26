@@ -49,7 +49,7 @@ export default function EditMembers({ allMembersData, setAllMembersData }) {
         !updatedMemberData.House
       ) {
         return setEmptyErrors({
-          admissionID: updatedMemberData.setEmptyErrors,
+          admissionID: updatedMemberData.admissionID,
           message: "Empty fields. Please fill in all required fields.",
         });
       }
@@ -103,144 +103,153 @@ export default function EditMembers({ allMembersData, setAllMembersData }) {
 
   return (
     <div className="member__add">
-      {allMembersData.map((member, index) => (
-        <div className="div" key={index}>
-          <div className="content grid-common m-4 flex-col position-relative">
-            <div className="user-content">
-              <div className="data-content inputs w-full p-4 g-3">
-                {editIndex === index ? (
-                  <>
-                    <span className="font-md p-3 bg-primary rounded-md font-weight-500">
-                      AdmissionID: {member.admissionID}
-                    </span>
-                    <Input
-                      id="name"
-                      type="text"
-                      placeholder="Name"
-                      value={
-                        (editedMember && editedMember.Name) || member.Name || ""
-                      }
-                      onChange={(e) =>
-                        handleInputChanges("Name", e.target.value)
-                      }
-                      required
-                    />
-                    <Input
-                      id="grade"
-                      type="text"
-                      placeholder="Grade"
-                      value={
-                        (editedMember && editedMember.Grade) ||
-                        member.Grade ||
-                        ""
-                      }
-                      onChange={(e) =>
-                        handleInputChanges("Grade", e.target.value)
-                      }
-                      required
-                    />
+      {allMembersData.lenght ? (
+        <>
+          {allMembersData.map((member, index) => (
+            <div className="div" key={index}>
+              <div className="content grid-common m-4 flex-col position-relative">
+                <div className="user-content">
+                  <div className="data-content inputs w-full p-4 g-3">
+                    {editIndex === index ? (
+                      <>
+                        <span className="font-md p-3 bg-primary rounded-md font-weight-500">
+                          AdmissionID: {member.admissionID}
+                        </span>
+                        <Input
+                          id="name"
+                          type="text"
+                          placeholder="Name"
+                          value={
+                            (editedMember && editedMember.Name) ||
+                            member.Name ||
+                            ""
+                          }
+                          onChange={(e) =>
+                            handleInputChanges("Name", e.target.value)
+                          }
+                          required
+                        />
+                        <Input
+                          id="grade"
+                          type="text"
+                          placeholder="Grade"
+                          value={
+                            (editedMember && editedMember.Grade) ||
+                            member.Grade ||
+                            ""
+                          }
+                          onChange={(e) =>
+                            handleInputChanges("Grade", e.target.value)
+                          }
+                          required
+                        />
 
-                    <Input
-                      id="house"
-                      type="text"
-                      placeholder="House"
-                      value={
-                        (editedMember && editedMember.House) ||
-                        member.House ||
-                        ""
-                      }
-                      onChange={(e) =>
-                        handleInputChanges("House", e.target.value)
-                      }
-                      required
-                    />
-                  </>
-                ) : (
-                  <>
-                    <span
-                      onClick={() => handleEdit(index)}
-                      className="font-md p-3 bg-primary rounded-md font-weight-500"
-                    >
-                      AdmissionID: {member.admissionID}
-                    </span>
-                    <span
-                      onClick={() => handleEdit(index)}
-                      className="font-md p-3 bg-primary rounded-md font-weight-500"
-                    >
-                      Name: {member.Name}
-                    </span>
-                    <span
-                      onClick={() => handleEdit(index)}
-                      className="font-md p-3 bg-primary rounded-md font-weight-500"
-                    >
-                      Grade: {member.Grade}
-                    </span>
-                    <span
-                      onClick={() => handleEdit(index)}
-                      className="font-md p-3 bg-primary rounded-md font-weight-500"
-                    >
-                      House: {member.House}
-                    </span>
-                  </>
-                )}
+                        <Input
+                          id="house"
+                          type="text"
+                          placeholder="House"
+                          value={
+                            (editedMember && editedMember.House) ||
+                            member.House ||
+                            ""
+                          }
+                          onChange={(e) =>
+                            handleInputChanges("House", e.target.value)
+                          }
+                          required
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <span
+                          onClick={() => handleEdit(index)}
+                          className="font-md p-3 bg-primary rounded-md font-weight-500"
+                        >
+                          AdmissionID: {member.admissionID}
+                        </span>
+                        <span
+                          onClick={() => handleEdit(index)}
+                          className="font-md p-3 bg-primary rounded-md font-weight-500"
+                        >
+                          Name: {member.Name}
+                        </span>
+                        <span
+                          onClick={() => handleEdit(index)}
+                          className="font-md p-3 bg-primary rounded-md font-weight-500"
+                        >
+                          Grade: {member.Grade}
+                        </span>
+                        <span
+                          onClick={() => handleEdit(index)}
+                          className="font-md p-3 bg-primary rounded-md font-weight-500"
+                        >
+                          House: {member.House}
+                        </span>
+                      </>
+                    )}
 
-                {submitErrors.admissionID === member.admissionID && (
-                  <>
-                    <Alert severity="error">
-                      {submitErrors.admissionID === member.admissionID &&
-                        submitErrors.message}
-                    </Alert>
-                  </>
-                )}
+                    {submitErrors.admissionID === member.admissionID && (
+                      <>
+                        <Alert severity="error">
+                          {submitErrors.admissionID === member.admissionID &&
+                            submitErrors.message}
+                        </Alert>
+                      </>
+                    )}
 
-                {emptyErrors.admissionID === member.admissionID && (
-                  <Alert severity="warning">{emptyErrors.message}</Alert>
-                )}
+                    {emptyErrors.admissionID === member.admissionID && (
+                      <Alert severity="warning">{emptyErrors.message}</Alert>
+                    )}
+                  </div>
+                </div>
+                <div className="buttons flex-row-center g-4">
+                  <>
+                    <Button
+                      btnType="error"
+                      variant="outlined"
+                      onClick={() => handleRemoveMember(member.admissionID)}
+                      className="bg-scarlet-1 rounded-md font-weight-600 font-md"
+                    >
+                      Remove
+                    </Button>
+                    {editIndex === index ? (
+                      <>
+                        <Button
+                          variant="contained"
+                          onClick={handleOk}
+                          className="bg-primary rounded-md font-weight-600 font-md"
+                        >
+                          OK
+                        </Button>
+                        <Button
+                          btnType="primary"
+                          variant="text"
+                          onClick={handleCancel}
+                          className="bg-secondary rounded-md font-weight-600 font-md"
+                        >
+                          Cancel
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        variant="contained"
+                        onClick={() => handleEdit(index)}
+                        className="bg-primary rounded-md font-weight-600 font-md"
+                      >
+                        Edit
+                      </Button>
+                    )}
+                  </>
+                </div>
               </div>
             </div>
-            <div className="buttons flex-row-center g-4">
-              <>
-                <Button
-                  btnType="error"
-                  variant="outlined"
-                  onClick={() => handleRemoveMember(member.admissionID)}
-                  className="bg-scarlet-1 rounded-md font-weight-600 font-md"
-                >
-                  Remove
-                </Button>
-                {editIndex === index ? (
-                  <>
-                    <Button
-                      variant="contained"
-                      onClick={handleOk}
-                      className="bg-primary rounded-md font-weight-600 font-md"
-                    >
-                      OK
-                    </Button>
-                    <Button
-                      btnType="primary"
-                      variant="text"
-                      onClick={handleCancel}
-                      className="bg-secondary rounded-md font-weight-600 font-md"
-                    >
-                      Cancel
-                    </Button>
-                  </>
-                ) : (
-                  <Button
-                    variant="contained"
-                    onClick={() => handleEdit(index)}
-                    className="bg-primary rounded-md font-weight-600 font-md"
-                  >
-                    Edit
-                  </Button>
-                )}
-              </>
-            </div>
-          </div>
+          ))}
+        </>
+      ) : (
+        <div className="empty_members">
+          <h2 className="font-weight-600 font-lg">We can't find any members</h2>
         </div>
-      ))}
-      )
+      )}
     </div>
   );
 }

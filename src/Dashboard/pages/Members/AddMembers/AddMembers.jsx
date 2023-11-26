@@ -13,6 +13,7 @@ import { styled } from "@mui/material/styles";
 import Button2 from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
 import { useSnackbar } from "notistack";
+import { CircularProgress } from "@mui/material";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -34,6 +35,7 @@ export default function AddMembers({ setAllMembersData }) {
   const [editIndex, setEditIndex] = useState(null);
   const [newMember, setNewMember] = useState({});
   const [createNew, setCreateNew] = useState(false);
+  const [inProgress, setInProgress] = useState(false);
 
   const handleFileUpload = (e) => {
     console.log("lol");
@@ -53,6 +55,7 @@ export default function AddMembers({ setAllMembersData }) {
 
   const handleSubmit = async () => {
     try {
+      setInProgress(true);
       const emptyIndexes = [];
       const isEmptyRow = membersData.some((member, index) => {
         const isEmpty =
@@ -77,10 +80,12 @@ export default function AddMembers({ setAllMembersData }) {
         });
 
         setEmptyErrors(emptyErrors);
+        setInProgress(false);
         console.log(emptyErrors);
         return;
       }
       if (!membersData.length) {
+        setInProgress(false);
         return;
       }
       const token = Cookies.get("token");
@@ -91,7 +96,9 @@ export default function AddMembers({ setAllMembersData }) {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
+      if (response.data) {
+        setInProgress(false);
+      }
       if (response.data.error) {
         setSubmitErrors(response.data.data);
         for (const error of response.data.data) {
@@ -180,10 +187,10 @@ export default function AddMembers({ setAllMembersData }) {
           </Button>
           <Button
             variant="contained"
-            disabled={!membersData.length}
+            disabled={!membersData.length || inProgress}
             onClick={handleSubmit}
           >
-            Submit
+            {inProgress ? <CircularProgress size={25} /> : "Submit"}
           </Button>
         </div>
       </div>
@@ -313,26 +320,6 @@ export default function AddMembers({ setAllMembersData }) {
                         </span>
                       </>
                     )}
-
-                    {/* {submitErrors.length > 0 &&
-                submitErrors.find(
-                  (value) => value.data === member.admissionID
-                ) && (
-                  <div
-                    style={{ top: "7%", right: "2%" }}
-                    className="status position-absolute"
-                    title={
-                      submitErrors.find(
-                        (value) => value.data === member.admissionID
-                      )?.message
-                    }
-                  >
-                    <FontAwesomeIcon
-                      className="text-scarlet"
-                      icon={faCircleXmark}
-                    />
-                  </div>
-                )} */}
 
                     {submitErrors.length > 0 &&
                       submitErrors.find(
