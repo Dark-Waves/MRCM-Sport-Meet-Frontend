@@ -26,7 +26,7 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-export default function AddMembers() {
+export default function AddMembers({ setAllMembersData }) {
   const { enqueueSnackbar } = useSnackbar();
   const [membersData, setMembersData] = useState([]);
   const [submitErrors, setSubmitErrors] = useState([]);
