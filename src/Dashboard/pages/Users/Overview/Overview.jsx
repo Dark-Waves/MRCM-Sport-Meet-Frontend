@@ -4,6 +4,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../../../Components/Loader/Loader";
+import { config } from "../../../../../config";
 export default function Overview() {
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState([]);
@@ -15,7 +16,7 @@ export default function Overview() {
       const token = Cookies.get("token");
       setIsLoading(true);
       try {
-        const response = await axios.get("http://localhost:8080/api/v1/role", {
+        const response = await axios.get(`${config.APIURI}/api/v1/role`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUsers(response.data.lowerUsers);
@@ -34,7 +35,7 @@ export default function Overview() {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/v1/user/${userId}`,
+        `${config.APIURI}/api/v1/user/${userId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

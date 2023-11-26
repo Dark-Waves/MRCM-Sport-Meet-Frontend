@@ -4,6 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import Loader from "../Components/Loader/Loader";
+import { config } from "../../config";
 
 export default function Auth() {
   const [userName, setUserName] = useState("");
@@ -22,9 +23,9 @@ export default function Auth() {
     e.preventDefault();
     setLoading(true);
     try {
-      const token = Cookies.get("token")
+      const token = Cookies.get("token");
       const response = await axios.post(
-        "http://localhost:8080/api/v1/user/auth",
+        `${config.APIURI}/api/v1/user/auth`,
         {
           loginData: { userName, password },
         },

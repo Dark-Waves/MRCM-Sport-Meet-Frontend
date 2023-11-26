@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
 import DashboardContext from "../../../../context/DashboardContext";
+import { config } from "../../../../../config";
 
 export default function UserEdit() {
   // Sample user data
@@ -23,7 +24,7 @@ export default function UserEdit() {
     const getUserData = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get("http://localhost:8080/api/v1/role", {
+        const response = await axios.get(`${config.APIURI}/api/v1/role`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUsers(response.data.lowerUsers);
