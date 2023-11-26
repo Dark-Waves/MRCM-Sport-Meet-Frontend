@@ -3,6 +3,7 @@ import { parse } from "papaparse"; // for parsing CSV files, you might need anot
 import axios from "axios";
 import { config } from "../../../utils/config";
 import Cookies from "js-cookie";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function AddMembers() {
   const [membersData, setMembersData] = useState([]);
@@ -104,41 +105,66 @@ export default function AddMembers() {
       <button onClick={handleAddManually}>Add Manually</button>
 
       {/* Display table of membersData */}
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Grade</th>
-            <th>House</th>
-            <th>Admission ID</th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* Map through membersData to display rows */}
-          {membersData.map((member, index) => (
-            <tr
-              key={index}
-              title={
-                submitErrors.length > 0 &&
-                submitErrors.find((value) => value.data === member.admissionID)
-                  ?.message
-              }
+      {/* Map through membersData to display rows */}
+      {membersData.map((member, index) => (
+        <div key={index} className="grid-common m-4 flex-col">
+          <div className="user-content">
+            <div className="data-content">
+              <span className="font-md font-weight-500">{member.name}</span>
+              <span className="font-md font-weight-500">{member.grade}</span>
+              <span className="font-md font-weight-500">{member.house}</span>
+              <span className="font-md font-weight-500">
+                {member.admissionID}
+              </span>
+              {submitErrors.length > 0 &&
+                submitErrors.find(
+                  (value) => value.data === member.admissionID
+                ) && (
+                  <div
+                    className="status"
+                    title={
+                      submitErrors.find(
+                        (value) => value.data === member.admissionID
+                      )?.message
+                    }
+                  >
+                    {submitErrors.find(
+                      (value) => value.data === member.admissionID
+                    )?.message === "approved" ? (
+                      <FontAwesomeIcon
+                        title={data.state}
+                        icon={faCircleCheck}
+                      />
+                    ) : data.state === "rejected" ? (
+                      <FontAwesomeIcon
+                        title={data.state}
+                        icon={faCircleXmark}
+                      />
+                    ) : data.state === "pending" ? (
+                      <FontAwesomeIcon title={data.state} icon={faCircle} />
+                    ) : (
+                      <FontAwesomeIcon title={data.state} icon={faHourglass} />
+                    )}
+                  </div>
+                )}
+            </div>
+          </div>
+          <div className="buttons flex-row-center g-4">
+            <button
+              onClick={() => handleRemove(index)}
+              className="p-t-4 p-b-4 p-r-3 p-l-3 bg-scarlet-1 rounded-md font-weight-600 font-md"
             >
-              <td>{member.name}</td>
-              <td>{member.grade}</td>
-              <td>{member.house}</td>
-              <td>{member.admissionID}</td>
-              <td>
-                <button onClick={() => handleRemove(index)}>Remove</button>
-              </td>
-              {/* Edit button for each row */}
-              <td>
-                <button onClick={() => handleEdit(index)}>Edit</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              Remove
+            </button>
+            <button
+              onClick={() => handleEdit(index)}
+              className="p-t-4 p-b-4 p-r-3 p-l-3 bg-primary rounded-md font-weight-600 font-md"
+            >
+              Edit
+            </button>
+          </div>
+        </div>
+      ))}
 
       <button onClick={handleSubmit}>Submit</button>
 
