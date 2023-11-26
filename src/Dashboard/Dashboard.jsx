@@ -1,4 +1,5 @@
 import "./Dashboard.css";
+import DashboardContext from "../context/DashboardContext";
 import Home from "./pages/Home/Home";
 import Events from "./pages/Events/Events";
 import Broadcast from "./pages/Broadcast/Broadcast";
@@ -9,7 +10,6 @@ import ErrorPage from "../Components/Error/Error.jsx";
 import Loader from "../Components/Loader/Loader";
 import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import { useEffect, useReducer } from "react";
-import DashboardContext from "../Context/DashboardContext";
 import useAuth from "../hooks/useAuth.jsx";
 import socketio from "socket.io-client";
 import axios from "axios";
