@@ -207,7 +207,7 @@ export default function Submits() {
 
                   <div className="buttons flex-row-eve g-3">
                     {/* <button type="submit">Submit</button> */}
-                    <Button btnType="secondary">submit</Button>
+                    <Button type="submit" btnType="secondary">submit</Button>
                   </div>
                 </form>
               </>
