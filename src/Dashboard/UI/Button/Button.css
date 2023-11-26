@@ -1,0 +1,49 @@
+button {
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: var(--font-family-bai);
+  transition: var(--transition-default);
+}
+
+.modern-button {
+  background-color: #1e7cba; /* Change to your preferred color */
+  color: #fff;
+}
+
+.modern-button:hover {
+  background-color: var(
+    --secondory-color
+  ); /* Change to your preferred color on hover */
+}
+
+/* Button.css */
+/* Common styles for all button types */
+/* Styles for the primary button */
+.primary-button {
+  background-color: #d1d3e1f8;
+  color: #000000;
+}
+.primary-button:hover {
+  background-color: #d3d5e098;
+}
+/* Styles for the secondary button */
+.secondary-button {
+  background-color: #2ecc71;
+  color: #fff;
+}
+
+.secondary-button:hover {
+  background-color: #1faf5b;
+}
+
+/* Styles for the danger button */
+.danger-button {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.danger-button:hover {
+  background-color: #c93d2d;
+}

@@ -1,12 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import "./Overview.css";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../../../Components/Loader/Loader";
-import DashboardContext from "../../../../Context/DashboardContext";
 export default function Overview() {
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const [popupUser, setPopupUser] = useState(null);

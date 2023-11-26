@@ -11,6 +11,7 @@ import {
   faCircleXmark,
   faHourglass,
 } from "@fortawesome/free-solid-svg-icons";
+import Button from "../../UI/Button/Button";
 
 export default function Submits() {
   const [events, setEvents] = useState([]);
@@ -205,7 +206,8 @@ export default function Submits() {
                     ))}
 
                   <div className="buttons flex-row-eve g-3">
-                    <button type="submit">Submit</button>
+                    {/* <button type="submit">Submit</button> */}
+                    <Button btnType="secondary">submit</Button>
                   </div>
                 </form>
               </>

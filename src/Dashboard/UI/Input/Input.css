@@ -1,0 +1,56 @@
+/* .input-container {
+  margin-bottom: 15px;
+} */
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-family: var(--font-family-bai);
+}
+
+/* Styles for text input */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  font-family: var(--font-family-bai);
+  transition: border-color 0.3s ease;
+}
+
+/* Styles for textarea */
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+  font-family: var(--font-family-bai);
+  resize: none; /* Allow vertical resizing */
+}
+
+/* Placeholder styles */
+input[type="text"]::placeholder,
+input[type="number"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder,
+textarea::placeholder {
+  font-family: var(--font-family-bai);
+  color: #aaa;
+}
+
+/* Focus styles */
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+textarea:focus {
+  outline: none;
+  border-color: #3498db; /* Adjust the color for focus state */
+}

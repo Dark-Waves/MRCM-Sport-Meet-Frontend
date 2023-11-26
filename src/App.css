@@ -7,7 +7,7 @@
 }
 
 :root {
-  --main-color: #02d7f3;
+  --main-color: #05cfead6;
   --secondory-color: #238baac0;
   --custom-color-1: #226a77;
   --font-xs: 10px;
@@ -85,7 +85,7 @@ button {
   color: var(--color-silver-v1);
 }
 .text-scarlet {
-  color: var(--custom-color-1);
+  color: var(--color-scarlet);
 }
 .text-green {
   color: var(--color-green);

@@ -6,8 +6,6 @@ import Overview from "./Overview/Overview";
 export default function Users() {
   return (
     <div className="Users main-content-holder">
-      {/* <UserRole />
-      <BanUsers /> */}
       <Routes>
         <Route index path="/" element={<Overview />} />
         <Route path="Edit" element={<UserEdit />} />

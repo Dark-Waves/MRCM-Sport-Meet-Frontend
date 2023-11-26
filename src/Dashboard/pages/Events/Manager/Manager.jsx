@@ -4,6 +4,10 @@ import "./Manager.css";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { config } from "../../../utils/config";
+import PopUp from "../../../UI/PopUp/PopUp";
+import Button from "../../../UI/Button/Button";
+import Input from "../../../UI/Input/Input";
+import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 
 export default function Manager({ allEvents, setAllEvents }) {
   const [showPopup, setShowPopup] = useState(false);
@@ -14,11 +18,13 @@ export default function Manager({ allEvents, setAllEvents }) {
     places: [],
     // Add other fields as needed
   });
+  const [submitErrors, setSubmitErrors] = useState({});
 
   const openEditPopup = (event) => {
     setSelectedEvent(event);
     setShowPopup(true);
     setEventData(event); // Set the event data to populate the form fields
+    setSubmitErrors({});
   };
 
   const closePopup = () => {
@@ -29,6 +35,7 @@ export default function Manager({ allEvents, setAllEvents }) {
       description: "",
       places: [],
     });
+    setSubmitErrors({});
   };
 
   const handleCreateEvent = () => {
@@ -39,6 +46,7 @@ export default function Manager({ allEvents, setAllEvents }) {
       description: "",
       places: [],
     });
+    setSubmitErrors({});
   };
 
   const handleDeleteEvent = async (eventToDelete) => {
@@ -67,6 +75,50 @@ export default function Manager({ allEvents, setAllEvents }) {
     e.preventDefault();
     const token = Cookies.get("token");
     const apiUrl = `${config.APIURI}/api/v1/events`;
+    console.log(eventData);
+    const errors = [];
+
+    if (!eventData.name) {
+      errors.push({
+        message: "Please Enter a name to the event.",
+        type: "name",
+      });
+    }
+
+    if (!eventData.description) {
+      errors.push({
+        message: "Please Enter a description to the event.",
+        type: "description",
+      });
+    }
+
+    if (!(eventData.places && eventData.places.length > 0)) {
+      errors.push({
+        message: "Please Enter places to the event.",
+        type: "places",
+      });
+    } else {
+      for (const place of eventData.places) {
+        console.log(place);
+        if (!place.place || !place.minimumMarks) {
+          errors.push({
+            message: "Please fill all place details.",
+            type: `place - ${place.place}`,
+          });
+          break; // Break the loop if any place detail is missing
+        }
+      }
+    }
+
+    if (errors.length > 0) {
+      const errorDetails = {};
+      errors.forEach((error) => {
+        errorDetails[error.type] = error.message;
+      });
+      setSubmitErrors(errorDetails);
+      console.log(submitErrors);
+      return; // Prevent API call if there are validation errors
+    }
 
     try {
       if (selectedEvent) {
@@ -94,10 +146,10 @@ export default function Manager({ allEvents, setAllEvents }) {
         const newEvent = { ...eventData, id: Date.now() }; // Generate a temporary ID for the new event (replace it with the actual ID received from the API)
         setAllEvents([...allEvents, newEvent]);
       }
+      setSubmitErrors({});
       closePopup();
     } catch (error) {
       console.error("Error saving event:", error);
-      // Handle error scenarios
     }
   };
 
@@ -133,6 +185,26 @@ export default function Manager({ allEvents, setAllEvents }) {
       places: updatedPlaces,
     });
   };
+
+  const getOrdinal = (number) => {
+    if (number >= 11 && number <= 13) {
+      return number + "th";
+    }
+
+    const lastDigit = number % 10;
+
+    switch (lastDigit) {
+      case 1:
+        return number + "st";
+      case 2:
+        return number + "nd";
+      case 3:
+        return number + "rd";
+      default:
+        return number + "th";
+    }
+  };
+
   return (
     <div className="event-manager">
       <div className="grid-common">
@@ -160,42 +232,58 @@ export default function Manager({ allEvents, setAllEvents }) {
         </div>
       </div>
       {showPopup && (
-        <div className="popup">
-          <div className="popup-content">
-            <span className="close-popup" onClick={closePopup}>
-              &times;
-            </span>
-            <h2>{selectedEvent ? "Edit Event" : "Create New Event"}</h2>
-            <form onSubmit={handleSaveEvent}>
-              <input
-                type="text"
-                placeholder="Name"
-                value={eventData.name}
-                onChange={(e) =>
-                  setEventData({ ...eventData, name: e.target.value })
-                }
-              />
-              <textarea
-                placeholder="Description"
-                value={eventData.description}
-                onChange={(e) =>
-                  setEventData({ ...eventData, description: e.target.value })
-                }
-              ></textarea>
-              <div className="places-section">
-                <h3>Places</h3>
-                {eventData.places &&
-                  eventData.places.map((place, index) => (
-                    <div key={index}>
-                      <input
+        <PopUp closePopup={closePopup}>
+          <h2>{selectedEvent ? "Edit Event" : "Create New Event"}</h2>
+          <form onSubmit={handleSaveEvent} className="m-t-5 m-b-4">
+            <Input
+              type="text"
+              value={eventData.name}
+              onChange={(e) =>
+                setEventData({ ...eventData, name: e.target.value })
+              }
+              placeholder="Enter Event Name"
+              className="m-b-4"
+              icon={submitErrors.name && faTriangleExclamation}
+              iconTitle={submitErrors.name && submitErrors.name}
+            />
+
+            <Input
+              className="m-b-4"
+              textarea
+              placeholder="Description"
+              value={eventData.description}
+              onChange={(e) =>
+                setEventData({ ...eventData, description: e.target.value })
+              }
+              icon={submitErrors.description && faTriangleExclamation}
+              iconTitle={submitErrors.description && submitErrors.description}
+            />
+
+            <div className="places-section">
+              {submitErrors.places && (
+                <span className="error_container text-scarlet font-md font-weight-600">
+                  {submitErrors.places}
+                </span>
+              )}
+              {submitErrors.place && (
+                <span className="error_container text-scarlet font-md font-weight-600">
+                  {submitErrors.place}
+                </span>
+              )}
+              {eventData.places.length > 0 && (
+                <>
+                  <h3>Places</h3>
+                  {eventData.places.map((place, index) => (
+                    <div
+                      key={index}
+                      className="flex-row-bet m-3 text-center position-relative"
+                    >
+                      <span className="font-md font-weight-600">
+                        {getOrdinal(place.place)}
+                      </span>
+                      <Input
                         type="number"
-                        value={place.place}
-                        onChange={(e) =>
-                          handlePlaceChange(index, "place", e.target.value)
-                        }
-                      />
-                      <input
-                        type="number"
+                        placeholder="Score"
                         value={place.minimumMarks}
                         onChange={(e) =>
                           handlePlaceChange(
@@ -204,20 +292,40 @@ export default function Manager({ allEvents, setAllEvents }) {
                             e.target.value
                           )
                         }
+                        icon={
+                          submitErrors[`place - ${place.place}`] &&
+                          faTriangleExclamation
+                        }
+                        iconTitle={
+                          submitErrors[`place - ${place.place}`] &&
+                          submitErrors[`place - ${place.place}`]
+                        }
+                        className="w-85"
                       />
-                      {/* Add other fields for place */}
+                      {/* <FontAwesomeIcon icon="fa-solid fa-triangle-exclamation" /> */}
                     </div>
                   ))}
-                <button type="button" onClick={handleAddPlace}>
-                  Add Place
-                </button>
-              </div>
-              <button type="submit">
-                {selectedEvent ? "Save Changes" : "Create Event"}
-              </button>
-            </form>
-          </div>
-        </div>
+                </>
+              )}
+              <Button
+                type="button"
+                className="m-t-4"
+                btnType="primary"
+                onClick={handleAddPlace}
+              >
+                Add Place
+              </Button>
+            </div>
+            <Button type="submit" className="m-t-3">
+              {selectedEvent ? "Save Changes" : "Create Event"}
+            </Button>
+          </form>
+          {/* {submitErrors && (
+            <span className="error_container text-scarlet font-md font-weight-600">
+              {submitErrors.message}
+            </span>
+          )} */}
+        </PopUp>
       )}
     </div>
   );
