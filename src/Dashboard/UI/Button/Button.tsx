@@ -1,14 +1,24 @@
 import React from "react";
 import "./Button.css"; // Import your CSS file for styling
-
-type ButtonType = "primary" | "secondary" | "danger" | "custom"; // Define the types for btnType
+import Button2 from "@mui/material/Button";
 
 interface ButtonProps {
   onClick: () => void;
   children: React.ReactNode;
-  btnType: ButtonType; // Use the defined type for btnType
+  btnType:
+    | "inherit"
+    | "primary"
+    | "secondary"
+    | "success"
+    | "error"
+    | "info"
+    | "warning";
   type: "button" | "submit" | "reset" | undefined;
   className: "";
+  variant: "text" | "outlined" | "contained";
+  startIcon: React.ReactNode;
+  endIcon: React.ReactNode;
+  disabled: boolean;
 }
 
 export default function Button({
@@ -17,27 +27,23 @@ export default function Button({
   btnType,
   type,
   className,
+  variant,
+  startIcon,
+  endIcon,
+  disabled,
 }: ButtonProps) {
-  const determineButtonType = () => {
-    switch (btnType) {
-      case "primary":
-        return "primary-button";
-      case "secondary":
-        return "secondary-button";
-      case "danger":
-        return "danger-button";
-      default:
-        return "modern-button";
-    }
-  };
-
   return (
-    <button
+    <Button2
+      disabled={disabled}
+      variant={variant}
       type={type}
-      className={`font-weight-600 rounded-md ${determineButtonType()} ${className}`}
       onClick={onClick}
+      startIcon={startIcon}
+      endIcon={endIcon}
+      color={btnType}
+      className={`button ${className}`}
     >
       {children}
-    </button>
+    </Button2>
   );
 }

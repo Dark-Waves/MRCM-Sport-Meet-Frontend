@@ -1,0 +1,21 @@
+.member__add .inputs {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(200px, 1fr)
+  ); /* Responsive columns */
+  gap: 20px; /* Gap between grid items */
+}
+.member__add .member-add-top {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+@media screen and (max-width: 550px) {
+  .member__add .member-add-top {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}

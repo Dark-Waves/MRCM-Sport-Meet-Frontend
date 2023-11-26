@@ -22,6 +22,7 @@ import Cookies from "js-cookie";
 import Approves from "./pages/Approves/Approves.jsx";
 import Submits from "./pages/Submits/Submits.jsx";
 import Members from "./pages/Members/Members.jsx";
+import { SnackbarProvider } from "notistack";
 const APIURI = config.APIURI;
 
 const initialValue = {
@@ -247,15 +248,17 @@ export default function Dashboard() {
         <DashboardContext.Provider
           value={{ ...state, dispatch, defaultLogo, SiteName }}
         >
-          <Sidebar />
-          <div className="Dashboard main-content">
-            <ContentTop />
-            <Routes>
-              {navigationLinks ? renderRoutes(navigationLinks) : ""}
-              <Route path="/" element={<Navigate to="/dashboard/home" />} />
-              <Route path="*" element={<ErrorPage code={404} />} />
-            </Routes>
-          </div>
+          <SnackbarProvider maxSnack={3}>
+            <Sidebar />
+            <div className="Dashboard main-content">
+              <ContentTop />
+              <Routes>
+                {navigationLinks ? renderRoutes(navigationLinks) : ""}
+                <Route path="/" element={<Navigate to="/dashboard/home" />} />
+                <Route path="*" element={<ErrorPage code={404} />} />
+              </Routes>
+            </div>
+          </SnackbarProvider>
         </DashboardContext.Provider>
       )}
     </>
