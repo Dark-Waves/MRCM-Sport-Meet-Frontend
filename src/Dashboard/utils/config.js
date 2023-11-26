@@ -1,4 +1,6 @@
+import configJS from "../../../config";
+
 export const config = {
-    SiteName: "MRCM SPORT MEET",
-    APIURI: 'http://localhost:8080',
+  SiteName: "MRCM SPORT MEET",
+  APIURI: configJS.config.APIURI,
 };
