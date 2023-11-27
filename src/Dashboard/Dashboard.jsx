@@ -119,10 +119,9 @@ export default function Dashboard() {
 
   useEffect(
     function () {
-      if (authStatus !== "ready") return;
-      if (!authenticated) navigate("/auth");
+      if (authStatus === "error") navigate("/auth");
     },
-    [authenticated, navigate, authStatus]
+    [navigate, authStatus]
   );
 
   useEffect(

@@ -35,11 +35,13 @@ export default function useAuth() {
           const { data } = await axios.get(`${config.APIURI}/api/v1/user/@me`, {
             headers: { Authorization: `Bearer ${token}` },
           });
+          console.log(token)
           dispatch({ type: "setStatus", payload: "ready" });
           if (data.error)
             dispatch({ type: "setAuthenticated", payload: false });
           else dispatch({ type: "setAuthenticated", payload: true });
         } catch (error) {
+          console.log(error)
           dispatch({ type: "setStatus", payload: "error" });
         }
       };
