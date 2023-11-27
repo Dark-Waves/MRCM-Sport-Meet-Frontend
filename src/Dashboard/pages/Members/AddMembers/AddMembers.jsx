@@ -62,18 +62,6 @@ export default function AddMembers({ setAllMembersData }) {
               foundKey !== undefined || key.toLowerCase() === "AdmissionID"
             );
           });
-          // const transformedData = parsedData.data.map((entry) => {
-          //   const transformedEntry = {};
-          //   for (const key in entry) {
-          //     let newKey = key.toLowerCase(); // Convert key to lowercase
-          //     if (key === 'Name') newKey = 'name'; // Convert 'Name' to 'name'
-          //     else if (key === 'Grade') newKey = 'grade'; // Convert 'Grade' to 'grade'
-          //     else if (key === 'House') newKey = 'house'; // Convert 'House' to 'house'
-          //     else if (key.toLowerCase() === 'admissionid') newKey = 'admissionID'; // Preserve 'AdmissionID' as is
-          //     transformedEntry[newKey] = entry[key];
-          //   }
-          //   return transformedEntry;
-          // }).filter((obj) => Object.values(obj).some(val => val !== '' && val !== null)); // Filter out objects with at least one non-empty value for any key
   
   
           if (!hasRequiredKeys) {
@@ -83,6 +71,17 @@ export default function AddMembers({ setAllMembersData }) {
             );
             return;
           }
+          const transformedData = parsedData.data.map((entry) => {
+            const transformedEntry = {};
+            for (const key in entry) {
+              if (key === 'name') newKey = 'Name'; // Convert 'Name' to 'name'
+              else if (key === 'grade') newKey = 'Grade'; // Convert 'Grade' to 'grade'
+              else if (key === 'house') newKey = 'House'; // Convert 'House' to 'house'
+              else if (key === 'admissionid') newKey = 'AdmissionID'; // Preserve 'AdmissionID' as is
+              transformedEntry[newKey] = entry[key];
+            }
+            return transformedEntry;
+          }).filter((obj) => Object.values(obj).some(val => val !== '' && val !== null)); // Filter out objects with at least one non-empty value for any key
 
           setMembersData(parsedData.data);
         },

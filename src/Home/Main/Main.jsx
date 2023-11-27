@@ -5,6 +5,7 @@ import Theme from "./Theme/Theme";
 import axios from "axios";
 import { config } from "../../../config";
 import HomeContext from "../../context/HomeContext";
+import Houses from "../Houses/Houses";
 
 // const houseData = [
 //   { houseName: "Rigel", HouseScore: 50 },
@@ -38,6 +39,7 @@ export default function Main() {
     socket.on("server-message", (data) => {
       if (data.type === "houseScoreUpdate") {
         console.log(data.payload);
+        setHouseData(data.payload);
       }
     });
   }, [socket]);
@@ -47,6 +49,7 @@ export default function Main() {
       <Hero houseData={houseData} />
       <Theme />
       <About />
+      <Houses houseData={houseData} />
     </div>
   );
 }
