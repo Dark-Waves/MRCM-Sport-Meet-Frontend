@@ -49,9 +49,9 @@ export default function Home() {
   const { status, publicDataStatus, publicData, socket, soketStatus } = state;
   /**Client Updates Checking */
 
-  // useEffect(function () {
-  //   document.title = `${SiteName} Dashboard`;
-  // }, []);
+  useEffect(function () {
+    document.title = `${config.SiteName}`;
+  }, []);
 
   useEffect(
     function () {
@@ -106,9 +106,7 @@ export default function Home() {
       ) : (
         status === "ready" && (
           <>
-            <HomeContext.Provider
-              value={{ ...state, dispatch }}
-            >
+            <HomeContext.Provider value={{ ...state, dispatch }}>
               <Header />
               <Routes>
                 <Route path="/" element={<Main />} />

@@ -3,21 +3,13 @@ import { useEffect, useState } from "react";
 import "./Hero.css";
 import { Link } from "react-router-dom";
 
-const houseData = [
-  { houseName: "Rigel", HouseScore: 50 },
-  { houseName: "Canapus", HouseScore: 60 },
-  { houseName: "Wega", HouseScore: 45 },
-  { houseName: "Anteyas", HouseScore: 54 },
-];
-
-export default function Hero() {
+export default function Hero({ houseData }) {
   const highestScore = Math.max(...houseData.map((data) => data.HouseScore));
 
   const getScoreHeight = function (score) {
     const scorePercentage = (score / highestScore) * 100;
     return `${scorePercentage}%`;
   };
-
   return (
     <div className="hero">
       <div className="left-content">
