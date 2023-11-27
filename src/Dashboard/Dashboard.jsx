@@ -18,6 +18,7 @@ import { siteImgs } from "./utils/images.js";
 import Sidebar from "./components/Sidebar/Sidebar.jsx";
 const defaultLogo = siteImgs.Logo;
 const SiteName = config.SiteName;
+import { useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 import Approves from "./pages/Approves/Approves.jsx";
 import Submits from "./pages/Submits/Submits.jsx";
@@ -109,9 +110,15 @@ export default function Dashboard() {
     navigationLinks,
     navigationStatus,
   } = state;
-  const [{ authenticated, status: authStatus }, dipatchAuth] = useAuth();
+  const [{ authenticated }, dispatchAuth] = useAuth();
   const navigate = useNavigate();
   /**Client Updates Checking */
+
+  const location = useLocation();
+
+  useEffect(() => {
+    dispatchAuth({ type: "setStatus", payload: "loading" });
+  }, [dispatchAuth, location]);
 
   useEffect(function () {
     document.title = `${SiteName} Dashboard`;
@@ -119,9 +126,9 @@ export default function Dashboard() {
 
   useEffect(
     function () {
-      if (authStatus === "error") navigate("/auth");
+      if (authenticated === false) navigate("/auth");
     },
-    [navigate, authStatus]
+    [navigate, authenticated]
   );
 
   useEffect(
@@ -182,7 +189,7 @@ export default function Dashboard() {
         socket.removeEventListener("server-message", handleSocket);
       };
     },
-    [socket, dipatchAuth]
+    [socket]
   );
 
   useEffect(
