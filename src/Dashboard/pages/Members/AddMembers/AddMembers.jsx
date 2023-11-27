@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { parse } from "papaparse";
 import axios from "axios";
 import { config } from "../../../utils/config";
@@ -13,7 +13,15 @@ import { styled } from "@mui/material/styles";
 import Button2 from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
 import { useSnackbar } from "notistack";
-import { CircularProgress } from "@mui/material";
+import {
+  CircularProgress,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -36,14 +44,46 @@ export default function AddMembers({ setAllMembersData }) {
   const [newMember, setNewMember] = useState({});
   const [createNew, setCreateNew] = useState(false);
   const [inProgress, setInProgress] = useState(false);
-
+  const [houses, setHouses] = useState([]);
+  console.log(membersData);
   const handleFileUpload = (e) => {
-    console.log("lol");
     const file = e.target.files[0];
     if (file) {
       parse(file, {
         header: true,
         complete: (parsedData) => {
+          const requiredKeys = ["Name", "Grade", "House", "AdmissionID"];
+
+          const hasRequiredKeys = requiredKeys.every((key) => {
+            const foundKey = parsedData.meta.fields.find(
+              (field) => field.toLowerCase() === key.toLowerCase()
+            );
+            return (
+              foundKey !== undefined || key.toLowerCase() === "AdmissionID"
+            );
+          });
+          // const transformedData = parsedData.data.map((entry) => {
+          //   const transformedEntry = {};
+          //   for (const key in entry) {
+          //     let newKey = key.toLowerCase(); // Convert key to lowercase
+          //     if (key === 'Name') newKey = 'name'; // Convert 'Name' to 'name'
+          //     else if (key === 'Grade') newKey = 'grade'; // Convert 'Grade' to 'grade'
+          //     else if (key === 'House') newKey = 'house'; // Convert 'House' to 'house'
+          //     else if (key.toLowerCase() === 'admissionid') newKey = 'admissionID'; // Preserve 'AdmissionID' as is
+          //     transformedEntry[newKey] = entry[key];
+          //   }
+          //   return transformedEntry;
+          // }).filter((obj) => Object.values(obj).some(val => val !== '' && val !== null)); // Filter out objects with at least one non-empty value for any key
+  
+  
+          if (!hasRequiredKeys) {
+            enqueueSnackbar(
+              "Import a valid data format (Name, Grade, House, AdmissionID)",
+              { variant: "error" }
+            );
+            return;
+          }
+
           setMembersData(parsedData.data);
         },
         error: (err) => {
@@ -59,7 +99,7 @@ export default function AddMembers({ setAllMembersData }) {
       const emptyIndexes = [];
       const isEmptyRow = membersData.some((member, index) => {
         const isEmpty =
-          !member.name || !member.grade || !member.house || !member.admissionID;
+          !member.Name || !member.Grade || !member.House || !member.AdmissionID;
         if (isEmpty) {
           emptyIndexes.push(index);
         }
@@ -109,6 +149,7 @@ export default function AddMembers({ setAllMembersData }) {
         console.log(response.data.data);
       }
       if (response.data.message === "ok") {
+        setAllMembersData((prev) => [...prev, ...membersData]);
         console.log(response.data);
         enqueueSnackbar("Successfully imported data.", { variant: "success" });
         setMembersData([]);
@@ -139,7 +180,8 @@ export default function AddMembers({ setAllMembersData }) {
     });
   };
 
-  const handleOk = () => {
+  const handleOk = (e) => {
+    e.preventDefault();
     setEditIndex(null);
   };
 
@@ -164,6 +206,21 @@ export default function AddMembers({ setAllMembersData }) {
     setCreateNew(false);
     setNewMember({});
   };
+
+  const fetchHouses = async () => {
+    try {
+      const response = await axios.get(`${config.APIURI}/api/v1/houses`);
+      if (response.data && response.data.HouseData) {
+        setHouses(response.data.HouseData); // Set fetched options
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchHouses(); // Fetch data when Autocomplete is opened
+  }, []);
   return (
     <div className="member__add">
       <div className="member-add-top m-4">
@@ -203,42 +260,53 @@ export default function AddMembers({ setAllMembersData }) {
                 className="content grid-common m-4 flex-col"
               >
                 <div className="inputs w-full p-4 g-3">
-                  <Input
+                  <TextField
                     type="text"
-                    placeholder="AdmissionID"
+                    label="AdmissionID"
                     onChange={(e) =>
                       setNewMember({
                         ...newMember,
-                        admissionID: e.target.value,
+                        AdmissionID: e.target.value,
                       })
                     }
                     required
                   />
-                  <Input
+                  <TextField
                     type="text"
-                    placeholder="Name"
+                    label="Name"
                     onChange={(e) =>
-                      setNewMember({ ...newMember, name: e.target.value })
+                      setNewMember({ ...newMember, Name: e.target.value })
                     }
                     required
                   />
-                  <Input
-                    type="text"
-                    placeholder="Grade"
+                  <TextField
+                    type="number"
+                    label="Grade"
                     onChange={(e) =>
-                      setNewMember({ ...newMember, grade: e.target.value })
+                      setNewMember({ ...newMember, Grade: e.target.value })
                     }
                     required
                   />
 
-                  <Input
-                    type="text"
-                    placeholder="House"
-                    onChange={(e) =>
-                      setNewMember({ ...newMember, house: e.target.value })
-                    }
-                    required
-                  />
+                  <FormControl fullWidth>
+                    <InputLabel id="House-select-label">House</InputLabel>
+                    <Select
+                      labelId="House-select-label"
+                      // value={age}
+                      id="House-select"
+                      required
+                      label="House"
+                      onChange={(e) =>
+                        setNewMember({ ...newMember, House: e.target.value })
+                      }
+                    >
+                      {houses.map((House, index) => (
+                        <MenuItem key={index} value={House.Name}>
+                          {House.Name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </div>
                 <div className="buttons flex-row-center g-4">
                   <Button type="submit" variant="contained">
@@ -253,44 +321,56 @@ export default function AddMembers({ setAllMembersData }) {
           )}
           {membersData.map((member, index) => (
             <div className="div" key={index}>
-              <div className="content grid-common m-4 flex-col position-relative">
+              <form
+                onSubmit={handleOk}
+                className="content grid-common m-4 flex-col position-relative"
+              >
                 <div className="user-content">
                   <div className="data-content inputs w-full p-4 g-3">
                     {editIndex === index ? (
                       <>
-                        <Input
-                          id="admissionID"
+                        <TextField
+                          id="AdmissionID"
                           type="text"
-                          placeholder="AdmissionID"
-                          value={member.admissionID || ""}
+                          label="AdmissionID"
+                          value={member.AdmissionID || ""}
                           onChange={(e) => handleInputChanges(e, index)}
                           required
                         />
-                        <Input
-                          id="name"
+                        <TextField
+                          id="Name"
                           type="text"
-                          placeholder="Name"
-                          value={member.name || ""}
+                          label="Name"
+                          value={member.Name || ""}
                           onChange={(e) => handleInputChanges(e, index)}
                           required
                         />
-                        <Input
-                          id="grade"
+                        <TextField
+                          id="Grade"
                           type="text"
-                          placeholder="Grade"
-                          value={member.grade || ""}
+                          label="Grade"
+                          value={member.Grade || ""}
                           onChange={(e) => handleInputChanges(e, index)}
                           required
                         />
 
-                        <Input
-                          id="house"
-                          type="text"
-                          placeholder="House"
-                          value={member.house || ""}
-                          onChange={(e) => handleInputChanges(e, index)}
-                          required
-                        />
+                        <FormControl fullWidth>
+                          <InputLabel id="House-select-label">House</InputLabel>
+                          <Select
+                            labelId="House-select-label"
+                            value={member.House || ""}
+                            id="House-select"
+                            required
+                            label="House"
+                            onChange={(e) => handleInputChanges(e, index)}
+                          >
+                            {houses.map((House, index) => (
+                              <MenuItem key={index} value={House.Name}>
+                                {House.Name}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
                       </>
                     ) : (
                       <>
@@ -298,38 +378,38 @@ export default function AddMembers({ setAllMembersData }) {
                           onClick={() => handleEdit(index)}
                           className="font-md p-3 bg-primary rounded-md font-weight-500"
                         >
-                          AdmissionID: {member.admissionID}
+                          AdmissionID: {member.AdmissionID}
                         </span>
                         <span
                           onClick={() => handleEdit(index)}
                           className="font-md p-3 bg-primary rounded-md font-weight-500"
                         >
-                          Name: {member.name}
+                          Name: {member.Name}
                         </span>
                         <span
                           onClick={() => handleEdit(index)}
                           className="font-md p-3 bg-primary rounded-md font-weight-500"
                         >
-                          Grade: {member.grade}
+                          Grade: {member.Grade}
                         </span>
                         <span
                           onClick={() => handleEdit(index)}
                           className="font-md p-3 bg-primary rounded-md font-weight-500"
                         >
-                          House: {member.house}
+                          House: {member.House}
                         </span>
                       </>
                     )}
 
                     {submitErrors.length > 0 &&
                       submitErrors.find(
-                        (value) => value.data === member.admissionID
+                        (value) => value.data === member.AdmissionID
                       ) && (
                         <>
                           <Alert severity="error">
                             {
                               submitErrors.find(
-                                (value) => value.data === member.admissionID
+                                (value) => value.data === member.AdmissionID
                               )?.message
                             }
                           </Alert>
@@ -356,8 +436,9 @@ export default function AddMembers({ setAllMembersData }) {
                     {editIndex === index ? (
                       <>
                         <Button
+                          type="submit"
                           variant="contained"
-                          onClick={handleOk}
+                          // onClick={handleOk}
                           className="bg-primary rounded-md font-weight-600 font-md"
                         >
                           OK
@@ -382,7 +463,7 @@ export default function AddMembers({ setAllMembersData }) {
                     )}
                   </>
                 </div>
-              </div>
+              </form>
             </div>
           ))}
         </>

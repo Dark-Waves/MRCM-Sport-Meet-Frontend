@@ -1,25 +1,46 @@
-import { useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import About from "./About/About";
 import Hero from "./Hero/Hero";
 import Theme from "./Theme/Theme";
 import axios from "axios";
+import { config } from "../../../config";
+import HomeContext from "../../context/HomeContext";
 
-const houseData = [
-  { houseName: "Rigel", HouseScore: 50 },
-  { houseName: "Canapus", HouseScore: 60 },
-  { houseName: "Wega", HouseScore: 45 },
-  { houseName: "Anteyas", HouseScore: 54 },
-];
+// const houseData = [
+//   { houseName: "Rigel", HouseScore: 50 },
+//   { houseName: "Canapus", HouseScore: 60 },
+//   { houseName: "Wega", HouseScore: 45 },
+//   { houseName: "Anteyas", HouseScore: 54 },
+// ];
 
 export default function Main() {
-
   // Get data from Api from startup
+  const [houseData, setHouseData] = useState([]);
+  const { socket } = useContext(HomeContext);
 
-  useEffect(()=> {
-    const getData = async ()=> {
-const responce = await axios.get()
-    }
-  },[])
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const responce = await axios.get(`${config.APIURI}/api/v1/houses`);
+
+        if (responce.data.message === "ok") {
+          setHouseData(responce.data.HouseData);
+        }
+        console.log(responce.data.HouseData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getData();
+  }, []);
+
+  useEffect(() => {
+    socket.on("server-message", (data) => {
+      if (data.type === "houseScoreUpdate") {
+        console.log(data.payload);
+      }
+    });
+  }, [socket]);
 
   return (
     <div className="home-content p-5">

@@ -88,10 +88,10 @@ export default function EditMembers({ allMembersData, setAllMembersData }) {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
+console.log(response)
       if (response.data.message === "ok") {
         const updatedMembers = allMembersData.filter(
-          (member) => member.id !== memId
+          (member) => member._id !== memId
         );
         setAllMembersData(updatedMembers);
         enqueueSnackbar("Member removed successfully.", { variant: "success" });
@@ -103,7 +103,7 @@ export default function EditMembers({ allMembersData, setAllMembersData }) {
 
   return (
     <div className="member__add">
-      {allMembersData.lenght ? (
+      {allMembersData.length ? (
         <>
           {allMembersData.map((member, index) => (
             <div className="div" key={index}>

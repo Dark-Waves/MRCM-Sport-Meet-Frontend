@@ -4,8 +4,8 @@ import "./Hero.css";
 import { Link } from "react-router-dom";
 
 export default function Hero({ houseData }) {
-  const highestScore = Math.max(...houseData.map((data) => data.HouseScore));
-
+  const highestScore = Math.max(...houseData.map((data) => data.houseScore));
+  console.log(houseData);
   const getScoreHeight = function (score) {
     const scorePercentage = (score / highestScore) * 100;
     return `${scorePercentage}%`;
@@ -14,14 +14,14 @@ export default function Hero({ houseData }) {
     <div className="hero">
       <div className="left-content">
         <div className="house-overview m-b-4">
-          {houseData.map((data, index) => (
-            <div className="House__Container w-full" key={index}>
+          {houseData.map((data) => (
+            <div className="House__Container w-full" key={data._id}>
               <div className="House__box flex-col-center">
                 <h3 className="House__Name font-lg font-weight-600">
-                  {data.houseName}
+                  {data.Name}
                 </h3>
                 <span className="House__Score font-xl font-weight-700">
-                  {data.HouseScore}
+                  {data.houseScore}
                 </span>
               </div>
 
@@ -29,7 +29,7 @@ export default function Hero({ houseData }) {
                 <div
                   className="House_Chart__Bar"
                   style={{
-                    height: getScoreHeight(data.HouseScore),
+                    height: getScoreHeight(data.houseScore),
                   }}
                 ></div>
               </div>

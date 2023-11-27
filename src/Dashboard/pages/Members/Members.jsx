@@ -26,7 +26,7 @@ export default function Members() {
     };
     getData();
   }, []);
-
+console.log(allMembersData)
   return (
     <div className="Members main-content-holder">
       <Routes>
@@ -44,7 +44,7 @@ export default function Members() {
             />
           }
         />
-        <Route path="Add" element={<AddMembers />} />
+        <Route path="Add" element={<AddMembers setAllMembersData={setAllMembersData}/>} />
       </Routes>
     </div>
   );
