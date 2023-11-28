@@ -7,6 +7,7 @@ import Button from "../../UI/Button/Button";
 import { useSnackbar } from "notistack";
 import "./Houses.css";
 import Loader from "../../../Components/Loader/Loader";
+import { TextField } from "@mui/material";
 
 export default function Houses() {
   const [allHousesData, setAllHousesData] = useState([]);
@@ -50,7 +51,8 @@ export default function Houses() {
     setEditedHouse({ ...allHousesData[index] });
   };
 
-  const handleOk = async () => {
+  const handleOk = async (e) => {
+    e.preventDefault();
     if (editedHouse) {
       await handleUpdateHouse(editedHouse);
       setEditedHouse(null);
@@ -67,7 +69,7 @@ export default function Houses() {
     setCreateForm(true);
   };
 
-  const handleCreateHouse = async (houseData) => {
+  const handleCreateHouse = async (e, houseData) => {
     console.log(houseData);
     try {
       const token = Cookies.get("token");
@@ -147,43 +149,72 @@ export default function Houses() {
         <Loader />
       ) : (
         <>
+          <div className="houses_add flex-row-center m-t-5 p-4">
+            <Button
+              variant="outlined"
+              className="m-4 p-4 "
+              onClick={setCreateNew}
+            >
+              Create New
+            </Button>
+          </div>
           {createForm && (
             <div className="create_house grid-common m-4 flex-col position-relative">
-              <div className="inputs w-full p-4 g-3">
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="Name"
-                  onChange={(e) => handleInputChanges("Name", e.target.value)}
-                  required
-                />
-                <Input
-                  id="description"
-                  type="text"
-                  placeholder="Description"
-                  onChange={(e) =>
-                    handleInputChanges("description", e.target.value)
-                  }
-                  required
-                />
-              </div>
-              <Button onClick={() => handleCreateHouse(editedHouse)}>
-                Create
-              </Button>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault(); // Prevent default form submission behavior
+                  handleCreateHouse(e, editedHouse); // Pass event and editedHouse to handleCreateHouse
+                }}
+                className="inputs w-full"
+              >
+                <div className="feild_container flex-col-center p-4 g-3 w-full">
+                  <div className="input_fields w-full flex-row g-5">
+                    <TextField
+                      fullWidth
+                      id="name"
+                      type="text"
+                      label="Name"
+                      onChange={(e) => (
+                        e.preventDefault(),
+                        handleInputChanges("Name", e.target.value)
+                      )}
+                      required
+                    />
+                    <TextField
+                      fullWidth
+                      id="description"
+                      type="text"
+                      label="Description"
+                      onChange={(e) => (
+                        e.preventDefault(),
+                        handleInputChanges("description", e.target.value)
+                      )}
+                    />
+                  </div>
+                  <div className="houses_submit_btn w-full">
+                    <Button type="submit" variant="contained">
+                      Create
+                    </Button>
+                  </div>
+                </div>
+              </form>
             </div>
           )}
           {allHousesData.length ? (
             <>
               {allHousesData.map((house, index) => (
                 <div className="house__container" key={house._id}>
-                  <div className="house__content content grid-common m-4 flex-col">
+                  <form
+                    onSubmit={handleOk}
+                    className="house__content content grid-common m-4 flex-col"
+                  >
                     <div className="data-content inputs w-full p-4 g-3">
                       {editIndex === index ? (
                         <>
                           <span className="font-md p-3 bg-primary rounded-md font-weight-500">
                             Name: {house.Name}
                           </span>
-                          <Input
+                          <TextField
                             id="description"
                             type="text"
                             placeholder="Description"
@@ -192,9 +223,10 @@ export default function Houses() {
                               house.description ||
                               ""
                             }
-                            onChange={(e) =>
+                            onChange={(e) => (
+                              e.preventDefault(),
                               handleInputChanges("description", e.target.value)
-                            }
+                            )}
                             required
                           />
                         </>
@@ -217,6 +249,7 @@ export default function Houses() {
                     </div>
                     <div className="house__buttons buttons flex-row-center g-4">
                       <Button
+                      className="houses_submit_btn"
                         btnType="error"
                         variant="outlined"
                         onClick={() => handleRemoveHouse(house._id)}
@@ -225,10 +258,12 @@ export default function Houses() {
                       </Button>
                       {editIndex === index ? (
                         <>
-                          <Button variant="contained" onClick={handleOk}>
+                          <Button
+                          className="houses_submit_btn" variant="contained" type="submit">
                             OK
                           </Button>
                           <Button
+                          className="houses_submit_btn"
                             btnType="primary"
                             variant="text"
                             onClick={handleCancel}
@@ -238,6 +273,7 @@ export default function Houses() {
                         </>
                       ) : (
                         <Button
+                        className="houses_submit_btn"
                           variant="contained"
                           onClick={() => handleEdit(index)}
                         >
@@ -245,7 +281,7 @@ export default function Houses() {
                         </Button>
                       )}
                     </div>
-                  </div>
+                  </form>
                 </div>
               ))}
             </>
@@ -254,11 +290,6 @@ export default function Houses() {
               <h2>We can't find any houses</h2>
             </div>
           )}
-          <div className="houses_add flex-row-center m-t-4 p-t-4">
-            <Button variant="outlined" onClick={setCreateNew}>
-              Create New
-            </Button>
-          </div>
         </>
       )}
     </div>

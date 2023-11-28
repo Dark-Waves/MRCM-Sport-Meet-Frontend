@@ -7,6 +7,8 @@ import "./EditMembers.css";
 import Button from "../../../UI/Button/Button";
 import Alert from "@mui/material/Alert";
 import { useSnackbar } from "notistack";
+import { TextField } from "@mui/material";
+
 
 export default function EditMembers({ allMembersData, setAllMembersData }) {
   const { enqueueSnackbar } = useSnackbar();
@@ -88,7 +90,7 @@ export default function EditMembers({ allMembersData, setAllMembersData }) {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-console.log(response)
+      console.log(response);
       if (response.data.message === "ok") {
         const updatedMembers = allMembersData.filter(
           (member) => member._id !== memId
@@ -115,10 +117,10 @@ console.log(response)
                         <span className="font-md p-3 bg-primary rounded-md font-weight-500">
                           AdmissionID: {member.admissionID}
                         </span>
-                        <Input
+                        <TextField
                           id="name"
                           type="text"
-                          placeholder="Name"
+                          label="Name"
                           value={
                             (editedMember && editedMember.Name) ||
                             member.Name ||
@@ -129,10 +131,10 @@ console.log(response)
                           }
                           required
                         />
-                        <Input
+                        <TextField
                           id="grade"
                           type="text"
-                          placeholder="Grade"
+                          label="Grade"
                           value={
                             (editedMember && editedMember.Grade) ||
                             member.Grade ||
@@ -144,10 +146,10 @@ console.log(response)
                           required
                         />
 
-                        <Input
+                        <TextField
                           id="house"
                           type="text"
-                          placeholder="House"
+                          label="House"
                           value={
                             (editedMember && editedMember.House) ||
                             member.House ||

@@ -118,7 +118,7 @@ export default function Approves() {
   };
   return (
     <div className="approve__submits">
-      {incomingSubmits ? (
+      {incomingSubmits.length ? (
         <div className="incoming_submits">
           <h1 className="font-weight-600 font-lg">Incoming Submits</h1>
           <div className="incoming_submits__container">
@@ -136,14 +136,15 @@ export default function Approves() {
                         <th>Admision No</th>
                         <th>Winner House</th>
                       </tr>
-                      {data.places && data.places.map((place, placeIndex) => (
-                        <tr key={placeIndex} className="submitted__places">
-                          <td>{place.place}</td>
-                          <td>{place.name}</td>
-                          <td>{place.inputAdmission}</td>
-                          <td>{place.house}</td>
-                        </tr>
-                      ))}
+                      {data.places &&
+                        data.places.map((place, placeIndex) => (
+                          <tr key={placeIndex} className="submitted__places">
+                            <td>{place.place}</td>
+                            <td>{place.name}</td>
+                            <td>{place.inputAdmission}</td>
+                            <td>{place.house}</td>
+                          </tr>
+                        ))}
                     </tbody>
                   </table>
                 </div>
@@ -172,7 +173,7 @@ export default function Approves() {
       ) : (
         "You Don't have any incoming submits."
       )}
-      {approved ? (
+      {approved.length ? (
         <div className="approved">
           <h1 className="font-weight-600 font-lg">Approved</h1>
           <div className="incoming_submits__container">

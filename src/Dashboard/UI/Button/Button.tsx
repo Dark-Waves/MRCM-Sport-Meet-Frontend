@@ -34,6 +34,7 @@ export default function Button({
 }: ButtonProps) {
   return (
     <Button2
+      fullWidth
       disabled={disabled}
       variant={variant}
       type={type}

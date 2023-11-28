@@ -6,3 +6,6 @@
   ); /* Responsive columns */
   gap: 20px; /* Gap between grid items */
 }
+.houses__container .houses_submit_btn {
+  max-width: 300px;
+}

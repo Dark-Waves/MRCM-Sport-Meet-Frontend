@@ -62,7 +62,7 @@ export default function Manager({ allEvents, setAllEvents }) {
       );
       if (response.data.message === "ok") {
         const updatedEvents = allEvents.filter(
-          (event) => event.id !== eventToDelete.id
+          (event) => event._id !== eventToDelete._id
         );
         setAllEvents(updatedEvents);
       }
@@ -74,6 +74,7 @@ export default function Manager({ allEvents, setAllEvents }) {
 
   const handleSaveEvent = async (e) => {
     e.preventDefault();
+
     const token = Cookies.get("token");
     const apiUrl = `${config.APIURI}/api/v1/events`;
     console.log(eventData);
@@ -85,14 +86,6 @@ export default function Manager({ allEvents, setAllEvents }) {
         type: "name",
       });
     }
-
-    if (!eventData.description) {
-      errors.push({
-        message: "Please Enter a description to the event.",
-        type: "description",
-      });
-    }
-
     if (!(eventData.places && eventData.places.length > 0)) {
       errors.push({
         message: "Please Enter places to the event.",
@@ -208,6 +201,15 @@ export default function Manager({ allEvents, setAllEvents }) {
 
   return (
     <div className="event-manager">
+      <div className="content_top w-full m-b-4">
+        <Button
+          className="create-event-button"
+          variant="outlined"
+          onClick={handleCreateEvent}
+        >
+          Create New Event
+        </Button>
+      </div>
       <div className="grid-common">
         <div className="grid-content flex-col">
           <div className="grid-card-container">
@@ -218,37 +220,49 @@ export default function Manager({ allEvents, setAllEvents }) {
                     <h3>{event.name}</h3>
                     <p>{event.description}</p>
                   </div>
-                  <div className="grid-card-actions">
-                    <button onClick={() => openEditPopup(event)}>Edit</button>
-                    <button onClick={() => handleDeleteEvent(event)}>
+                  <div className="grid-card-actions g-4 flex-row">
+                    <Button
+                      variant="contained"
+                      onClick={() => openEditPopup(event)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      btnType="error"
+                      variant="outlined"
+                      onClick={() => handleDeleteEvent(event)}
+                    >
                       Delete
-                    </button>
+                    </Button>
                   </div>
                 </div>
               ))}
           </div>
-          <button className="create-event-button" onClick={handleCreateEvent}>
-            Create New Event
-          </button>
         </div>
       </div>
       {showPopup && (
         <PopUp closePopup={closePopup}>
           <h2>{selectedEvent ? "Edit Event" : "Create New Event"}</h2>
-          <form onSubmit={handleSaveEvent} className="m-t-5 m-b-4">
+          <form
+            onSubmit={handleSaveEvent}
+            className="m-t-5 m-b-4 flex-col-center g-4"
+          >
             <TextField
               type="text"
+              style={{ width: "100%" }}
               value={eventData.name}
               onChange={(e) =>
                 setEventData({ ...eventData, name: e.target.value })
               }
               label="Enter Event Name"
-              error={submitErrors.name}              
+              error={submitErrors.name}
             />
 
             <TextField
+              minRows={4}
+              maxRows={4}
               className="m-b-4"
-              textarea
+              style={{ width: "100%" }}
               label="Description"
               value={eventData.description}
               onChange={(e) =>
@@ -258,7 +272,7 @@ export default function Manager({ allEvents, setAllEvents }) {
             />
 
             <div className="places-section">
-              {submitErrors.places && (
+              {/* {submitErrors.places && (
                 <span className="error_container text-scarlet font-md font-weight-600">
                   {submitErrors.places}
                 </span>
@@ -267,7 +281,7 @@ export default function Manager({ allEvents, setAllEvents }) {
                 <span className="error_container text-scarlet font-md font-weight-600">
                   {submitErrors.place}
                 </span>
-              )}
+              )} */}
               {eventData.places.length > 0 && (
                 <>
                   <h3>Places</h3>
@@ -276,11 +290,10 @@ export default function Manager({ allEvents, setAllEvents }) {
                       key={index}
                       className="flex-row-bet m-3 text-center position-relative"
                     >
-                      <span className="font-md font-weight-600">
-                        {getOrdinal(place.place)}
-                      </span>
-                      <Input
+                      <TextField
+                        label={getOrdinal(place.place)}
                         type="number"
+                        style={{width: "100%"}}
                         placeholder="Score"
                         value={place.minimumMarks}
                         onChange={(e) =>
@@ -290,14 +303,7 @@ export default function Manager({ allEvents, setAllEvents }) {
                             e.target.value
                           )
                         }
-                        icon={
-                          submitErrors[`place - ${place.place}`] &&
-                          faTriangleExclamation
-                        }
-                        iconTitle={
-                          submitErrors[`place - ${place.place}`] &&
-                          submitErrors[`place - ${place.place}`]
-                        }
+                        error={submitErrors[`place - ${place.place}`]}
                         className="w-85"
                       />
                       {/* <FontAwesomeIcon icon="fa-solid fa-triangle-exclamation" /> */}
@@ -308,13 +314,20 @@ export default function Manager({ allEvents, setAllEvents }) {
               <Button
                 type="button"
                 className="m-t-4"
-                btnType="primary"
+                btnType={submitErrors.places ? "error" : "primary"}
+                startIcon={
+                  submitErrors.places ? (
+                    <FontAwesomeIcon icon="fa-solid fa-triangle-exclamation" />
+                  ) : (
+                    ""
+                  )
+                }
                 onClick={handleAddPlace}
               >
                 Add Place
               </Button>
             </div>
-            <Button type="submit" className="m-t-3">
+            <Button variant="contained" type="submit" className="m-t-3">
               {selectedEvent ? "Save Changes" : "Create Event"}
             </Button>
           </form>

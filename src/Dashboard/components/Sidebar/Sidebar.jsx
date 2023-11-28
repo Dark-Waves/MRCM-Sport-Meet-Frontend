@@ -44,7 +44,7 @@ const Sidebar = () => {
     <div className={`sidebar ${sidebarOpen ? "" : "sidebar-change"}`}>
       <div className="user-info">
         <div className="info-img img-fit-cover">
-          <img src={personsImgs.person_two} alt="profile image" />
+          <img src={"/logo/logo.png"} alt="profile image" />
         </div>
         <span className="info-name">Dark Waves</span>
       </div>

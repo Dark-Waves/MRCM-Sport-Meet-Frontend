@@ -1,79 +1,30 @@
 /* Broadcast.css */
 .broadcast {
-    font-family: Arial, sans-serif;
-    margin: 20px auto;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 5px;
+}
+.broadcast .top-actions-broadcast {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.broadcast .top-actions-broadcast .brodcast_send_msg {
+  max-width: 500px;
+}
+@media screen and (max-width: 750px) {
+  .broadcast .top-actions-broadcast {
+    flex-direction: column;
   }
-  
-  .broadcast h1 {
-    font-size: 24px;
-    margin-bottom: 20px;
+}
+
+.broadcast .message-list {
+  margin-top: 20px;
+}
+
+@media (max-width: 600px) {
+  .broadcast .filters {
+    display: flex;
+    flex-direction: column;
   }
-  
-  .broadcast .message-input textarea,
-  .broadcast .message-content textarea,
-  .broadcast .filters input[type="text"] {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    resize: none!important;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
-  }
-  
-  .broadcast .filters label {
-    font-weight: bold;
-    margin-right: 5px;
-  }
-  
-  .broadcast button {
-    background-color: #007bff;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 16px;
-    color: #fff;
-    transition: background-color 0.3s;
-  }
-  
-  .broadcast button:hover {
-    background-color: #0056b3;
-  }
-  
-  .broadcast .message-list {
-    margin-top: 20px;
-  }
-  
-  .broadcast .message {
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 20px;
-  }
-  
-  .broadcast .message h2 {
-    font-size: 18px;
-    margin-top: 0;
-  }
-  
-  .broadcast .message p {
-    margin: 5px 0;
-  }
-  
-  @media (max-width: 600px) {
-    .broadcast .filters {
-      display: flex;
-      flex-direction: column;
-    }
-  
-    .broadcast .filters label,
-    .broadcast .filters input[type="text"] {
-      width: 100%;
-    }
-  }
-  
+}

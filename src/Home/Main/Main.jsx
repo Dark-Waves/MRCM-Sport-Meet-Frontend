@@ -22,12 +22,11 @@ export default function Main() {
   useEffect(() => {
     const getData = async () => {
       try {
-        const responce = await axios.get(`${config.APIURI}/api/v1/houses`);
+        const response = await axios.get(`${config.APIURI}/api/v1/houses`);
 
-        if (responce.data.message === "ok") {
-          setHouseData(responce.data.HouseData);
+        if (response.data.message === "ok") {
+          setHouseData(response.data.HouseData);
         }
-        console.log(responce.data.HouseData);
       } catch (error) {
         console.log(error);
       }
@@ -38,11 +37,27 @@ export default function Main() {
   useEffect(() => {
     socket.on("server-message", (data) => {
       if (data.type === "houseScoreUpdate") {
-        console.log(data.payload);
-        setHouseData(data.payload);
+        const updatedHouseData = data.payload.wsSendHouseData.map(
+          (updatedHouse) => {
+            const index = houseData.findIndex(
+              (house) => house._id === updatedHouse._id
+            );
+
+            if (index !== -1) {
+              return {
+                ...houseData[index],
+                houseScore: updatedHouse.houseScore,
+              };
+            }
+
+            return updatedHouse; // If not found, keep the original object
+          }
+        );
+
+        setHouseData(updatedHouseData);
       }
     });
-  }, [socket]);
+  }, [socket, houseData]); // Include houseData as a dependency
 
   return (
     <div className="home-content p-5">

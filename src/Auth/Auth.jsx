@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import Loader from "../Components/Loader/Loader";
 import { config } from "../../config";
+import { TextField } from "@mui/material";
+import Button from "../Dashboard/UI/Button/Button";
 
 export default function Auth() {
   const [userName, setUserName] = useState("");
@@ -67,34 +69,36 @@ export default function Auth() {
                 </div>
                 <div className="actual-form">
                   <div className="input-wrap">
-                    <input
+                    <TextField
                       type="text"
                       minLength={4}
                       className="input-field"
                       autoComplete="off"
-                      required=""
+                      required
+                      label="Name"
+                      style={{width:"100%"}}
                       value={userName} // Bind input value to state
                       onChange={(e) => setUserName(e.target.value)} // Update state on change
                     />
-                    <label>Name</label>
                   </div>
                   <div className="input-wrap">
-                    <input
+                    <TextField
                       type="password"
                       minLength={4}
                       className="input-field"
                       autoComplete="off"
-                      required=""
+                      required
+                      label="Password"
+                      style={{width:"100%"}}
                       value={password} // Bind input value to state
                       onChange={(e) => setPassword(e.target.value)} // Update state on change
                     />
-                    <label>Password</label>
                   </div>
-                  <input
+                  <Button
                     type="submit"
                     defaultValue="Sign In"
                     className="sign-btn"
-                  />
+                  >Login</Button>
                   <p className="text text-center">
                     You must be a Admin or Staff
                   </p>
