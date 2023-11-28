@@ -8,6 +8,7 @@ import PopUp from "../../../UI/PopUp/PopUp";
 import Button from "../../../UI/Button/Button";
 import Input from "../../../UI/Input/Input";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { TextField } from "@mui/material";
 
 export default function Manager({ allEvents, setAllEvents }) {
   const [showPopup, setShowPopup] = useState(false);
@@ -235,28 +236,25 @@ export default function Manager({ allEvents, setAllEvents }) {
         <PopUp closePopup={closePopup}>
           <h2>{selectedEvent ? "Edit Event" : "Create New Event"}</h2>
           <form onSubmit={handleSaveEvent} className="m-t-5 m-b-4">
-            <Input
+            <TextField
               type="text"
               value={eventData.name}
               onChange={(e) =>
                 setEventData({ ...eventData, name: e.target.value })
               }
-              placeholder="Enter Event Name"
-              className="m-b-4"
-              icon={submitErrors.name && faTriangleExclamation}
-              iconTitle={submitErrors.name && submitErrors.name}
+              label="Enter Event Name"
+              error={submitErrors.name}              
             />
 
-            <Input
+            <TextField
               className="m-b-4"
               textarea
-              placeholder="Description"
+              label="Description"
               value={eventData.description}
               onChange={(e) =>
                 setEventData({ ...eventData, description: e.target.value })
               }
-              icon={submitErrors.description && faTriangleExclamation}
-              iconTitle={submitErrors.description && submitErrors.description}
+              error={submitErrors.description}
             />
 
             <div className="places-section">
