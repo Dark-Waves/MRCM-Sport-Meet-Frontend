@@ -23,19 +23,21 @@ import {
   ToggleButton,
   Autocomplete,
   Checkbox,
+  CircularProgress,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
 import PopUp from "../../UI/PopUp/PopUp";
 import SearchIcon from "@mui/icons-material/Search";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import Loader from "../../../Components/Loader/Loader";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  backgroundColor: alpha(theme.palette.common.black, 0.15),
   "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
+    backgroundColor: alpha(theme.palette.common.black, 0.25),
   },
   marginLeft: 0,
   width: "100%",
@@ -84,6 +86,8 @@ export default function Submits() {
   const [searchQuery, setSearchQuery] = useState("");
   const allStates = [...new Set(events.map((event) => event.state))];
   const [selectedStates, setSelectedStates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [progress, setProgress] = useState(false);
 
   useEffect(() => {
     const handleSocketMessage = (message) => {
@@ -144,6 +148,8 @@ export default function Submits() {
         setEvents(data.events);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
     getData();
@@ -178,7 +184,19 @@ export default function Submits() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const errors = [];
+    for (const place of admissionNumbers) {
+      if (!place.inputAdmission) {
+        errors.push({ message: "Fill the input fields", place: place. });
+      }
+      continue;
+    }
+    if (errors.length > 0) {
+      console.log(errors)
+      return setError(errors);
+    }
     try {
+      setProgress(true);
       const token = Cookies.get("token");
       const response = await axios.post(
         `${config.APIURI}/api/v1/event/${selectedEvent._id}`,
@@ -190,6 +208,7 @@ export default function Submits() {
         }
       );
       if (response.data.error) {
+        setProgress(false);
         console.log(response.data.data);
         for (const message of response.data.data) {
           enqueueSnackbar(`${message.message} - place ${message.place}`, {
@@ -204,195 +223,220 @@ export default function Submits() {
 
       // Add logic to handle the response if needed
     } catch (error) {
+      setProgress(false);
       console.log(error);
+    } finally {
+      setProgress(false);
     }
   };
 
-  const filteredEvents = events.filter((event) =>
-    event.name.toLowerCase().includes(searchQuery.toLowerCase()),
-    // selectedStates.includes(event.state)
+  const searchFilteredEvents = events.filter((event) =>
+    event.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const filteredEvents =
+    selectedStates.length > 0
+      ? searchFilteredEvents.filter((event) =>
+          selectedStates.includes(event.state)
+        )
+      : searchFilteredEvents;
 
   return (
     <div className="event-submits">
-      <div className="top-content flex-row-bet">
-        <h1 className="font-lg font-weight-600">Event Submits</h1>
-        <div className="searchbar flex-row g-3">
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search…"
-              inputProps={{ "aria-label": "search" }}
-            />
-          </Search>
-          <Autocomplete
-            multiple
-            id="checkboxes-tags-demo"
-            options={allStates}
-            disableCloseOnSelect
-            getOptionLabel={(option) => option}
-            renderOption={(props, option, { selected }) => (
-              <li {...props}>
-                <Checkbox
-                  icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
-                  checkedIcon={<CheckBoxIcon fontSize="small" />}
-                  style={{ marginRight: 8 }}
-                  checked={selected}
-                />
-                {option}
-              </li>
-            )}
-            style={{ width: 500 }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Filter by State"
-                placeholder="Select States"
-              />
-            )}
-          />
-        </div>
-      </div>
-      <div className="events-to-submit flex-col g-5 m-t-4 content-grid-one">
-        {filteredEvents.map((data, index) => (
-          <div className={`event grid-common bg-main`} key={index}>
-            <div className="event-submit-content p-4 flex-col-center g-3">
-              {data.name && (
-                <div className="event-name font-weight-500 font-md">
-                  Event Name:{" "}
-                  <span className="font-weight-600">{data.name}</span>
-                </div>
-              )}
-              {data.description && (
-                <div className="event-des m-b-4 font-weight-500 font-md">
-                  Event Descriptions:{" "}
-                  <span className="font-weight-600">{data.description}</span>
-                </div>
-              )}
-              {/* {data.state === "approved" ? (
-              <FontAwesomeIcon title={data.state} icon={faCircleCheck} />
-            ) : data.state === "rejected" ? (
-              <FontAwesomeIcon title={data.state} icon={faCircleXmark} />
-            ) : data.state === "pending" ? (
-              <FontAwesomeIcon title={data.state} icon={faCircle} />
-            ) : (
-              <FontAwesomeIcon title={data.state} icon={faHourglass} />
-            )} */}
-              <div className="button-container">
-                <Button
-                  variant="contained"
-                  disabled={
-                    data.state === "pending" || data.state === "approved"
-                  }
-                  onClick={
-                    data.state === "rejected" || data.state === "notSubmitted"
-                      ? () => handlePopup(data)
-                      : undefined
-                  }
-                >
-                  {data.state === "approved"
-                    ? "Approved"
-                    : data.state === "rejected"
-                    ? "Try again"
-                    : data.state === "pending"
-                    ? "Submitted"
-                    : "Enter Event Winners Data"}
-                </Button>
+      {loading ? (
+        <Loader />
+      ) : (
+        <>
+          <div className="top-content flex-row-bet">
+            <h1 className="font-lg font-weight-600">Event Submits</h1>
+            <div className="searchbar flex-row-bet g-3">
+              <div className="searc">
+                <Search>
+                  <SearchIconWrapper>
+                    <SearchIcon />
+                  </SearchIconWrapper>
+                  <StyledInputBase
+                    color="primary"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search…"
+                    inputProps={{ "aria-label": "search" }}
+                  />
+                </Search>
               </div>
-            </div>{" "}
-          </div>
-        ))}
-      </div>
-      {isPopUp && (
-        <PopUp closePopup={closePopup}>
-          {selectedEvent ? (
-            <>
-              <h2>{selectedEvent.name}</h2>
-              <form onSubmit={handleSubmit} className="p-t-3">
-                {selectedEvent.places &&
-                  selectedEvent.places.map((place, index) => (
-                    <div
-                      className="m-t-4 score__submit flex-row-aro position-relative"
-                      key={index}
-                    >
-                      <TextField
-                        type="number"
-                        label={`${place.place} Place`}
-                        placeholder="Admission Number"
-                        value={admissionNumbers[index]?.inputAdmission || ""}
-                        onChange={(e) =>
-                          handleInputChange(index, e.target.value, place.place)
-                        }
-                        error={error.find((err) => err.place === place.place)}
+              <div className="filter w-50">
+                <Autocomplete
+                  style={{ minWidth: "200px", width: "100%" }}
+                  multiple
+                  id="checkboxes-tags-demo"
+                  options={allStates}
+                  disableCloseOnSelect
+                  value={selectedStates}
+                  onChange={(event, newValue) => setSelectedStates(newValue)}
+                  getOptionLabel={(option) => option}
+                  renderOption={(props, option, { selected }) => (
+                    <li {...props}>
+                      <Checkbox
+                        icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+                        checkedIcon={<CheckBoxIcon fontSize="small" />}
+                        style={{ marginRight: 8 }}
+                        checked={selected}
                       />
-
-                      {error.find((err) => err.place === place.place) ? (
-                        <span
-                          title={
-                            error.find((err) => err.place === place.place)
-                              .message
-                          }
-                          className="position-absolute"
-                          style={{ right: 0 }}
-                        >
-                          <FontAwesomeIcon icon={faCircleExclamation} />
-                        </span>
-                      ) : (
-                        ""
-                      )}
-                    </div>
-                  ))}
-
-                <div className="buttons flex-row-eve g-3 m-4">
-                  <Button type="submit" btnType="info" variant="contained">
-                    submit
-                  </Button>
-                </div>
-              </form>
-            </>
-          ) : submitedEvent ? (
-            <>
-              <div className="submitted_content">
-                <h2 className="m-b-4">{submitedEvent.name}</h2>
-                <table>
-                  <tbody>
-                    <tr>
-                      <th>Place</th>
-                      <th>Score</th>
-                      <th>Winner Name</th>
-                      <th>Admision No</th>
-                      <th>Winner House</th>
-                    </tr>
-                    {submitedEvent.places &&
-                      submitedEvent.places.map((place, placeIndex) => (
-                        <tr key={placeIndex} className="submitted__places">
-                          <td>{place.place}</td>
-                          <td>{place.minimumMarks}</td>
-                          <td>{place.name}</td>
-                          <td>{place.inputAdmission}</td>
-                          <td>{place.house}</td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-                <span>
-                  If you are not satisfied with these data? contact admin.
-                </span>
-                <div className="buttons flex-row-eve g-3 m-t-4">
-                  <Button variant="contained" onClick={closePopup}>
-                    Ok
-                  </Button>
-                </div>
+                      {option}
+                    </li>
+                  )}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Filter by State"
+                      placeholder="Select States"
+                    />
+                  )}
+                />
               </div>
-            </>
-          ) : (
-            "Undefined..."
+            </div>
+          </div>
+          <div className="events-to-submit flex-col g-5 m-t-4 content-grid-one">
+            {filteredEvents.map((data, index) => (
+              <div className={`event grid-common bg-main`} key={index}>
+                <div className="event-submit-content p-4 flex-col-center g-3">
+                  {data.name && (
+                    <div className="event-name font-weight-500 font-md">
+                      Event Name:{" "}
+                      <span className="font-weight-600">{data.name}</span>
+                    </div>
+                  )}
+                  {data.description && (
+                    <div className="event-des m-b-4 font-weight-500 font-md">
+                      Event Descriptions:{" "}
+                      <span className="font-weight-600">
+                        {data.description}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="button-container">
+                    <Button
+                      variant="contained"
+                      disabled={
+                        data.state === "pending" || data.state === "approved"
+                      }
+                      onClick={
+                        data.state === "rejected" ||
+                        data.state === "notSubmitted"
+                          ? () => handlePopup(data)
+                          : undefined
+                      }
+                    >
+                      {data.state === "approved"
+                        ? "Approved"
+                        : data.state === "rejected"
+                        ? "Try again"
+                        : data.state === "pending"
+                        ? "Submitted"
+                        : "Enter Event Winners Data"}
+                    </Button>
+                  </div>
+                </div>{" "}
+              </div>
+            ))}
+          </div>
+          {isPopUp && (
+            <PopUp closePopup={closePopup}>
+              {selectedEvent ? (
+                <>
+                  <h2>{selectedEvent.name}</h2>
+                  <form onSubmit={handleSubmit} className="p-t-3">
+                    {selectedEvent.places &&
+                      selectedEvent.places.map((place, index) => (
+                        <div
+                          className="m-t-4 score__submit flex-row-aro position-relative"
+                          key={index}
+                        >
+                          <TextField
+                            type="number"
+                            label={`${place.place} Place`}
+                            placeholder="Admission Number"
+                            value={
+                              admissionNumbers[index]?.inputAdmission || ""
+                            }
+                            onChange={(e) =>
+                              handleInputChange(
+                                index,
+                                e.target.value,
+                                place.place
+                              )
+                            }
+                            error={error.find(
+                              (err) => err.place === place.place
+                            )}
+                          />
+
+                          {error.find((err) => err.place === place.place) ? (
+                            <span
+                              title={
+                                error.find((err) => err.place === place.place)
+                                  .message
+                              }
+                              className="position-absolute"
+                              style={{ right: 0 }}
+                            >
+                              <FontAwesomeIcon icon={faCircleExclamation} />
+                            </span>
+                          ) : (
+                            ""
+                          )}
+                        </div>
+                      ))}
+
+                    <div className="buttons flex-row-eve g-3 m-4">
+                      <Button type="submit" btnType="info" variant="contained">
+                        {progress ? <CircularProgress size={25} /> : "submit"}
+                      </Button>
+                    </div>
+                  </form>
+                </>
+              ) : submitedEvent ? (
+                <>
+                  <div className="submitted_content">
+                    <h2 className="m-b-4">{submitedEvent.name}</h2>
+                    <table>
+                      <tbody>
+                        <tr>
+                          <th>Place</th>
+                          <th>Score</th>
+                          <th>Winner Name</th>
+                          <th>Admision No</th>
+                          <th>Winner House</th>
+                        </tr>
+                        {submitedEvent.places &&
+                          submitedEvent.places.map((place, placeIndex) => (
+                            <tr key={placeIndex} className="submitted__places">
+                              <td>{place.place}</td>
+                              <td>{place.minimumMarks}</td>
+                              <td>{place.name}</td>
+                              <td>{place.inputAdmission}</td>
+                              <td>{place.house}</td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                    <span>
+                      If you are not satisfied with these data? contact admin.
+                    </span>
+                    <div className="buttons flex-row-eve g-3 m-t-4">
+                      <Button variant="contained" onClick={closePopup}>
+                        Ok
+                      </Button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                "Undefined..."
+              )}
+            </PopUp>
           )}
-        </PopUp>
+        </>
       )}
     </div>
   );
