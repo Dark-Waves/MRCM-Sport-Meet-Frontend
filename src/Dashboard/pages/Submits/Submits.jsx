@@ -187,7 +187,7 @@ export default function Submits() {
     const errors = [];
     for (const place of admissionNumbers) {
       if (!place.inputAdmission) {
-        errors.push({ message: "Fill the input fields", place: place. });
+        errors.push({ message: "Fill the input fields", place: place.place });
       }
       continue;
     }
@@ -237,8 +237,8 @@ export default function Submits() {
   const filteredEvents =
     selectedStates.length > 0
       ? searchFilteredEvents.filter((event) =>
-          selectedStates.includes(event.state)
-        )
+        selectedStates.includes(event.state)
+      )
       : searchFilteredEvents;
 
   return (
@@ -323,7 +323,7 @@ export default function Submits() {
                       }
                       onClick={
                         data.state === "rejected" ||
-                        data.state === "notSubmitted"
+                          data.state === "notSubmitted"
                           ? () => handlePopup(data)
                           : undefined
                       }
@@ -331,10 +331,10 @@ export default function Submits() {
                       {data.state === "approved"
                         ? "Approved"
                         : data.state === "rejected"
-                        ? "Try again"
-                        : data.state === "pending"
-                        ? "Submitted"
-                        : "Enter Event Winners Data"}
+                          ? "Try again"
+                          : data.state === "pending"
+                            ? "Submitted"
+                            : "Enter Event Winners Data"}
                     </Button>
                   </div>
                 </div>{" "}
