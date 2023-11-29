@@ -6,9 +6,12 @@ import { useEffect, useState } from "react";
 import { config } from "../../utils/config";
 import axios from "axios";
 import Cookies from "js-cookie";
+import Loader from "../../../Components/Loader/Loader";
 
 export default function Members() {
   const [allMembersData, setAllMembersData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const getData = async () => {
       try {
@@ -22,30 +25,39 @@ export default function Members() {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
       }
     };
     getData();
   }, []);
-console.log(allMembersData)
+  console.log(allMembersData);
   return (
     <div className="Members main-content-holder">
-      <Routes>
-        <Route
-          index
-          path="/"
-          element={<Overview allMembersData={allMembersData} />}
-        />
-        <Route
-          path="Edit"
-          element={
-            <EditMembers
-              allMembersData={allMembersData}
-              setAllMembersData={setAllMembersData}
-            />
-          }
-        />
-        <Route path="Add" element={<AddMembers setAllMembersData={setAllMembersData}/>} />
-      </Routes>
+      {loading ? (
+        <Loader />
+      ) : (
+        <Routes>
+          <Route
+            index
+            path="/"
+            element={<Overview allMembersData={allMembersData} />}
+          />
+          <Route
+            path="Edit"
+            element={
+              <EditMembers
+                allMembersData={allMembersData}
+                setAllMembersData={setAllMembersData}
+              />
+            }
+          />
+          <Route
+            path="Add"
+            element={<AddMembers setAllMembersData={setAllMembersData} />}
+          />
+        </Routes>
+      )}{" "}
     </div>
   );
 }

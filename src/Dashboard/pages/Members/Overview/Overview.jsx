@@ -6,7 +6,7 @@ export default function Overview({ allMembersData }) {
 
   useEffect(() => {
       const formattedRows = allMembersData.map((member) => ({
-        id: member.admissionID || "", // You can choose your unique identifier
+        id: member.AdmissionID || "", // You can choose your unique identifier
         Name: member.Name || "",
         Grade: parseInt(member.Grade) || "",
         House: member.House || "",

@@ -22,6 +22,7 @@ import {
 } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
+import Loader from "../../../../Components/Loader/Loader";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -45,7 +46,8 @@ export default function AddMembers({ setAllMembersData }) {
   const [createNew, setCreateNew] = useState(false);
   const [inProgress, setInProgress] = useState(false);
   const [houses, setHouses] = useState([]);
-  console.log(membersData);
+  const [loading, setLoading] = useState(true);
+
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -62,8 +64,7 @@ export default function AddMembers({ setAllMembersData }) {
               foundKey !== undefined || key.toLowerCase() === "AdmissionID"
             );
           });
-  
-  
+
           if (!hasRequiredKeys) {
             enqueueSnackbar(
               "Import a valid data format (Name, Grade, House, AdmissionID)",
@@ -71,19 +72,30 @@ export default function AddMembers({ setAllMembersData }) {
             );
             return;
           }
-          const transformedData = parsedData.data.map((entry) => {
-            const transformedEntry = {};
-            for (const key in entry) {
-              if (key === 'name') newKey = 'Name'; // Convert 'Name' to 'name'
-              else if (key === 'grade') newKey = 'Grade'; // Convert 'Grade' to 'grade'
-              else if (key === 'house') newKey = 'House'; // Convert 'House' to 'house'
-              else if (key === 'admissionid') newKey = 'AdmissionID'; // Preserve 'AdmissionID' as is
-              transformedEntry[newKey] = entry[key];
-            }
-            return transformedEntry;
-          }).filter((obj) => Object.values(obj).some(val => val !== '' && val !== null)); // Filter out objects with at least one non-empty value for any key
-
-          setMembersData(parsedData.data);
+          const transformedData = parsedData.data
+            .map((entry) => {
+              const transformedEntry = {};
+              let newKey = "";
+              for (const key in entry) {
+                if (key === "name") newKey = "Name"; // Convert 'Name' to 'name'
+                else if (key === "grade")
+                  newKey = "Grade"; // Convert 'Grade' to 'grade'
+                else if (key === "house")
+                  newKey = "House"; // Convert 'House' to 'house'
+                else if (
+                  key === "admissionid" ||
+                  key === "admissionID" ||
+                  key === "admissionId"
+                )
+                  newKey = "AdmissionID"; // Preserve 'AdmissionID' as is
+                transformedEntry[newKey] = entry[key];
+              }
+              return transformedEntry;
+            })
+            .filter((obj) =>
+              Object.values(obj).some((val) => val !== "" && val !== null)
+            ); // Filter out objects with at least one non-empty value for any key
+          setMembersData(transformedData);
         },
         error: (err) => {
           console.error(err);
@@ -127,6 +139,7 @@ export default function AddMembers({ setAllMembersData }) {
         setInProgress(false);
         return;
       }
+      console.log(membersData)
       const token = Cookies.get("token");
       const response = await axios.put(
         `${config.APIURI}/api/v1/members/add`,
@@ -135,6 +148,7 @@ export default function AddMembers({ setAllMembersData }) {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+      console.log(response)
       if (response.data) {
         setInProgress(false);
       }
@@ -188,10 +202,13 @@ export default function AddMembers({ setAllMembersData }) {
     setEditIndex(null);
   };
 
-  const handleInputChanges = (e, index) => {
-    const { id, value } = e.target;
+  const handleInputChanges = (e, index, id) => {
+    const { value } = e.target;
+    console.log(id);
+    console.log(value);
     const updatedMembersData = [...membersData];
     updatedMembersData[index][id] = value;
+    console.log(updatedMembersData);
     setMembersData(updatedMembersData);
   };
 
@@ -206,272 +223,292 @@ export default function AddMembers({ setAllMembersData }) {
     setNewMember({});
   };
 
-  const fetchHouses = async () => {
-    try {
-      const response = await axios.get(`${config.APIURI}/api/v1/houses`);
-      if (response.data && response.data.HouseData) {
-        setHouses(response.data.HouseData); // Set fetched options
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
   useEffect(() => {
+    const fetchHouses = async () => {
+      try {
+        const response = await axios.get(`${config.APIURI}/api/v1/houses`);
+        if (response.data && response.data.HouseData) {
+          setHouses(response.data.HouseData); // Set fetched options
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchHouses(); // Fetch data when Autocomplete is opened
   }, []);
   return (
     <div className="member__add">
-      <div className="member-add-top m-4">
-        <Button2
-          component="label"
-          variant="contained"
-          startIcon={<CloudUploadIcon />}
-          color="primary"
-        >
-          Upload file
-          <VisuallyHiddenInput
-            type="file"
-            accept=".csv"
-            onChange={handleFileUpload}
-          />
-        </Button2>
-
-        <div className="addButtons flex-row-center g-4">
-          <Button variant="outlined" onClick={() => setCreateNew(true)}>
-            Create New
-          </Button>
-          <Button
-            variant="contained"
-            disabled={!membersData.length || inProgress}
-            onClick={handleSubmit}
-          >
-            {inProgress ? <CircularProgress size={25} /> : "Submit"}
-          </Button>
-        </div>
-      </div>
-      {membersData.length || createNew ? (
+      {loading ? (
+        <Loader />
+      ) : (
         <>
-          {createNew && (
-            <div>
-              <form
-                onSubmit={addCreateNew}
-                className="content grid-common m-4 flex-col"
-              >
-                <div className="inputs w-full p-4 g-3">
-                  <TextField
-                    type="text"
-                    label="AdmissionID"
-                    onChange={(e) =>
-                      setNewMember({
-                        ...newMember,
-                        AdmissionID: e.target.value,
-                      })
-                    }
-                    required
-                  />
-                  <TextField
-                    type="text"
-                    label="Name"
-                    onChange={(e) =>
-                      setNewMember({ ...newMember, Name: e.target.value })
-                    }
-                    required
-                  />
-                  <TextField
-                    type="number"
-                    label="Grade"
-                    onChange={(e) =>
-                      setNewMember({ ...newMember, Grade: e.target.value })
-                    }
-                    required
-                  />
+          <div className="member-add-top m-4">
+            <Button2
+              component="label"
+              variant="contained"
+              startIcon={<CloudUploadIcon />}
+              color="primary"
+            >
+              Upload file
+              <VisuallyHiddenInput
+                type="file"
+                accept=".csv"
+                onChange={handleFileUpload}
+              />
+            </Button2>
 
-                  <FormControl fullWidth>
-                    <InputLabel id="House-select-label">House</InputLabel>
-                    <Select
-                      labelId="House-select-label"
-                      // value={age}
-                      id="House-select"
-                      required
-                      label="House"
-                      onChange={(e) =>
-                        setNewMember({ ...newMember, House: e.target.value })
-                      }
-                    >
-                      {houses.map((House, index) => (
-                        <MenuItem key={index} value={House.Name}>
-                          {House.Name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+            <div className="addButtons flex-row-center g-4">
+              <Button variant="outlined" onClick={() => setCreateNew(true)}>
+                Create New
+              </Button>
+              <Button
+                variant="contained"
+                disabled={!membersData.length || inProgress}
+                onClick={handleSubmit}
+              >
+                {inProgress ? <CircularProgress size={25} /> : "Submit"}
+              </Button>
+            </div>
+          </div>
+          {membersData.length || createNew ? (
+            <>
+              {createNew && (
+                <div>
+                  <form
+                    onSubmit={addCreateNew}
+                    className="content grid-common m-4 flex-col"
+                  >
+                    <div className="inputs w-full p-4 g-3">
+                      <TextField
+                        type="text"
+                        label="AdmissionID"
+                        onChange={(e) =>
+                          setNewMember({
+                            ...newMember,
+                            AdmissionID: e.target.value,
+                          })
+                        }
+                        required
+                      />
+                      <TextField
+                        type="text"
+                        label="Name"
+                        onChange={(e) =>
+                          setNewMember({ ...newMember, Name: e.target.value })
+                        }
+                        required
+                      />
+                      <TextField
+                        type="number"
+                        label="Grade"
+                        onChange={(e) =>
+                          setNewMember({ ...newMember, Grade: e.target.value })
+                        }
+                        required
+                      />
+
+                      <FormControl fullWidth>
+                        <InputLabel id="House-select-label">House</InputLabel>
+                        <Select
+                          labelId="House-select-label"
+                          // value={age}
+                          id="House"
+                          required
+                          label="House"
+                          onChange={(e) =>
+                            setNewMember({
+                              ...newMember,
+                              House: e.target.value,
+                            })
+                          }
+                        >
+                          {houses.map((House, index) => (
+                            <MenuItem key={index} value={House.Name}>
+                              {House.Name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </div>
+                    <div className="buttons flex-row-center g-4">
+                      <Button type="submit" variant="contained">
+                        OK
+                      </Button>
+                      <Button btnType="primary" onClick={clearCreateNew}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </form>
                 </div>
-                <div className="buttons flex-row-center g-4">
-                  <Button type="submit" variant="contained">
-                    OK
-                  </Button>
-                  <Button btnType="primary" onClick={clearCreateNew}>
-                    Cancel
-                  </Button>
+              )}
+              {membersData.map((member, index) => (
+                <div className="div" key={index}>
+                  <form
+                    onSubmit={handleOk}
+                    className="content grid-common m-4 flex-col position-relative"
+                  >
+                    <div className="user-content">
+                      <div className="data-content inputs w-full p-4 g-3">
+                        {editIndex === index ? (
+                          <>
+                            <TextField
+                              id="AdmissionID"
+                              type="text"
+                              label="AdmissionID"
+                              value={member.AdmissionID || ""}
+                              onChange={(e) =>
+                                handleInputChanges(e, index, "AdmissionID")
+                              }
+                              required
+                            />
+                            <TextField
+                              id="Name"
+                              type="text"
+                              label="Name"
+                              value={member.Name || ""}
+                              onChange={(e) =>
+                                handleInputChanges(e, index, "Name")
+                              }
+                              required
+                            />
+                            <TextField
+                              id="Grade"
+                              type="number"
+                              label="Grade"
+                              value={member.Grade || ""}
+                              onChange={(e) =>
+                                handleInputChanges(e, index, "Grade")
+                              }
+                              required
+                            />
+
+                            <FormControl fullWidth>
+                              <InputLabel id="House-select-label">
+                                House
+                              </InputLabel>
+                              <Select
+                                itemID="House"
+                                labelId="House-select-label"
+                                value={member.House || ""}
+                                id="House"
+                                label="House"
+                                onChange={(e) =>
+                                  handleInputChanges(e, index, "House")
+                                }
+                              >
+                                {houses.map((House, index) => (
+                                  <MenuItem key={index} value={House.Name}>
+                                    {House.Name}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
+                          </>
+                        ) : (
+                          <>
+                            <span
+                              onClick={() => handleEdit(index)}
+                              className="font-md p-3 bg-primary rounded-md font-weight-500"
+                            >
+                              AdmissionID: {member.AdmissionID}
+                            </span>
+                            <span
+                              onClick={() => handleEdit(index)}
+                              className="font-md p-3 bg-primary rounded-md font-weight-500"
+                            >
+                              Name: {member.Name}
+                            </span>
+                            <span
+                              onClick={() => handleEdit(index)}
+                              className="font-md p-3 bg-primary rounded-md font-weight-500"
+                            >
+                              Grade: {member.Grade}
+                            </span>
+                            <span
+                              onClick={() => handleEdit(index)}
+                              className="font-md p-3 bg-primary rounded-md font-weight-500"
+                            >
+                              House: {member.House}
+                            </span>
+                          </>
+                        )}
+
+                        {submitErrors.length > 0 &&
+                          submitErrors.find(
+                            (value) => value.data === member.AdmissionID
+                          ) && (
+                            <>
+                              <Alert severity="error">
+                                {
+                                  submitErrors.find(
+                                    (value) => value.data === member.AdmissionID
+                                  )?.message
+                                }
+                              </Alert>
+                            </>
+                          )}
+
+                        {emptyErrors[index]?.error && (
+                          <Alert severity="warning">
+                            {emptyErrors[index]?.message}
+                          </Alert>
+                        )}
+                      </div>
+                    </div>
+                    <div className="buttons flex-row-center g-4">
+                      <>
+                        <Button
+                          btnType="error"
+                          variant="outlined"
+                          onClick={() => handleRemove(index)}
+                          className="bg-scarlet-1 rounded-md font-weight-600 font-md"
+                        >
+                          Remove
+                        </Button>
+                        {editIndex === index ? (
+                          <>
+                            <Button
+                              type="submit"
+                              variant="contained"
+                              // onClick={handleOk}
+                              className="bg-primary rounded-md font-weight-600 font-md"
+                            >
+                              OK
+                            </Button>
+                            <Button
+                              btnType="primary"
+                              variant="text"
+                              onClick={handleCancel}
+                              className="bg-secondary rounded-md font-weight-600 font-md"
+                            >
+                              Cancel
+                            </Button>
+                          </>
+                        ) : (
+                          <Button
+                            variant="contained"
+                            onClick={() => handleEdit(index)}
+                            className="bg-primary rounded-md font-weight-600 font-md"
+                          >
+                            Edit
+                          </Button>
+                        )}
+                      </>
+                    </div>
+                  </form>
                 </div>
-              </form>
+              ))}
+            </>
+          ) : (
+            <div className="empty-member-add">
+              <h1 className="font-lg font-weight-700 text-center m-t-8">
+                You can Upload a CSV file or add members manualy.
+              </h1>
             </div>
           )}
-          {membersData.map((member, index) => (
-            <div className="div" key={index}>
-              <form
-                onSubmit={handleOk}
-                className="content grid-common m-4 flex-col position-relative"
-              >
-                <div className="user-content">
-                  <div className="data-content inputs w-full p-4 g-3">
-                    {editIndex === index ? (
-                      <>
-                        <TextField
-                          id="AdmissionID"
-                          type="text"
-                          label="AdmissionID"
-                          value={member.AdmissionID || ""}
-                          onChange={(e) => handleInputChanges(e, index)}
-                          required
-                        />
-                        <TextField
-                          id="Name"
-                          type="text"
-                          label="Name"
-                          value={member.Name || ""}
-                          onChange={(e) => handleInputChanges(e, index)}
-                          required
-                        />
-                        <TextField
-                          id="Grade"
-                          type="text"
-                          label="Grade"
-                          value={member.Grade || ""}
-                          onChange={(e) => handleInputChanges(e, index)}
-                          required
-                        />
-
-                        <FormControl fullWidth>
-                          <InputLabel id="House-select-label">House</InputLabel>
-                          <Select
-                            labelId="House-select-label"
-                            value={member.House || ""}
-                            id="House-select"
-                            required
-                            label="House"
-                            onChange={(e) => handleInputChanges(e, index)}
-                          >
-                            {houses.map((House, index) => (
-                              <MenuItem key={index} value={House.Name}>
-                                {House.Name}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </>
-                    ) : (
-                      <>
-                        <span
-                          onClick={() => handleEdit(index)}
-                          className="font-md p-3 bg-primary rounded-md font-weight-500"
-                        >
-                          AdmissionID: {member.AdmissionID}
-                        </span>
-                        <span
-                          onClick={() => handleEdit(index)}
-                          className="font-md p-3 bg-primary rounded-md font-weight-500"
-                        >
-                          Name: {member.Name}
-                        </span>
-                        <span
-                          onClick={() => handleEdit(index)}
-                          className="font-md p-3 bg-primary rounded-md font-weight-500"
-                        >
-                          Grade: {member.Grade}
-                        </span>
-                        <span
-                          onClick={() => handleEdit(index)}
-                          className="font-md p-3 bg-primary rounded-md font-weight-500"
-                        >
-                          House: {member.House}
-                        </span>
-                      </>
-                    )}
-
-                    {submitErrors.length > 0 &&
-                      submitErrors.find(
-                        (value) => value.data === member.AdmissionID
-                      ) && (
-                        <>
-                          <Alert severity="error">
-                            {
-                              submitErrors.find(
-                                (value) => value.data === member.AdmissionID
-                              )?.message
-                            }
-                          </Alert>
-                        </>
-                      )}
-
-                    {emptyErrors[index]?.error && (
-                      <Alert severity="warning">
-                        {emptyErrors[index]?.message}
-                      </Alert>
-                    )}
-                  </div>
-                </div>
-                <div className="buttons flex-row-center g-4">
-                  <>
-                    <Button
-                      btnType="error"
-                      variant="outlined"
-                      onClick={() => handleRemove(index)}
-                      className="bg-scarlet-1 rounded-md font-weight-600 font-md"
-                    >
-                      Remove
-                    </Button>
-                    {editIndex === index ? (
-                      <>
-                        <Button
-                          type="submit"
-                          variant="contained"
-                          // onClick={handleOk}
-                          className="bg-primary rounded-md font-weight-600 font-md"
-                        >
-                          OK
-                        </Button>
-                        <Button
-                          btnType="primary"
-                          variant="text"
-                          onClick={handleCancel}
-                          className="bg-secondary rounded-md font-weight-600 font-md"
-                        >
-                          Cancel
-                        </Button>
-                      </>
-                    ) : (
-                      <Button
-                        variant="contained"
-                        onClick={() => handleEdit(index)}
-                        className="bg-primary rounded-md font-weight-600 font-md"
-                      >
-                        Edit
-                      </Button>
-                    )}
-                  </>
-                </div>
-              </form>
-            </div>
-          ))}
         </>
-      ) : (
-        <div className="empty-member-add">
-          <h1 className="font-lg font-weight-700 text-center m-t-8">
-            You can Upload a CSV file or add members manualy.
-          </h1>
-        </div>
       )}
     </div>
   );

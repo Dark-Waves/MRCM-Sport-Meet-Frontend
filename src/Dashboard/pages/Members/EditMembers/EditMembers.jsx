@@ -51,13 +51,13 @@ export default function EditMembers({ allMembersData, setAllMembersData }) {
         !updatedMemberData.House
       ) {
         return setEmptyErrors({
-          admissionID: updatedMemberData.admissionID,
+          AdmissionID: updatedMemberData.AdmissionID,
           message: "Empty fields. Please fill in all required fields.",
         });
       }
       const token = Cookies.get("token");
       const response = await axios.patch(
-        `${config.APIURI}/api/v1/member/${updatedMemberData.admissionID}`,
+        `${config.APIURI}/api/v1/member/${updatedMemberData.AdmissionID}`,
         { updatedMemberData },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -66,7 +66,7 @@ export default function EditMembers({ allMembersData, setAllMembersData }) {
       console.log(response.data);
       if (response.data.message === "ok") {
         const updatedMembers = allMembersData.map((member) =>
-          member.admissionID === updatedMemberData.admissionID
+          member.AdmissionID === updatedMemberData.AdmissionID
             ? updatedMemberData
             : member
         );
@@ -115,7 +115,7 @@ export default function EditMembers({ allMembersData, setAllMembersData }) {
                     {editIndex === index ? (
                       <>
                         <span className="font-md p-3 bg-primary rounded-md font-weight-500">
-                          AdmissionID: {member.admissionID}
+                          AdmissionID: {member.AdmissionID}
                         </span>
                         <TextField
                           id="name"
@@ -167,7 +167,7 @@ export default function EditMembers({ allMembersData, setAllMembersData }) {
                           onClick={() => handleEdit(index)}
                           className="font-md p-3 bg-primary rounded-md font-weight-500"
                         >
-                          AdmissionID: {member.admissionID}
+                          AdmissionID: {member.AdmissionID}
                         </span>
                         <span
                           onClick={() => handleEdit(index)}
@@ -190,16 +190,16 @@ export default function EditMembers({ allMembersData, setAllMembersData }) {
                       </>
                     )}
 
-                    {submitErrors.admissionID === member.admissionID && (
+                    {submitErrors.AdmissionID === member.AdmissionID && (
                       <>
                         <Alert severity="error">
-                          {submitErrors.admissionID === member.admissionID &&
+                          {submitErrors.AdmissionID === member.AdmissionID &&
                             submitErrors.message}
                         </Alert>
                       </>
                     )}
 
-                    {emptyErrors.admissionID === member.admissionID && (
+                    {emptyErrors.AdmissionID === member.AdmissionID && (
                       <Alert severity="warning">{emptyErrors.message}</Alert>
                     )}
                   </div>
@@ -209,7 +209,7 @@ export default function EditMembers({ allMembersData, setAllMembersData }) {
                     <Button
                       btnType="error"
                       variant="outlined"
-                      onClick={() => handleRemoveMember(member.admissionID)}
+                      onClick={() => handleRemoveMember(member.AdmissionID)}
                       className="bg-scarlet-1 rounded-md font-weight-600 font-md"
                     >
                       Remove

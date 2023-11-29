@@ -12,7 +12,6 @@ const System = () => {
     socket.on("server-message", (args) => {
       if (!(args.type === "systemInfo")) return;
       setSystemData(args.payload);
-      console.log(systemData)
     });
   }, [socket]);
 

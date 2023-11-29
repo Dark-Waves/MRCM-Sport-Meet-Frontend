@@ -16,23 +16,23 @@ import Houses from "../Houses/Houses";
 
 export default function Main() {
   // Get data from Api from startup
-  const [houseData, setHouseData] = useState([]);
-  const { socket } = useContext(HomeContext);
+  // const [houseData, setHouseData] = useState([]);
+  const { socket, houseData, dispatch } = useContext(HomeContext);
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const response = await axios.get(`${config.APIURI}/api/v1/houses`);
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     try {
+  //       const response = await axios.get(`${config.APIURI}/api/v1/houses`);
 
-        if (response.data.message === "ok") {
-          setHouseData(response.data.HouseData);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getData();
-  }, []);
+  //       if (response.data.message === "ok") {
+  //         setHouseData(response.data.HouseData);
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   getData();
+  // }, []);
 
   useEffect(() => {
     socket.on("server-message", (data) => {
@@ -53,11 +53,13 @@ export default function Main() {
             return updatedHouse; // If not found, keep the original object
           }
         );
-
-        setHouseData(updatedHouseData);
+        dispatch({
+          type: "setHouseData",
+          payload: updatedHouseData,
+        });
       }
     });
-  }, [socket, houseData]); // Include houseData as a dependency
+  }, [socket, houseData, dispatch]); // Include houseData as a dependency
 
   return (
     <div className="home-content p-5">

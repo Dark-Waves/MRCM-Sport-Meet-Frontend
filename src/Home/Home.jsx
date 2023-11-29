@@ -20,6 +20,7 @@ const initialValue = {
   publicDataStatus: "loading",
   socket: null,
   soketStatus: "loading",
+  houseData: null,
   // loading , error ,ready
 };
 const reducer = function (state, action) {
@@ -36,6 +37,9 @@ const reducer = function (state, action) {
     case "setSoketStatus": {
       return { ...state, soketStatus: action.payload };
     }
+    case "setHouseData": {
+      return { ...state, houseData: action.payload };
+    }
     case "setWs": {
       return { ...state, socket: action.payload };
     }
@@ -46,7 +50,14 @@ const reducer = function (state, action) {
 
 export default function Home() {
   const [state, dispatch] = useReducer(reducer, initialValue);
-  const { status, publicDataStatus, publicData, socket, soketStatus } = state;
+  const {
+    status,
+    publicDataStatus,
+    publicData,
+    socket,
+    soketStatus,
+    houseData,
+  } = state;
   /**Client Updates Checking */
 
   useEffect(function () {
@@ -57,9 +68,10 @@ export default function Home() {
     function () {
       if (!publicData) return;
       if (!socket) return;
+      if (!soketStatus) return;
       dispatch({ type: "setStatus", payload: "ready" });
     },
-    [publicData, socket]
+    [publicData, socket, soketStatus]
   );
 
   useEffect(function () {
@@ -83,11 +95,19 @@ export default function Home() {
       const getData = async function () {
         if (publicDataStatus !== "loading") return;
         try {
-          const { data } = await axios.get(
-            `${config.APIURI}/api/v1/public/data`
-          );
-          dispatch({ type: "setPublicData", payload: data });
-          dispatch({ type: "setPublicDataStatus", payload: "ready" });
+          const response = await axios.get(`${config.APIURI}/api/v1/houses`);
+
+          if (response.data.message === "ok") {
+            dispatch({
+              type: "setPublicData",
+              payload: "success",
+            });
+            dispatch({
+              type: "setHouseData",
+              payload: response.data.HouseData,
+            });
+            dispatch({ type: "setPublicDataStatus", payload: "ready" });
+          }
         } catch (error) {
           dispatch({ type: "setPublicDataStatus", payload: "error" });
         }
@@ -106,7 +126,7 @@ export default function Home() {
       ) : (
         status === "ready" && (
           <>
-            <HomeContext.Provider value={{ ...state, dispatch }}>
+            <HomeContext.Provider value={{ ...state, dispatch, houseData }}>
               <Header />
               <Routes>
                 <Route path="/" element={<Main />} />

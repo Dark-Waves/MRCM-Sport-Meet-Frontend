@@ -6,9 +6,11 @@ import Controller from "./Controller/Controller";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { config } from "../../utils/config";
+import Loader from "../../../Components/Loader/Loader";
 
 export default function Events() {
   const [allEvents, setAllEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getEventData = async () => {
@@ -20,6 +22,8 @@ export default function Events() {
         setAllEvents(data.events);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -28,18 +32,26 @@ export default function Events() {
 
   return (
     <div className="events main-content-holder">
-      <div>
-        <Routes>
-          <Route path="/" index element={<Overview allEvents={allEvents} />} />
-          <Route
-            path="/Manager"
-            element={
-              <Manager allEvents={allEvents} setAllEvents={setAllEvents} />
-            }
-          />
-          <Route path="/Controller" element={<Controller />} />
-        </Routes>
-      </div>
+      {loading ? (
+        <Loader />
+      ) : (
+        <div>
+          <Routes>
+            <Route
+              path="/"
+              index
+              element={<Overview allEvents={allEvents} />}
+            />
+            <Route
+              path="/Manager"
+              element={
+                <Manager allEvents={allEvents} setAllEvents={setAllEvents} />
+              }
+            />
+            <Route path="/Controller" element={<Controller />} />
+          </Routes>
+        </div>
+      )}
     </div>
   );
 }

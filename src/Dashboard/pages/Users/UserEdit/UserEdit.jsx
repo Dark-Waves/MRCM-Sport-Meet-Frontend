@@ -5,23 +5,16 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import DashboardContext from "../../../../context/DashboardContext";
 import { config } from "../../../../../config";
+import Loader from "../../../../Components/Loader/Loader";
 
 export default function UserEdit() {
   // Sample user data
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState([]);
-  const { status } = useContext(DashboardContext);
 
   useEffect(() => {
-    const token = Cookies.get("token");
-
-    if (!(status === "ready") || !token) {
-      navigate("/auth");
-      return;
-    }
-
     const getUserData = async () => {
+      const token = Cookies.get("token");
       setIsLoading(true);
       try {
         const response = await axios.get(`${config.APIURI}/api/v1/role`, {
@@ -36,28 +29,34 @@ export default function UserEdit() {
     };
 
     getUserData();
-  }, [navigate, status]);
+  }, []);
 
   return (
     <div className="view-user-activity grid-common main-content-holder">
-      <h2>User UserEdit</h2>
-      <ul className="user-list">
-        {users.map((user) => (
-          <li key={user._id}>
-            <div className="user-card">
-              <div className="user-info">
-                <h3>{user.name}</h3>
-                <p>{user.userName}</p>
-              </div>
-              <div className="role-editor">
-                {/* {currentUser.editAcessRoles.map((data,index) => {
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <>
+          <h2>User UserEdit</h2>
+          <ul className="user-list">
+            {users.map((user) => (
+              <li key={user._id}>
+                <div className="user-card">
+                  <div className="user-info">
+                    <h3>{user.name}</h3>
+                    <p>{user.userName}</p>
+                  </div>
+                  <div className="role-editor">
+                    {/* {currentUser.editAcessRoles.map((data,index) => {
                   <div className="role-btn" key={index}>{data.roleType}</div>
                 })} */}
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}{" "}
     </div>
   );
 }
