@@ -210,35 +210,39 @@ export default function Manager({ allEvents, setAllEvents }) {
           Create New Event
         </Button>
       </div>
-      <div className="grid-common">
-        <div className="grid-content flex-col">
-          <div className="grid-card-container">
-            {allEvents &&
-              allEvents.map((event, index) => (
-                <div className="grid-card flex-col-bet" key={index}>
-                  <div className="grid-card-content">
-                    <h3>{event.name}</h3>
-                    <p>{event.description}</p>
+      <div className="content-grid-one flex-col g-4 w-full">
+        {allEvents &&
+          allEvents.map((event, index) => (
+            <div className="grid-common" key={index}>
+              <div className="flex-col-center g-4 m-t-4">
+                {event.name && (
+                  <div className="event-name font-weight-500 font-md">
+                    <span className="font-weight-600">{event.name}</span>
                   </div>
-                  <div className="grid-card-actions g-4 flex-row">
-                    <Button
-                      variant="contained"
-                      onClick={() => openEditPopup(event)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      btnType="error"
-                      variant="outlined"
-                      onClick={() => handleDeleteEvent(event)}
-                    >
-                      Delete
-                    </Button>
+                )}
+                {event.description && (
+                  <div className="event-des m-b-4 font-weight-500 font-md">
+                    <span className="font-weight-600">{event.description}</span>
                   </div>
-                </div>
-              ))}
-          </div>
-        </div>
+                )}
+              </div>
+              <div className="g-4 flex-row-center">
+                <Button
+                  variant="contained"
+                  onClick={() => openEditPopup(event)}
+                >
+                  Edit
+                </Button>
+                <Button
+                  btnType="error"
+                  variant="outlined"
+                  onClick={() => handleDeleteEvent(event)}
+                >
+                  Delete
+                </Button>
+              </div>
+            </div>
+          ))}
       </div>
       {showPopup && (
         <PopUp closePopup={closePopup}>
@@ -293,7 +297,7 @@ export default function Manager({ allEvents, setAllEvents }) {
                       <TextField
                         label={getOrdinal(place.place)}
                         type="number"
-                        style={{width: "100%"}}
+                        style={{ width: "100%" }}
                         placeholder="Score"
                         value={place.minimumMarks}
                         onChange={(e) =>

@@ -79,17 +79,16 @@ const Broadcast = () => {
       ) : (
         <>
           <div className="top-actions-broadcast w-full g-5 flex-col">
-
             <div className="brodcast_send_msg flex-col-bet g-4 w-full">
-            <TextField
-              fullWidth
-              maxRows={4}
-              minRows={3}
-              label="Enter your broadcast message here"
-              value={messageContent}
-              onChange={(e) => setMessageContent(e.target.value)}
-              className="w-50"
-            />
+              <TextField
+                fullWidth
+                maxRows={4}
+                minRows={3}
+                label="Enter your broadcast message here"
+                value={messageContent}
+                onChange={(e) => setMessageContent(e.target.value)}
+                className="w-50"
+              />
               <ToggleButtonGroup
                 value={messageType}
                 exclusive

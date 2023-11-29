@@ -149,7 +149,7 @@ export default function Houses() {
         <Loader />
       ) : (
         <>
-          <div className="houses_add flex-row-center m-t-5 p-4">
+          <div className="houses_add flex-row m-t-5 p-4">
             <Button
               variant="outlined"
               className="m-4 p-4 "
@@ -191,7 +191,7 @@ export default function Houses() {
                       )}
                     />
                   </div>
-                  <div className="houses_submit_btn w-full">
+                  <div className="houses_submit_btn m-auto p-t-4">
                     <Button type="submit" variant="contained">
                       Create
                     </Button>

@@ -1,0 +1,14 @@
+.event-submits .top-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
+@media screen and (max-width: 700px) {
+  .event-submits .top-content {
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
+  }
+}

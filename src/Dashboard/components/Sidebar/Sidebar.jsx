@@ -1,16 +1,29 @@
 import { personsImgs } from "../../utils/images";
 import "./Sidebar.css";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom"; // Import useLocation
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DashboardContext from "../../../context/DashboardContext";
+import { useSnackbar } from "notistack";
 
 const Sidebar = () => {
-  const { sidebarOpen, navigationLinks } =
-    useContext(DashboardContext);
+  const { enqueueSnackbar } = useSnackbar();
+  const { socket } = useContext(DashboardContext);
+
+  const { sidebarOpen, navigationLinks } = useContext(DashboardContext);
   // Get the current location using useLocation
   const location = useLocation();
   console.log(location.pathname);
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.on("server-message", (message) => {
+      if (message.type === "message") {
+        console.log(message);
+        enqueueSnackbar(message.payload.content, { variant: "info" });
+      }
+    });
+  }, [socket, enqueueSnackbar]);
 
   const renderSubMenu = (subMenuItems) => {
     return (
