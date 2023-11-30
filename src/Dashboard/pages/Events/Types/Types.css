@@ -1,0 +1,14 @@
+.event_types__container .inputs {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(200px, 1fr)
+  ); /* Responsive columns */
+  gap: 20px; /* Gap between grid items */
+}
+.event_types__container .event__buttons {
+  max-width: 300px;
+}
+.event_types__container .create_event_type {
+  min-height: 206px;
+}

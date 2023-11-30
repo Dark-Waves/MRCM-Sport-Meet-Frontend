@@ -8,7 +8,14 @@ import PopUp from "../../../UI/PopUp/PopUp";
 import Button from "../../../UI/Button/Button";
 import Input from "../../../UI/Input/Input";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
-import { TextField } from "@mui/material";
+import {
+  Autocomplete,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
 
 export default function Manager({ allEvents, setAllEvents }) {
   const [showPopup, setShowPopup] = useState(false);
@@ -16,10 +23,27 @@ export default function Manager({ allEvents, setAllEvents }) {
   const [eventData, setEventData] = useState({
     name: "",
     description: "",
+    type: "",
     places: [],
-    // Add other fields as needed
   });
   const [submitErrors, setSubmitErrors] = useState({});
+  const [eventTypes, setEventTypes] = useState([]);
+  useEffect(() => {
+    const getEventTypes = async () => {
+      try {
+        let responce = await axios.get(`${config.APIURI}/api/v1/event-types`, {
+          headers: { Authorization: `Bearer ${Cookies.get("token")}` },
+        });
+        if (responce.data) {
+          console.log(responce.data);
+          setEventTypes(responce.data.eventsTypes);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getEventTypes();
+  }, []);
 
   const openEditPopup = (event) => {
     setSelectedEvent(event);
@@ -34,6 +58,7 @@ export default function Manager({ allEvents, setAllEvents }) {
     setEventData({
       name: "",
       description: "",
+      type: "",
       places: [],
     });
     setSubmitErrors({});
@@ -45,6 +70,7 @@ export default function Manager({ allEvents, setAllEvents }) {
     setEventData({
       name: "",
       description: "",
+      type: "",
       places: [],
     });
     setSubmitErrors({});
@@ -198,6 +224,11 @@ export default function Manager({ allEvents, setAllEvents }) {
         return number + "th";
     }
   };
+  const [age, setAge] = useState("");
+
+  const handleChange = (event) => {
+    setAge(event.target.value);
+  };
 
   return (
     <div className="event-manager">
@@ -218,6 +249,11 @@ export default function Manager({ allEvents, setAllEvents }) {
                 {event.name && (
                   <div className="event-name font-weight-500 font-md">
                     <span className="font-weight-600">{event.name}</span>
+                  </div>
+                )}
+                {event.type && (
+                  <div className="event-des m-b-4 font-weight-500 font-md">
+                    <span className="font-weight-600">{event.type}</span>
                   </div>
                 )}
                 {event.description && (
@@ -261,6 +297,50 @@ export default function Manager({ allEvents, setAllEvents }) {
               label="Enter Event Name"
               error={submitErrors.name}
             />
+            {/* {eventTypes.length > 0 && (
+              <FormControl fullWidth>
+                <InputLabel id="type-select-label">Type</InputLabel>
+                <Select
+                  labelId="type-select-label"
+                  id="eventTypes"
+                  value={eventData.type ? eventData.type._id : ""}
+                  label="Type"
+                  onChange={(e) => {
+                    const selectedType = eventTypes.find(
+                      (type) => type._id === e.target.value
+                    );
+                    setEventData({ ...eventData, type: selectedType });
+                  }}
+                >
+                  {eventTypes.map((type, index) => (
+                    <MenuItem key={index} value={type._id}>
+                      {type.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )} */}
+
+            <FormControl fullWidth>
+              <Select
+                itemID="House"
+                labelId="House-select-label"
+                // value={member.House || ""}
+                id="House"
+                label="House"
+                // onChange={(e) => handleInputChanges(e, index, "House")}
+              >
+                <MenuItem value="">Select House</MenuItem>{" "}
+                {/* Add a default empty option */}
+                {eventTypes.map((House, index) => (
+                  <MenuItem key={index} value={House.Name}>
+                    {House.Name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            {/* This is not working */}
 
             <TextField
               minRows={4}

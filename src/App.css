@@ -50,7 +50,7 @@
 body {
   font-family: var(--font-family-bai);
   color: var(--color-white);
-  /* background-color: var(--color-secondary); */
+  background-color: var(--color-secondary);
 }
 
  

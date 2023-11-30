@@ -1,6 +1,6 @@
 /* sidebar */
 .sidebar {
-  background-color: #cdc9c9 !important;
+  background: var(--color-primary);
   width: 260px;
   padding: 36px 20px;
   transition: var(--transition-default);

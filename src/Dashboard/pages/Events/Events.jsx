@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Manager from "./Manager/Manager";
 import { Route, Routes } from "react-router-dom";
 import Overview from "./Overview/Overview";
-import Controller from "./Controller/Controller";
+import Types from "./Types/Types";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { config } from "../../utils/config";
@@ -19,6 +19,7 @@ export default function Events() {
         const { data } = await axios.get(`${config.APIURI}/api/v1/events`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        console.log(data)
         setAllEvents(data.events);
       } catch (error) {
         console.log(error);
@@ -48,7 +49,7 @@ export default function Events() {
                 <Manager allEvents={allEvents} setAllEvents={setAllEvents} />
               }
             />
-            <Route path="/Controller" element={<Controller />} />
+            <Route path="/Types" element={<Types />} />
           </Routes>
         </div>
       )}

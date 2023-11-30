@@ -28,6 +28,7 @@
 
 
 header {
+  z-index: 111;
   background-color: #0000006e;
 }
 
