@@ -110,7 +110,7 @@ export default function Dashboard() {
     navigationLinks,
     navigationStatus,
   } = state;
-  const [{ authenticated }, dispatchAuth] = useAuth();
+  const [{ authenticated, status: authStatus }, dispatchAuth] = useAuth();
   const navigate = useNavigate();
   /**Client Updates Checking */
 
@@ -126,9 +126,9 @@ export default function Dashboard() {
 
   useEffect(
     function () {
-      if (authenticated === false) navigate("/auth");
+      if (authStatus === "error") navigate("/auth");
     },
-    [navigate, authenticated]
+    [navigate, authStatus]
   );
 
   useEffect(
@@ -191,7 +191,6 @@ export default function Dashboard() {
     },
     [socket]
   );
-
 
   useEffect(
     function () {

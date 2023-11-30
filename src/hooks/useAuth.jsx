@@ -33,18 +33,16 @@ export default function useAuth() {
         try {
           const token = Cookies.get("token");
           if (!token) {
-            dispatch({ type: "setAuthenticated", payload: false });
+            dispatch({ type: "setStatus", payload: "error" });
             return;
           }
 
-          const { data } = await axios.get(`${config.APIURI}/api/v1/user/@me`, {
+          await axios.get(`${config.APIURI}/api/v1/user/@me`, {
             headers: { Authorization: `Bearer ${token}` },
           });
 
           dispatch({ type: "setStatus", payload: "ready" });
-          if (data.error) {
-            dispatch({ type: "setAuthenticated", payload: false });
-          } else dispatch({ type: "setAuthenticated", payload: true });
+          dispatch({ type: "setAuthenticated", payload: true });
         } catch (error) {
           dispatch({ type: "setStatus", payload: "error" });
         }

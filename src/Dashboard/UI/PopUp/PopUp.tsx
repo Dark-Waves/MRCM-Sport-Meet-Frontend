@@ -8,7 +8,7 @@ interface PopUpProps {
 
 const PopUp: React.FC<PopUpProps> = ({ closePopup, children }) => {
   return (
-    <div className="popup">
+    <div className="popup" >
       <div className="popup-content">
         <span className="close-popup" onClick={closePopup}>
           &times;
