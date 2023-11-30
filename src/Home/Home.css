@@ -3,4 +3,10 @@
     max-width: 1256px;
     margin-left: auto;
     margin-right: auto;
+    color: white;
+    background: black;
+}
+
+body {
+    background: black;
 }

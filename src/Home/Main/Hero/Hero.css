@@ -3,42 +3,53 @@
   flex-direction: row;
   align-items: center;
 }
+
 .hero .left-content {
   width: 50%;
 }
+
 .hero .right-content {
   width: 50%;
 }
+
 @media (max-width: 850px) {
   .hero {
     display: flex;
     flex-direction: column-reverse;
     align-items: center;
   }
+
   .hero .left-content {
     margin-top: 2rem;
     width: 100%;
   }
+
   .hero .right-content {
     width: 100%;
   }
+
   .hero .left-content h1 {
     text-align: center;
     font-size: 41px;
   }
+
   .hero .hero-buttons {
     margin-top: 1rem;
     justify-content: space-evenly;
   }
+
   .hero .House__box {
     align-items: center !important;
   }
+
   .hero .House_Chart__Container {
     align-items: center !important;
   }
+
   .hero .House__Container {
     margin: 4rem 0;
   }
+
   .house-overview {
     grid-template-columns: repeat(4, 1fr) !important;
   }
@@ -48,6 +59,7 @@
   .hero .left-content h1 {
     font-size: 30px;
   }
+
   .house-overview {
     grid-template-columns: repeat(3, 1fr) !important;
   }
@@ -92,22 +104,38 @@
 
 .hero .House_Chart__Container {
   height: 100px;
-  justify-content: start;
+  justify-content: end;
   align-items: start;
 }
 
 .hero .House_Chart__Bar {
-  background: var(--main-color);
   width: 61px;
-  border-radius: 0px 0px 20px 20px;
+  border-radius: 20px 20px 0px 0px;
   transition: height 300ms ease;
 }
 
 .hero .House__box {
   align-items: start;
 }
+
 .house-overview {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-gap: 20px;
+}
+
+.hero .House_Chart__Bar.houseType-0 {
+  background: #ffff00;
+}
+
+.hero .House_Chart__Bar.houseType-1 {
+  background: #6600cc;
+}
+
+.hero .House_Chart__Bar.houseType-2 {
+  background: #009933;
+}
+
+.hero .House_Chart__Bar.houseType-3 {
+  background: #cc0000;
 }

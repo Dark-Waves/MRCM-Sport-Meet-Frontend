@@ -14,9 +14,18 @@ export default function Hero({ houseData }) {
     <div className="hero">
       <div className="left-content">
         <div className="house-overview m-b-4">
-          {houseData.map((data) => (
+          {houseData.map((data, index) => (
             <div className="House__Container w-full" key={data._id}>
-              <div className="House__box flex-col-center">
+              <div className="House_Chart__Container flex-col-center flex-start">
+                <div
+                  className={`House_Chart__Bar houseType-${index}`}
+                  style={{
+                    height: getScoreHeight(data.houseScore),
+                  }}
+                ></div>
+              </div>
+
+              <div className={`House__box flex-col-center`}>
                 <h3 className="House__Name font-lg font-weight-600">
                   {data.Name}
                 </h3>
@@ -25,14 +34,6 @@ export default function Hero({ houseData }) {
                 </span>
               </div>
 
-              <div className="House_Chart__Container flex-col-center flex-start">
-                <div
-                  className="House_Chart__Bar"
-                  style={{
-                    height: getScoreHeight(data.houseScore),
-                  }}
-                ></div>
-              </div>
             </div>
           ))}
         </div>
