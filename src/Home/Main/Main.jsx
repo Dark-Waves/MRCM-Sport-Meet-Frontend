@@ -6,6 +6,7 @@ import axios from "axios";
 import { config } from "../../../config";
 import HomeContext from "../../context/HomeContext";
 import Houses from "../Houses/Houses";
+import "./Main.css"
 
 // const houseData = [
 //   { houseName: "Rigel", HouseScore: 50 },

@@ -118,7 +118,7 @@ export default function Home() {
   );
 
   return (
-    <div className="flex-col landing-page">
+    <div className="flex-col landing-page position-relative">
       {status === "loading" ? (
         <Loader />
       ) : status === "error" ? (

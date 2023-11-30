@@ -1,19 +1,22 @@
 /* sidebar */
 .sidebar {
-  background-color: var(--color-primary);
+  background-color: #cdc9c9 !important;
   width: 260px;
   padding: 36px 20px;
   transition: var(--transition-default);
 }
+
 .user-info {
   display: flex;
   justify-content: flex-start;
   align-items: center;
   column-gap: 16px;
 }
+
 .info-name {
   font-weight: 500;
 }
+
 .info-img {
   width: 48px;
   height: 48px;
@@ -22,11 +25,13 @@
   border-radius: 100%;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
+
 .info-name {
   font-size: 20px;
   color: var(--color-white);
   text-transform: uppercase;
 }
+
 .navigation {
   margin-top: 28px;
   height: 600px;
@@ -45,6 +50,7 @@
     border-radius: 18px;
   }
 }
+
 .sidebar-change {
   margin-left: -260px;
 }
@@ -53,18 +59,22 @@
   margin-bottom: 10px;
   margin-right: 4px;
 }
+
 .nav-item a.active .nav-link {
   background-color: var(--main-color);
   box-shadow: rgba(0, 0, 0, 0.1) 0px 20px 25px -5px,
     rgba(0, 0, 0, 0.04) 0px 10px 10px -5px;
 }
+
 .nav-item a.active .nav-link svg {
   color: var(--color-white);
 }
+
 .nav-item a .nav-link svg {
   font-size: 1.2rem;
   color: var(--color-silver-v1);
 }
+
 .nav-link {
   display: block;
   height: 44px;
@@ -78,19 +88,23 @@
   border: 1px solid transparent;
   transition: var(--transition-default);
 }
+
 /* Initially, hide the sub-menu */
 .nav-item .sub-menu {
   max-height: 0;
   overflow: hidden;
   opacity: 0;
-  transition: max-height 100ms ease-in-out; /* Use ease-in-out for smooth animation */
+  transition: max-height 100ms ease-in-out;
+  /* Use ease-in-out for smooth animation */
 }
 
 /* When the parent nav-item is active, show the sub-menu with a non-zero max-height */
 .nav-item.active .sub-menu {
   opacity: 1;
-  max-height: 100px; /* Adjust this value based on your sub-menu's expected maximum height */
-  transition: all 200ms ease-in-out; /* Use ease-in-out for smooth animation */
+  max-height: 100px;
+  /* Adjust this value based on your sub-menu's expected maximum height */
+  transition: all 200ms ease-in-out;
+  /* Use ease-in-out for smooth animation */
 }
 
 .nav-link:hover {
@@ -100,6 +114,7 @@
 .nav-link-icon {
   width: 22px;
 }
+
 .nav-link-text {
   text-transform: capitalize;
 }
@@ -116,12 +131,15 @@
     padding-left: 12px;
     padding-right: 12px;
   }
+
   .sidebar-change {
     margin-left: -72px;
   }
+
   .info-name {
     display: none;
   }
+
   .nav-item {
     display: flex;
     justify-content: center;
@@ -130,6 +148,7 @@
     align-items: center;
     margin-right: 0px;
   }
+
   .nav-link {
     padding: 0;
     display: flex;
@@ -138,18 +157,23 @@
     width: 32px;
     height: 32px;
   }
+
   a.active .nav-link {
     border-radius: 100%;
   }
+
   .nav-link:hover {
     border-radius: 100%;
   }
+
   .nav-link-text {
     display: none;
   }
+
   .nav-item.active .sub-menu {
     margin-left: 0px;
   }
+
   .nav-item.active .sub-menu span {
     display: none;
   }
@@ -159,6 +183,7 @@
   .sidebar {
     margin-left: -72px;
   }
+
   .sidebar-change {
     margin-left: 0px;
   }
@@ -168,7 +193,8 @@
 
 .sub-menu {
   padding: 0;
-  margin-left: 20px; /* Adjust the indentation as needed */
+  margin-left: 20px;
+  /* Adjust the indentation as needed */
 }
 
 .sub-menu-item {
@@ -183,6 +209,7 @@
   display: block;
   transition: color 0.2s ease;
 }
+
 .sub-menu-link.active {
   color: var(--main-color);
 }

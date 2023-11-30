@@ -25,3 +25,13 @@
     overflow: hidden;
     transition: min-height 300ms;  }
 }
+
+
+header {
+  background-color: #0000006e;
+}
+
+header .nav {
+  max-width: 1400px;
+  margin: auto;
+}

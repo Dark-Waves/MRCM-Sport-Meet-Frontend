@@ -5,13 +5,12 @@ import { Link } from "react-router-dom";
 
 export default function Hero({ houseData }) {
   const highestScore = Math.max(...houseData.map((data) => data.houseScore));
-  console.log(houseData);
   const getScoreHeight = function (score) {
     const scorePercentage = (score / highestScore) * 100;
     return `${scorePercentage}%`;
   };
   return (
-    <div className="hero">
+    <div className="hero p-t-8 m-t-8">
       <div className="left-content">
         <div className="house-overview m-b-4">
           {houseData.map((data, index) => (
@@ -56,7 +55,7 @@ export default function Hero({ houseData }) {
         </div>
       </div>
       <div className="right-content flex-row">
-        <img src="/logo/logo.png" alt="MRCM LOGO" className="w-90 m-auto" />
+        <img src="/assets/hero/hero logo.svg" alt="MRCM LOGO" className="w-90 m-auto" />
       </div>
     </div>
   );

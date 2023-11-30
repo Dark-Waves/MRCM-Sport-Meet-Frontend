@@ -32,10 +32,10 @@ export default function Header() {
   };
 
   return (
-    <header className=" w-full p-5 position-relative">
+    <header className="header w-full p-5 position-absolute">
       <div className="nav flex-row-bet">
         <h1 className="text-center">
-          <Link to="/">MRCM SPORTS</Link>
+          <Link to="/">MRCM SPORTS 2K24</Link>
         </h1>
         {isMobile && (
           <button className="menu-icon" onClick={toggleNav}>

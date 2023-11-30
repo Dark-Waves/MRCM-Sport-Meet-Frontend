@@ -1,12 +1,39 @@
 .landing-page {
     width: 100%;
-    max-width: 1256px;
     margin-left: auto;
     margin-right: auto;
     color: white;
-    background: black;
 }
 
-body {
-    background: black;
+
+
+.landing-page {
+    background: url(/assets/hero/background.svg);
+}
+
+.landing-page::before {
+    content: "";
+    background: url("/assets/hero/waves layers.svg");
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background-repeat: no-repeat;
+    /* Remove the duplicated line */
+    background-position: center;
+    background-size: cover;
+    animation: animate 5s infinite;
+}
+
+@keyframes animate {
+    0% {
+        opacity: 0.2;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0.2;
+    }
 }
