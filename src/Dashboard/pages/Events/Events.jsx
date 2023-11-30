@@ -33,6 +33,28 @@ const reducer = function (state, action) {
     case "setEventTypesStatus": {
       return { ...state, eventTypesStatus: action.payload };
     }
+    case "deleteEvent": {
+      return {
+        ...state,
+        eventData: state.eventData.filter(
+          (event) => event._id !== action.payload._id
+        ),
+      };
+    }
+    case "addEvent": {
+      return {
+        ...state,
+        eventData: [...state.eventData, action.payload],
+      };
+    }
+    case "editEvent": {
+      return {
+        ...state,
+        eventData: state.eventData.map((event) =>
+          event._id === action.payload._id ? action.payload : event
+        ),
+      };
+    }
     default:
       return new Error("method not found");
   }
@@ -78,9 +100,12 @@ export default function Events() {
         if (eventTypesStatus !== "loading") return;
         try {
           const token = Cookies.get("token");
-          const { data } = await axios.get(`${config.APIURI}/api/v1/event-types`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          const { data } = await axios.get(
+            `${config.APIURI}/api/v1/event-types`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
           dispatch({ type: "setEventTypesStatus", payload: "ready" });
           dispatch({ type: "setEventTypes", payload: data.eventsTypes });
         } catch (error) {

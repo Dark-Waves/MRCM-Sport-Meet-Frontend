@@ -76,10 +76,18 @@ export default function Manager({
       const submitData = async function () {
         if (saveStatus !== "loading") return;
         if (!popUpModal) return;
+        const token = Cookies.get("token");
+        const apiUrl = `${config.APIURI}/api/v1/events`;
         // deleting event
         if (!tempeventData && selectedEvent) {
           try {
-            
+            await axios.delete(`${apiUrl}/${selectedEvent._id}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            dispatchEvent({
+              type: "deleteEvent",
+              payload: selectedEvent,
+            });
             closePopUp();
           } catch (error) {
             dispatch({ type: "setSaveStatus", payload: "error" });
@@ -89,6 +97,19 @@ export default function Manager({
         // editing event
         if (tempeventData && selectedEvent) {
           try {
+            const { data } = await axios.patch(
+              `${apiUrl}/${selectedEvent._id}`,
+              { updatedData: tempeventData },
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+            
+            dispatchEvent({
+              type: "editEvent",
+              payload: data.eventSchema,
+            });
+
             closePopUp();
           } catch (error) {
             dispatch({ type: "setSaveStatus", payload: "error" });
@@ -98,6 +119,17 @@ export default function Manager({
         // creating event
         if (tempeventData && !selectedEvent) {
           try {
+            const { data } = await axios.put(
+              apiUrl,
+              { eventData: tempeventData },
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+            dispatchEvent({
+              type: "addEvent",
+              payload: data.eventSchema,
+            });
             closePopUp();
           } catch (error) {
             dispatch({ type: "setSaveStatus", payload: "error" });
@@ -107,7 +139,7 @@ export default function Manager({
       };
       submitData();
     },
-    [saveStatus, popUpModal, selectedEvent, tempeventData]
+    [saveStatus, popUpModal, selectedEvent, tempeventData, dispatchEvent]
   );
   return <div></div>;
 }
