@@ -1,5 +1,5 @@
 import { useEffect, useReducer } from "react";
-import Manager from "./Manager/Manager-new";
+import Manager from "./Manager/Manager";
 import { Route, Routes } from "react-router-dom";
 import Overview from "./Overview/Overview";
 import Types from "./Types/Types";
@@ -84,7 +84,7 @@ export default function Events() {
             headers: { Authorization: `Bearer ${token}` },
           });
           dispatch({ type: "setEventDataStatus", payload: "ready" });
-          dispatch({ type: "setEventData", payload: data.event });
+          dispatch({ type: "setEventData", payload: data.events });
         } catch (error) {
           dispatch({ type: "setEventDataStatus", payload: "error" });
         }
@@ -107,7 +107,10 @@ export default function Events() {
             }
           );
           dispatch({ type: "setEventTypesStatus", payload: "ready" });
-          dispatch({ type: "setEventTypes", payload: data.eventsTypes });
+          dispatch({
+            type: "setEventTypes",
+            payload: [{ name: "running", _id: 123545 }],
+          });
         } catch (error) {
           dispatch({ type: "setEventTypesStatus", payload: "error" });
         }
@@ -123,19 +126,19 @@ export default function Events() {
       {status === "ready" && (
         <div>
           <Routes>
-            <Route
+            {/* <Route
               path="/"
               index
               element={<Overview {...state} dispatch={dispatch} />}
-            />
+            /> */}
             <Route
               path="/Manager"
               element={<Manager {...state} dispatch={dispatch} />}
             />
-            <Route
+            {/* <Route
               path="/Types"
               element={<Types {...state} dispatch={dispatch} />}
-            />
+            /> */}
           </Routes>
         </div>
       )}
