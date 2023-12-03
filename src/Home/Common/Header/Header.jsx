@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import "./Header.css";
 import { navLinks } from "../../data/landingNav";
+import { Button } from "@mui/material";
 
 export default function Header() {
   const [isNavVisible, setIsNavVisible] = useState(false);
@@ -43,16 +44,34 @@ export default function Header() {
           </button>
         )}
         {!isMobile && (
-          <div className={`nav-links flex-row g-5`}>
+          <div className={`nav-links flex-row-center g-5`}>
             {navLinks.map((link, index) => (
               <Link to={link.url} key={index}>
-                <span className="font-md font-weight-700">{link.name}</span>
+                <Button
+                  sx={{
+                    textTransform: "capitalize",
+                    fontWeight: 600,
+                    fontSize: 17,
+                  }}
+                  variant="text"
+                  color="inherit"
+                >
+                  {link.name}
+                </Button>
               </Link>
             ))}
             <Link to={"/auth"}>
-              <span className="font-md font-weight-700 p-3 bg-main rounded-md">
+              <Button
+                sx={{
+                  textTransform: "capitalize",
+                  fontWeight: 600,
+                  fontSize: 17,
+                }}
+                color="error"
+                variant="contained"
+              >
                 Admin/Staff
-              </span>
+              </Button>
             </Link>
           </div>
         )}

@@ -5,8 +5,8 @@ import Theme from "./Theme/Theme";
 import axios from "axios";
 import { config } from "../../../config";
 import HomeContext from "../../context/HomeContext";
-import Houses from "../Houses/Houses";
-import "./Main.css"
+import Houses from "./Houses/Houses";
+import "./Main.css";
 
 // const houseData = [
 //   { houseName: "Rigel", HouseScore: 50 },
@@ -66,7 +66,7 @@ export default function Main() {
     <div className="home-content p-5">
       <Hero houseData={houseData} />
       <Theme />
-      <About />
+      {/* <About /> */}
       <Houses houseData={houseData} />
     </div>
   );

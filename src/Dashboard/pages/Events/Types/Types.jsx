@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import axios from "axios";
 import { config } from "../../../utils/config";
 import Cookies from "js-cookie";
@@ -9,38 +9,18 @@ import "./Types.css";
 import Loader from "../../../../Components/Loader/Loader";
 import { TextField } from "@mui/material";
 
-export default function Types() {
-  const [allEventTypes, setAllEventTypes] = useState([]);
+export default function Types({
+  eventTypes,
+  eventData,
+  dispatch: dispatchEvent,
+}) {
+  const [setAllEventTypes] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
   const [editIndex, setEditIndex] = useState(null);
   const [editedHouse, setEditedHouse] = useState(null);
   const [createForm, setCreateForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(false);
-
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const token = Cookies.get("token");
-        const response = await axios.get(
-          `${config.APIURI}/api/v1/event-types`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        if (response.data) {
-          setLoading(false);
-          setAllEventTypes(response.data.eventsTypes);
-        }
-      } catch (error) {
-        setLoading(false);
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getData();
-  }, []);
 
   const handleInputChanges = (field, value) => {
     setEditedHouse((prev) => ({
@@ -51,13 +31,13 @@ export default function Types() {
 
   const handleEdit = (index) => {
     setEditIndex(index);
-    setEditedHouse({ ...allEventTypes[index] });
+    setEditedHouse({ ...eventTypes[index] });
   };
 
   const handleOk = async (e) => {
     e.preventDefault();
     if (editedHouse) {
-      await handleUpdateHouse(editedHouse);
+      await handleUpdateEventType(editedHouse);
       setEditedHouse(null);
     }
     setEditIndex(null);
@@ -72,13 +52,13 @@ export default function Types() {
     setCreateForm(true);
   };
 
-  const handleCreateHouse = async (e, eventTypes) => {
-    console.log(eventTypes);
+  const handleCreateEventType = async (e, updatedEventTypes) => {
+    console.log(updatedEventTypes);
     try {
       const token = Cookies.get("token");
       const response = await axios.put(
         `${config.APIURI}/api/v1/event-types`,
-        { eventTypes },
+        { updatedEventTypes },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -86,7 +66,10 @@ export default function Types() {
 
       if (response.data.message === "ok") {
         setCreateForm(false);
-        setAllEventTypes((prevData) => [...prevData, eventTypes]);
+        dispatchEvent({
+          type: "setEventTypes",
+          payload: { ...eventTypes, updatedEventTypes },
+        });
         enqueueSnackbar("Event Type created successfully.", {
           variant: "success",
         });
@@ -99,7 +82,7 @@ export default function Types() {
     }
   };
 
-  const handleUpdateHouse = async (updatedData) => {
+  const handleUpdateEventType = async (updatedData) => {
     console.log(updatedData);
     try {
       const token = Cookies.get("token");
@@ -112,11 +95,17 @@ export default function Types() {
       );
 
       if (response.data.message === "ok") {
-        const updatedHouses = allEventTypes.map((eventType) =>
+        console.log(eventTypes);
+        const updatedEventTypes = eventTypes.map((eventType) =>
           eventType._id === updatedData._id ? updatedData : eventType
         );
-        setAllEventTypes(updatedHouses);
-        enqueueSnackbar("Event Type updated successfully.", { variant: "success" });
+        dispatchEvent({
+          type: "setEventTypes",
+          payload: updatedEventTypes,
+        });
+        enqueueSnackbar("Event Type updated successfully.", {
+          variant: "success",
+        });
       }
     } catch (error) {
       if (error.response && error.response.data && error.response.data.error) {
@@ -126,7 +115,7 @@ export default function Types() {
     }
   };
 
-  const handleRemoveHouse = async (eventID) => {
+  const handleRemoveEventType = async (eventID) => {
     try {
       const token = Cookies.get("token");
       const response = await axios.delete(
@@ -137,10 +126,13 @@ export default function Types() {
       );
 
       if (response.data.message === "ok") {
-        const updatedHouses = allEventTypes.filter(
+        const updatedEventType = eventTypes.filter(
           (eventType) => eventType._id !== eventID
         );
-        setAllEventTypes(updatedHouses);
+        dispatchEvent({
+          type: "setEventTypes",
+          payload: updatedEventType,
+        });
         enqueueSnackbar("Event Type removed successfully.", {
           variant: "success",
         });
@@ -171,7 +163,7 @@ export default function Types() {
                 <form
                   onSubmit={(e) => {
                     e.preventDefault(); // Prevent default form submission behavior
-                    handleCreateHouse(e, editedHouse); // Pass event and editedHouse to handleCreateHouse
+                    handleCreateEventType(e, editedHouse); // Pass event and editedHouse to handleCreateEventType
                   }}
                   className="inputs w-full"
                 >
@@ -198,9 +190,9 @@ export default function Types() {
                 </form>
               </div>
             )}
-            {allEventTypes.length ? (
+            {eventTypes.length ? (
               <>
-                {allEventTypes.map((eventType, index) => (
+                {eventTypes.map((eventType, index) => (
                   <div className="event__container" key={eventType._id}>
                     <form
                       onSubmit={handleOk}
@@ -241,7 +233,7 @@ export default function Types() {
                           className="houses_submit_btn"
                           btnType="error"
                           variant="outlined"
-                          onClick={() => handleRemoveHouse(eventType._id)}
+                          onClick={() => handleRemoveEventType(eventType._id)}
                         >
                           Remove
                         </Button>
@@ -279,7 +271,7 @@ export default function Types() {
               </>
             ) : (
               <div className="empty_houses">
-                <h2>We can't find any houses</h2>
+                <h2>{"We can't find any houses"}</h2>
               </div>
             )}
           </div>

@@ -282,7 +282,7 @@ export default function AddMembers({ setAllMembersData }) {
                   >
                     <div className="inputs w-full p-4 g-3">
                       <TextField
-                        type="text"
+                        type="number"
                         label="AdmissionID"
                         onChange={(e) =>
                           setNewMember({
@@ -355,7 +355,7 @@ export default function AddMembers({ setAllMembersData }) {
                           <>
                             <TextField
                               id="AdmissionID"
-                              type="text"
+                              type="number"
                               label="AdmissionID"
                               value={member.AdmissionID || ""}
                               onChange={(e) =>

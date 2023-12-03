@@ -187,6 +187,7 @@ export default function Approves() {
                     </div>
                     <div className="buttons flex-row-center g-4">
                       <Button
+                        variant="contained"
                         onClick={() => {
                           approveEvent(data._id);
                         }}
@@ -199,6 +200,8 @@ export default function Approves() {
                         )}
                       </Button>
                       <Button
+                        variant="outlined"
+                        btnType="error"
                         onClick={() => {
                           rejectEvent(data._id);
                         }}

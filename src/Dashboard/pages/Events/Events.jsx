@@ -109,7 +109,7 @@ export default function Events() {
           dispatch({ type: "setEventTypesStatus", payload: "ready" });
           dispatch({
             type: "setEventTypes",
-            payload: [{ name: "running", _id: 123545 }],
+            payload: data.eventsTypes,
           });
         } catch (error) {
           dispatch({ type: "setEventTypesStatus", payload: "error" });
@@ -126,19 +126,19 @@ export default function Events() {
       {status === "ready" && (
         <div>
           <Routes>
-            {/* <Route
+            <Route
               path="/"
               index
               element={<Overview {...state} dispatch={dispatch} />}
-            /> */}
+            />
             <Route
               path="/Manager"
               element={<Manager {...state} dispatch={dispatch} />}
             />
-            {/* <Route
+            <Route
               path="/Types"
               element={<Types {...state} dispatch={dispatch} />}
-            /> */}
+            />
           </Routes>
         </div>
       )}

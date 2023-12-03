@@ -8,15 +8,13 @@ import PopUp from "../../../UI/PopUp/PopUp";
 import Button from "../../../UI/Button/Button";
 import { useAutocomplete } from "@mui/base/useAutocomplete";
 import { styled } from "@mui/system";
-import {
-  Autocomplete,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material";
+import { Autocomplete, InputLabel, TextField } from "@mui/material";
 import { async } from "parse/lib/browser/Storage";
+import Box from "@mui/material/Box";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+
 const initialValue = {
   popUpModal: false,
   tempeventData: {},
@@ -77,6 +75,12 @@ export default function Manager({
           type: "name",
         });
       }
+      if (!tempeventData.type) {
+        errors.push({
+          message: "Please Select a type to the event.",
+          type: "type",
+        });
+      }
       if (!(tempeventData.places && tempeventData.places.length > 0)) {
         errors.push({
           message: "Please Enter places to the event.",
@@ -93,7 +97,7 @@ export default function Manager({
           }
         }
       }
-
+      console.log(errors);
       if (errors.length > 0) {
         const errorDetails = {};
         errors.forEach((error) => {
@@ -103,7 +107,7 @@ export default function Manager({
         return;
       }
     }
-
+    console.log(tempeventData);
     dispatch({ type: "setSaveStatus", payload: "loading" });
     dispatch({ type: "setSaveResponse", payload: null });
   };
@@ -113,6 +117,7 @@ export default function Manager({
   const handleEdit = async function (eventId) {
     const event = eventData.find((val) => val._id === eventId);
     if (!event) return;
+    console.log(event);
     dispatch({ type: "setPopUp", payload: true });
     dispatch({ type: "setSelectedEvent", payload: event });
     dispatch({ type: "setEventData", payload: event });
@@ -127,7 +132,11 @@ export default function Manager({
   const closePopUp = async function () {
     dispatch({ type: "reset" });
   };
-  const getOrdinal = async function (number) {
+  const getOrdinal = (number) => {
+    if (number >= 11 && number <= 13) {
+      return number + "th";
+    }
+
     const lastDigit = number % 10;
 
     switch (lastDigit) {
@@ -144,7 +153,6 @@ export default function Manager({
 
   const handleAddPlaces = async function () {
     let updatedPlaces = [];
-
     if (!tempeventData.places || tempeventData.places.length === 0) {
       const newPlace = {
         place: 1,
@@ -161,6 +169,7 @@ export default function Manager({
       };
       updatedPlaces = [...tempeventData.places, newPlace];
     }
+    console.log(updatedPlaces);
     dispatch({
       type: "setEventData",
       payload: {
@@ -170,6 +179,8 @@ export default function Manager({
     });
   };
   const handlePlaces = async function (e, place, index) {
+    e.preventDefault();
+    console.log(e.target.value);
     const updatedPlaces = [...tempeventData.places];
     updatedPlaces[index].minimumMarks = e.target.value;
     dispatch({
@@ -282,7 +293,7 @@ export default function Manager({
               )}
               {event.type && (
                 <div className="event-des m-b-4 font-weight-500 font-md">
-                  <span className="font-weight-600">{event.type}</span>
+                  <span className="font-weight-600">{event.type.name}</span>
                 </div>
               )}
               {event.description && (
@@ -350,7 +361,76 @@ export default function Manager({
               }}
               error={submitErrors.description}
             />
-           
+            <FormControl fullWidth>
+              <InputLabel id="event-type-select-label">Age</InputLabel>
+              <Select
+                labelId="event-type-select-label"
+                id="event-type-select"
+                value={
+                  tempeventData.type._id
+                    ? tempeventData.type._id
+                    : tempeventData.type
+                    ? tempeventData.type
+                    : ""
+                }
+                label="Type"
+                onChange={(e) => {
+                  dispatch({
+                    type: "setEventData",
+                    payload: { ...tempeventData, type: e.target.value },
+                  });
+                }}
+                error={submitErrors.type}
+              >
+                {eventTypes.map((data, index) => (
+                  <MenuItem key={index} value={data._id}>
+                    {data.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <div className="places-section">
+              {tempeventData.places && tempeventData.places.length > 0 && (
+                <>
+                  <h3>Places</h3>
+                  {tempeventData.places.map((place, index) => (
+                    <div
+                      key={index}
+                      className="flex-row-bet m-3 text-center position-relative"
+                    >
+                      <TextField
+                        label={getOrdinal(place.place)}
+                        type="number"
+                        style={{ width: "100%" }}
+                        placeholder="Score"
+                        value={place.minimumMarks}
+                        onChange={(e) => handlePlaces(e, place, index)}
+                        error={submitErrors[`place - ${place.place}`]}
+                        className="w-85"
+                      />
+                      {/* <FontAwesomeIcon icon="fa-solid fa-triangle-exclamation" /> */}
+                    </div>
+                  ))}
+                </>
+              )}
+              <Button
+                type="button"
+                className="m-t-4"
+                btnType={submitErrors.places ? "error" : "primary"}
+                startIcon={
+                  submitErrors.places ? (
+                    <FontAwesomeIcon icon="fa-solid fa-triangle-exclamation" />
+                  ) : (
+                    ""
+                  )
+                }
+                onClick={handleAddPlaces}
+              >
+                Add Place
+              </Button>
+            </div>
+
             <Button variant="contained" type="submit" className="m-t-3">
               {Object.keys(selectedEvent).length
                 ? "Save Changes"

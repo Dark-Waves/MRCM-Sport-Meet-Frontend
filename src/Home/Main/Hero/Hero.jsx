@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 // import img from "../../../../public/logo/logo.png"
 import "./Hero.css";
 import { Link } from "react-router-dom";
+import { Button } from "@mui/material";
 
 export default function Hero({ houseData }) {
   const highestScore = Math.max(...houseData.map((data) => data.houseScore));
@@ -32,30 +33,46 @@ export default function Hero({ houseData }) {
                   {data.houseScore}
                 </span>
               </div>
-
             </div>
           ))}
         </div>
         <h1 className="font-2xl font-weight-800">
-          Modernizing Sports Meet Of Mahinda Rajapaksha College Matara 
+          Modernizing Sports Meet Of Mahinda Rajapaksha College Matara
         </h1>
-        <div className="hero-buttons flex-row g-5">
-          <Link
-            to={"About"}
-            className="hero-btn font-md font-weight-600 rounded-md main-btn"
-          >
-            About
+        <div className="hero-buttons flex-row g-5 m-t-5">
+          <Link to={"About"}>
+            <Button
+              variant="contained"
+              sx={{
+                textTransform: "capitalize",
+                fontWeight: 600,
+                fontSize: 17,
+              }}
+            >
+              About
+            </Button>
           </Link>
-          <Link
-            to={"Live"}
-            className="hero-btn font-md font-weight-600 rounded-md second-btn"
-          >
-            Live
+          <Link to={"Live"}>
+            <Button
+              sx={{
+                textTransform: "capitalize",
+                fontWeight: 600,
+                fontSize: 17,
+              }}
+              variant="text"
+              color="inherit"
+            >
+              Live
+            </Button>
           </Link>
         </div>
       </div>
       <div className="right-content flex-row">
-        <img src="/assets/hero/hero logo.svg" alt="MRCM LOGO" className="w-90 m-auto" />
+        <img
+          src="/assets/hero/hero logo.svg"
+          alt="MRCM LOGO"
+          className="w-90 m-auto"
+        />
       </div>
     </div>
   );
