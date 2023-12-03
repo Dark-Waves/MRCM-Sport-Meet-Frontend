@@ -367,10 +367,10 @@ export default function Manager({
                 labelId="event-type-select-label"
                 id="event-type-select"
                 value={
-                  tempeventData.type._id
-                    ? tempeventData.type._id
-                    : tempeventData.type
-                    ? tempeventData.type
+                  tempeventData?.type?._id
+                    ? tempeventData?.type._id
+                    : tempeventData?.type
+                    ? tempeventData?.type
                     : ""
                 }
                 label="Type"
