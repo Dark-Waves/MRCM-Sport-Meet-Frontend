@@ -43,6 +43,7 @@ export default function Hero({ houseData }) {
           <Link to={"About"}>
             <Button
               variant="contained"
+              color="error"
               sx={{
                 textTransform: "capitalize",
                 fontWeight: 600,

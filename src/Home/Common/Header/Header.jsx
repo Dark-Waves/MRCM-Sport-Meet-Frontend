@@ -36,7 +36,7 @@ export default function Header() {
     <header className="header w-full p-5 position-absolute">
       <div className="nav flex-row-bet">
         <h1 className="text-center">
-          <Link to="/">MRCM SPORTS 2K24</Link>
+          <Link to="/" className="flex-row-center g-4"><img src="/logo/logo.png" alt="mrcm logo" width={50} height={50} /><span>MRCM SPORTS 2K24</span></Link>
         </h1>
         {isMobile && (
           <button className="menu-icon" onClick={toggleNav}>
@@ -78,9 +78,8 @@ export default function Header() {
       </div>
       {isMobile && (
         <div
-          className={`nav-links flex-col-center g-5  ${
-            isNavVisible ? "visible " : "hidden"
-          } position-relative`}
+          className={`nav-links flex-col-center g-5  ${isNavVisible ? "visible " : "hidden"
+            } position-relative`}
         >
           {navLinks.map((link, index) => (
             <Link to={link.url} key={index}>
