@@ -54,20 +54,20 @@ export default function AddMembers({ setAllMembersData }) {
       parse(file, {
         header: true,
         complete: (parsedData) => {
-          const requiredKeys = ["Name", "Grade", "House", "AdmissionID"];
+          const requiredKeys = ["Name", "Grade", "House", "HouseID"];
 
           const hasRequiredKeys = requiredKeys.every((key) => {
             const foundKey = parsedData.meta.fields.find(
               (field) => field.toLowerCase() === key.toLowerCase()
             );
             return (
-              foundKey !== undefined || key.toLowerCase() === "AdmissionID"
+              foundKey !== undefined || key.toLowerCase() === "HouseID"
             );
           });
 
           if (!hasRequiredKeys) {
             enqueueSnackbar(
-              "Import a valid data format (Name, Grade, House, AdmissionID)",
+              "Import a valid data format (Name, Grade, House, HouseID)",
               { variant: "error" }
             );
             return;
@@ -83,11 +83,11 @@ export default function AddMembers({ setAllMembersData }) {
                 else if (key === "house")
                   newKey = "House"; // Convert 'House' to 'house'
                 else if (
-                  key === "admissionid" ||
-                  key === "admissionID" ||
-                  key === "admissionId"
+                  key === "HouseID" ||
+                  key === "HouseID" ||
+                  key === "HouseID"
                 )
-                  newKey = "AdmissionID"; // Preserve 'AdmissionID' as is
+                  newKey = "HouseID"; // Preserve 'HouseID' as is
                 transformedEntry[newKey] = entry[key];
               }
               return transformedEntry;
@@ -110,7 +110,7 @@ export default function AddMembers({ setAllMembersData }) {
       const emptyIndexes = [];
       const isEmptyRow = membersData.some((member, index) => {
         const isEmpty =
-          !member.Name || !member.Grade || !member.House || !member.AdmissionID;
+          !member.Name || !member.Grade || !member.House || !member.HouseID;
         if (isEmpty) {
           emptyIndexes.push(index);
         }
@@ -283,11 +283,11 @@ export default function AddMembers({ setAllMembersData }) {
                     <div className="inputs w-full p-4 g-3">
                       <TextField
                         type="number"
-                        label="AdmissionID"
+                        label="HouseID"
                         onChange={(e) =>
                           setNewMember({
                             ...newMember,
-                            AdmissionID: e.target.value,
+                            HouseID: e.target.value,
                           })
                         }
                         required
@@ -354,12 +354,12 @@ export default function AddMembers({ setAllMembersData }) {
                         {editIndex === index ? (
                           <>
                             <TextField
-                              id="AdmissionID"
+                              id="HouseID"
                               type="number"
-                              label="AdmissionID"
-                              value={member.AdmissionID || ""}
+                              label="HouseID"
+                              value={member.HouseID || ""}
                               onChange={(e) =>
-                                handleInputChanges(e, index, "AdmissionID")
+                                handleInputChanges(e, index, "HouseID")
                               }
                               required
                             />
@@ -412,7 +412,7 @@ export default function AddMembers({ setAllMembersData }) {
                               onClick={() => handleEdit(index)}
                               className="font-md p-3 bg-primary rounded-md font-weight-500"
                             >
-                              AdmissionID: {member.AdmissionID}
+                              HouseID: {member.HouseID}
                             </span>
                             <span
                               onClick={() => handleEdit(index)}
@@ -437,13 +437,13 @@ export default function AddMembers({ setAllMembersData }) {
 
                         {submitErrors.length > 0 &&
                           submitErrors.find(
-                            (value) => value.data === member.AdmissionID
+                            (value) => value.data === member.HouseID
                           ) && (
                             <>
                               <Alert severity="error">
                                 {
                                   submitErrors.find(
-                                    (value) => value.data === member.AdmissionID
+                                    (value) => value.data === member.HouseID
                                   )?.message
                                 }
                               </Alert>
