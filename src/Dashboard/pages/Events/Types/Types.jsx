@@ -14,16 +14,18 @@ export default function Types({
   eventData,
   dispatch: dispatchEvent,
 }) {
+  console.log(eventTypes);
   const [setAllEventTypes] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
   const [editIndex, setEditIndex] = useState(null);
-  const [editedHouse, setEditedHouse] = useState(null);
+  const [editedEventType, setEditedEventType] = useState(null);
   const [createForm, setCreateForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(false);
+  const [eventOptions, setEventOptions] = useState([]);
 
   const handleInputChanges = (field, value) => {
-    setEditedHouse((prev) => ({
+    setEditedEventType((prev) => ({
       ...prev,
       [field]: value,
     }));
@@ -31,21 +33,21 @@ export default function Types({
 
   const handleEdit = (index) => {
     setEditIndex(index);
-    setEditedHouse({ ...eventTypes[index] });
+    setEditedEventType({ ...eventTypes[index] });
   };
 
   const handleOk = async (e) => {
     e.preventDefault();
-    if (editedHouse) {
-      await handleUpdateEventType(editedHouse);
-      setEditedHouse(null);
+    if (editedEventType) {
+      await handleUpdateEventType(editedEventType);
+      setEditedEventType(null);
     }
     setEditIndex(null);
   };
 
   const handleCancel = () => {
     setEditIndex(null);
-    setEditedHouse(null);
+    setEditedEventType(null);
   };
 
   const setCreateNew = () => {
@@ -142,6 +144,11 @@ export default function Types({
     }
   };
 
+  const createOption = () => {
+    // Add a option and value = empty for the option
+    setEventOptions((prevOptions) => [...prevOptions, { option: "" }]);
+  };
+
   return (
     <div className="event_types__container">
       {loading ? (
@@ -163,7 +170,7 @@ export default function Types({
                 <form
                   onSubmit={(e) => {
                     e.preventDefault(); // Prevent default form submission behavior
-                    handleCreateEventType(e, editedHouse); // Pass event and editedHouse to handleCreateEventType
+                    handleCreateEventType(e, editedEventType); // Pass event and editedEventType to handleCreateEventType
                   }}
                   className="inputs w-full"
                 >
@@ -180,6 +187,30 @@ export default function Types({
                         )}
                         required
                       />
+                      <div className="event_types">
+                        {eventOptions.map((data, index) => (
+                          <TextField
+                            fullWidth
+                            id="option"
+                            type="text"
+                            label="Option"
+                            key={index}
+                            onChange={(e) => (
+                              e.preventDefault(),
+                              handleInputChanges("name", e.target.value)
+                            )}
+                            required
+                          />
+                        ))}
+                        <Button
+                          onClick={() => {
+                            createOption();
+                          }}
+                          variant="contained"
+                        >
+                          Create Option
+                        </Button>
+                      </div>
                     </div>
                     <div className="eventTypes_submit_btn m-auto p-t-4">
                       <Button type="submit" variant="contained">
@@ -206,7 +237,7 @@ export default function Types({
                               type="text"
                               placeholder="Description"
                               value={
-                                (editedHouse && editedHouse.name) ||
+                                (editedEventType && editedEventType.name) ||
                                 eventType.name ||
                                 ""
                               }
@@ -225,6 +256,15 @@ export default function Types({
                             >
                               Name: {eventType.name}
                             </span>
+                            {eventType.options && (
+                              <div className="types">
+                                {eventType.options.map((option) => (
+                                  <span key={option._id} className="type">
+                                    {option.option}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
                           </>
                         )}
                       </div>
