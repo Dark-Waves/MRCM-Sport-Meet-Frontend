@@ -14,25 +14,44 @@ export default function Types({
   eventData,
   dispatch: dispatchEvent,
 }) {
-  console.log(eventTypes);
   const [setAllEventTypes] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
   const [editIndex, setEditIndex] = useState(null);
-  const [editedEventType, setEditedEventType] = useState(null);
+  const [editedEventType, setEditedEventType] = useState({
+    name: "",
+    options: [],
+  });
   const [createForm, setCreateForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(false);
   const [eventOptions, setEventOptions] = useState([]);
 
-  const handleInputChanges = (field, value) => {
-    setEditedEventType((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  const handleInputChanges = (field, value, index) => {
+    console.log(editedEventType);
+
+    if (field === "option") {
+      setEditedEventType((prev) => {
+        // If field is "option," update the array at the specified index
+        const updatedOptions = [...prev.options];
+        updatedOptions[index] = { option: value };
+
+        return {
+          ...prev,
+          options: updatedOptions,
+        };
+      });
+    } else {
+      // For other fields, update normally
+      setEditedEventType((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+    }
   };
 
   const handleEdit = (index) => {
     setEditIndex(index);
+    setCreateForm(false);
     setEditedEventType({ ...eventTypes[index] });
   };
 
@@ -40,27 +59,39 @@ export default function Types({
     e.preventDefault();
     if (editedEventType) {
       await handleUpdateEventType(editedEventType);
-      setEditedEventType(null);
+      setEditedEventType({
+        name: "",
+        options: [],
+      });
     }
     setEditIndex(null);
   };
 
   const handleCancel = () => {
     setEditIndex(null);
-    setEditedEventType(null);
+    setCreateForm(false);
+    setEditedEventType({
+      name: "",
+      options: [],
+    });
   };
 
   const setCreateNew = () => {
     setCreateForm(true);
+    setEditIndex(null);
+    setEditedEventType({
+      name: "",
+      options: [],
+    });
   };
 
   const handleCreateEventType = async (e, updatedEventTypes) => {
-    console.log(updatedEventTypes);
+    // console.log(updatedEventTypes);
     try {
       const token = Cookies.get("token");
       const response = await axios.put(
         `${config.APIURI}/api/v1/event-types`,
-        { updatedEventTypes },
+        { eventTypes: updatedEventTypes },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -70,8 +101,15 @@ export default function Types({
         setCreateForm(false);
         dispatchEvent({
           type: "setEventTypes",
-          payload: { ...eventTypes, updatedEventTypes },
+          payload: [
+            ...eventTypes,
+            {
+              name: updatedEventTypes.name,
+              options: updatedEventTypes.options,
+            },
+          ],
         });
+        console.log(eventTypes);
         enqueueSnackbar("Event Type created successfully.", {
           variant: "success",
         });
@@ -145,8 +183,9 @@ export default function Types({
   };
 
   const createOption = () => {
-    // Add a option and value = empty for the option
     setEventOptions((prevOptions) => [...prevOptions, { option: "" }]);
+
+    // Add a option and value = empty for the option
   };
 
   return (
@@ -193,11 +232,15 @@ export default function Types({
                             fullWidth
                             id="option"
                             type="text"
-                            label="Option"
+                            label={`Option ${index + 1}`}
                             key={index}
                             onChange={(e) => (
                               e.preventDefault(),
-                              handleInputChanges("name", e.target.value)
+                              handleInputChanges(
+                                "option",
+                                e.target.value,
+                                index
+                              )
                             )}
                             required
                           />
@@ -224,7 +267,7 @@ export default function Types({
             {eventTypes.length ? (
               <>
                 {eventTypes.map((eventType, index) => (
-                  <div className="event__container" key={eventType._id}>
+                  <div className="event__container" key={index}>
                     <form
                       onSubmit={handleOk}
                       className="create_event_type house__content content grid-common m-4 flex-col"
@@ -247,6 +290,41 @@ export default function Types({
                               )}
                               required
                             />
+                            <div className="event_types">
+                              {editedEventType.options.map((data, index) => (
+                                <TextField
+                                  fullWidth
+                                  id="option"
+                                  type="text"
+                                  value={(data && data.option) || ""}
+                                  label={`Option ${index + 1}`}
+                                  key={index}
+                                  onChange={(e) => (
+                                    e.preventDefault(),
+                                    handleInputChanges(
+                                      "option",
+                                      e.target.value,
+                                      index
+                                    )
+                                  )}
+                                  required
+                                />
+                              ))}
+                              <Button
+                                onClick={() => {
+                                  setEditedEventType((prev) => ({
+                                    ...prev,
+                                    options: [
+                                      ...(prev.options || []), // Preserve previous options
+                                      { option: "" }, // Add a new empty option
+                                    ],
+                                  }));
+                                }}
+                                variant="contained"
+                              >
+                                Create Option
+                              </Button>
+                            </div>
                           </>
                         ) : (
                           <>
@@ -311,7 +389,7 @@ export default function Types({
               </>
             ) : (
               <div className="empty_houses">
-                <h2>{"We can't find any houses"}</h2>
+                <h2>{"We can't find any types"}</h2>
               </div>
             )}
           </div>
