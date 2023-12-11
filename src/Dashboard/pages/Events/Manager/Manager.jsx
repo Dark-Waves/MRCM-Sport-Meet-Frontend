@@ -202,8 +202,11 @@ export default function Manager({
         const apiUrl = `${config.APIURI}/api/v1/events`;
         // deleting event
         if (
-          !Object.keys(tempeventData).length &&
-          Object.keys(selectedEvent).length
+          Object.values(tempeventData).every(
+            (value) =>
+              value === "" || (Array.isArray(value) && value.length === 0)
+          ) &&
+          Object.keys(selectedEvent).length > 0
         ) {
           try {
             await axios.delete(`${apiUrl}/${selectedEvent._id}`, {
