@@ -55,6 +55,7 @@ export default function Manager({
   eventData,
   dispatch: dispatchEvent,
 }) {
+  console.log(eventTypes);
   const [state, dispatch] = useReducer(reducer, initialValue);
 
   const {
@@ -361,7 +362,12 @@ export default function Manager({
               }}
               error={submitErrors.description}
             />
-            <FormControl fullWidth>
+            {/* Achira You have to fix this like after created event_types_selection                   dispatch({
+                    type: "setEventData",
+                    payload: { ...tempeventData, type: e.target.value },
+                  });*/}
+
+            {/* <FormControl fullWidth>
               <InputLabel id="event-type-select-label">Age</InputLabel>
               <Select
                 labelId="event-type-select-label"
@@ -388,7 +394,42 @@ export default function Manager({
                   </MenuItem>
                 ))}
               </Select>
-            </FormControl>
+            </FormControl> */}
+            <div className="event_types_selection">
+              {eventTypes.map((eventType, index) => (
+                <FormControl fullWidth key={index}>
+                  <InputLabel id="event-type-select-label">
+                    {eventType.name}
+                  </InputLabel>
+                  <Select
+                    labelId="event-type-select-label"
+                    id="event-type-select"
+                    value={
+                      tempeventData?.type?._id
+                        ? tempeventData?.type._id
+                        : tempeventData?.type
+                        ? tempeventData?.type
+                        : ""
+                    }
+                    label="Type"
+                    onChange={(e) => {
+                      dispatch({
+                        type: "setEventData",
+                        payload: { ...tempeventData, type: e.target.value },
+                      });
+                    }}
+                    error={submitErrors.type}
+                    // required={eventType.required}
+                  >
+                    {eventType.options.map((data, index) => (
+                      <MenuItem key={index} value={data._id}>
+                        {data.option}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              ))}
+            </div>
 
             <div className="places-section">
               {tempeventData.places && tempeventData.places.length > 0 && (
