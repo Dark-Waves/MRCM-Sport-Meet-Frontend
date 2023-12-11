@@ -17,7 +17,7 @@ import Select from "@mui/material/Select";
 
 const initialValue = {
   popUpModal: false,
-  tempeventData: {},
+  tempeventData: { name: "", description: "", places: [], types: [] },
   selectedEvent: {},
   saveStatus: "none",
   saveResponse: null,
@@ -55,9 +55,7 @@ export default function Manager({
   eventData,
   dispatch: dispatchEvent,
 }) {
-  console.log(eventTypes);
   const [state, dispatch] = useReducer(reducer, initialValue);
-
   const {
     popUpModal,
     tempeventData,
@@ -66,7 +64,7 @@ export default function Manager({
     saveResponse,
     submitErrors,
   } = state;
-
+  console.log(tempeventData);
   const handleSubmit = async function (force) {
     if (!force) {
       const errors = [];
@@ -76,10 +74,10 @@ export default function Manager({
           type: "name",
         });
       }
-      if (!tempeventData.type) {
+      if (!(tempeventData.types && tempeventData.types.length)) {
         errors.push({
-          message: "Please Select a type to the event.",
-          type: "type",
+          message: "Please Select a types to the event.",
+          type: "types",
         });
       }
       if (!(tempeventData.places && tempeventData.places.length > 0)) {
@@ -127,7 +125,10 @@ export default function Manager({
     const event = eventData.find((val) => val._id === eventId);
     if (!event) return;
     dispatch({ type: "setSelectedEvent", payload: event });
-    dispatch({ type: "setEventData", payload: {} });
+    dispatch({
+      type: "setEventData",
+      payload: { name: "", description: "", places: [], types: [] },
+    });
     handleSubmit(true);
   };
   const closePopUp = async function () {
@@ -362,39 +363,6 @@ export default function Manager({
               }}
               error={submitErrors.description}
             />
-            {/* Achira You have to fix this like after created event_types_selection                   dispatch({
-                    type: "setEventData",
-                    payload: { ...tempeventData, type: e.target.value },
-                  });*/}
-
-            {/* <FormControl fullWidth>
-              <InputLabel id="event-type-select-label">Age</InputLabel>
-              <Select
-                labelId="event-type-select-label"
-                id="event-type-select"
-                value={
-                  tempeventData?.type?._id
-                    ? tempeventData?.type._id
-                    : tempeventData?.type
-                    ? tempeventData?.type
-                    : ""
-                }
-                label="Type"
-                onChange={(e) => {
-                  dispatch({
-                    type: "setEventData",
-                    payload: { ...tempeventData, type: e.target.value },
-                  });
-                }}
-                error={submitErrors.type}
-              >
-                {eventTypes.map((data, index) => (
-                  <MenuItem key={index} value={data._id}>
-                    {data.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl> */}
             <div className="event_types_selection">
               {eventTypes.map((eventType, index) => (
                 <FormControl fullWidth key={index}>
@@ -405,21 +373,41 @@ export default function Manager({
                     labelId="event-type-select-label"
                     id="event-type-select"
                     value={
-                      tempeventData?.type?._id
-                        ? tempeventData?.type._id
-                        : tempeventData?.type
-                        ? tempeventData?.type
-                        : ""
+                      tempeventData.types?.find(
+                        (type) => type._id === eventType._id
+                      )?.option ||
+                      selectedEvent?.types?.find(
+                        (type) => type._id === eventType._id
+                      )?.option ||
+                      ""
                     }
                     label="Type"
                     onChange={(e) => {
+                      const selectedOptionId = e.target.value;
+                      const selectedEventType = eventTypes.find((eventType) =>
+                        eventType.options.some(
+                          (option) => option._id === selectedOptionId
+                        )
+                      );
+                      const updatedTypes = [
+                        ...(tempeventData.types || []).filter(
+                          (type) => type._id !== selectedEventType._id
+                        ),
+                        {
+                          _id: selectedEventType._id,
+                          option: selectedOptionId,
+                        },
+                      ];
+
                       dispatch({
                         type: "setEventData",
-                        payload: { ...tempeventData, type: e.target.value },
+                        payload: {
+                          ...tempeventData,
+                          types: updatedTypes,
+                        },
                       });
                     }}
                     error={submitErrors.type}
-                    // required={eventType.required}
                   >
                     {eventType.options.map((data, index) => (
                       <MenuItem key={index} value={data._id}>
