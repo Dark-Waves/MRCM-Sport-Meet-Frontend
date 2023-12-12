@@ -290,7 +290,7 @@ export default function Types({
                               )}
                               required
                             />
-                            <div className="event_types">
+                            <div className="event_types flex-col g-3">
                               {editedEventType.options.map((data, index) => (
                                 <TextField
                                   fullWidth
@@ -335,9 +335,9 @@ export default function Types({
                               Name: {eventType.name}
                             </span>
                             {eventType.options && (
-                              <div className="types">
+                              <div className="types flex-row g-2" onClick={() => handleEdit(index)}>
                                 {eventType.options.map((option) => (
-                                  <span key={option._id} className="type">
+                                  <span key={option._id} className="type p-3 bg-primary rounded">
                                     {option.option}
                                   </span>
                                 ))}

@@ -21,6 +21,8 @@
   width: 400px;
   text-align: center;
   position: relative;
+  max-height: 91vh;
+  overflow-y: auto;
 }
 
 /* Styles for the close button in the popup */

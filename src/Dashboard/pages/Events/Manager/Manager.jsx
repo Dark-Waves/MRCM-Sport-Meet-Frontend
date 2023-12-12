@@ -366,7 +366,7 @@ export default function Manager({
               }}
               error={submitErrors.description}
             />
-            <div className="event_types_selection">
+            <div className="event_types_selection w-full flex-col-center g-4">
               {eventTypes.map((eventType, index) => (
                 <FormControl fullWidth key={index}>
                   <InputLabel id="event-type-select-label">
