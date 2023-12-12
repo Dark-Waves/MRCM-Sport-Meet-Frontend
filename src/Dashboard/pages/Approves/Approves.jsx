@@ -201,7 +201,7 @@ export default function Approves() {
                       </Button>
                       <Button
                         variant="outlined"
-                        btnType="error"
+                        color="error"
                         onClick={() => {
                           rejectEvent(data._id);
                         }}

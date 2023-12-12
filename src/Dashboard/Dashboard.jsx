@@ -6,7 +6,7 @@ import Broadcast from "./pages/Broadcast/Broadcast";
 import Users from "./pages/Users/Users";
 import Website from "./pages/Website/Website";
 import ContentTop from "./components/ContentTop/ContentTop"; // Heading
-import ErrorPage from "../Components/Error/Error.jsx";
+import ErrorPage from "../Components/Error/Error";
 import Loader from "../Components/Loader/Loader";
 import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import { useEffect, useReducer } from "react";
@@ -88,11 +88,9 @@ const getPageComponent = (title) => {
 };
 
 const renderRoutes = (links) => {
-  console.log(links);
   return links.map((link) => {
     const PageComponent = getPageComponent(link.title);
     if (!PageComponent) return null; // Skip if no matching component
-    console.log(links);
     return (
       <Route key={link._id} path={link.path} element={<PageComponent />} />
       // Note: If subMenu exists, you might want to handle nested routes here

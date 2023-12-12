@@ -1,37 +1,48 @@
-import { useEffect, useReducer, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { config } from "../../../utils/config";
 import Cookies from "js-cookie";
-import Input from "../../../UI/Input/Input";
 import Button from "../../../UI/Button/Button";
 import { useSnackbar } from "notistack";
 import "./Types.css";
 import Loader from "../../../../Components/Loader/Loader";
 import { TextField } from "@mui/material";
 
-export default function Types({
+interface EventType {
+  _id: string;
+  name: string;
+  options: { option: string; _id: string }[];
+}
+
+interface TypesProps {
+  eventTypes: EventType[];
+  dispatch: React.Dispatch<any>; // Define the type for dispatch as needed
+}
+
+const Types: React.FC<TypesProps> = ({
   eventTypes,
-  eventData,
   dispatch: dispatchEvent,
-}) {
-  const [setAllEventTypes] = useState([]);
+}) => {
+  const [setAllEventTypes] = useState<any[]>([]);
   const { enqueueSnackbar } = useSnackbar();
-  const [editIndex, setEditIndex] = useState(null);
-  const [editedEventType, setEditedEventType] = useState({
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [editedEventType, setEditedEventType] = useState<EventType>({
+    _id: "",
     name: "",
     options: [],
   });
-  const [createForm, setCreateForm] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState(false);
-  const [eventOptions, setEventOptions] = useState([]);
+  const [createForm, setCreateForm] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [progress, setProgress] = useState<boolean>(false);
+  const [eventOptions, setEventOptions] = useState<any[]>([]);
 
-  const handleInputChanges = (field, value, index) => {
-    console.log(editedEventType);
-
-    if (field === "option") {
+  const handleInputChanges = (
+    field: string,
+    value: string,
+    index?: number
+  ): void => {
+    if (field === "option" && index !== undefined) {
       setEditedEventType((prev) => {
-        // If field is "option," update the array at the specified index
         const updatedOptions = [...prev.options];
         updatedOptions[index] = { option: value };
 
@@ -41,7 +52,6 @@ export default function Types({
         };
       });
     } else {
-      // For other fields, update normally
       setEditedEventType((prev) => ({
         ...prev,
         [field]: value,
@@ -335,9 +345,16 @@ export default function Types({
                               Name: {eventType.name}
                             </span>
                             {eventType.options && (
-                              <div className="types flex-row g-2" onClick={() => handleEdit(index)}>
+                              <div
+                                className="types flex-row g-2"
+                                onClick={() => handleEdit(index)}
+                                style={{ overflow: "auto" }}
+                              >
                                 {eventType.options.map((option) => (
-                                  <span key={option._id} className="type p-3 bg-primary rounded">
+                                  <span
+                                    key={option._id}
+                                    className="type p-3 bg-primary rounded"
+                                  >
                                     {option.option}
                                   </span>
                                 ))}
@@ -349,7 +366,7 @@ export default function Types({
                       <div className="event__buttons buttons flex-row-center m-auto g-4">
                         <Button
                           className="houses_submit_btn"
-                          btnType="error"
+                          color="error"
                           variant="outlined"
                           onClick={() => handleRemoveEventType(eventType._id)}
                         >
@@ -366,7 +383,7 @@ export default function Types({
                             </Button>
                             <Button
                               className="houses_submit_btn"
-                              btnType="primary"
+                              color="primary"
                               variant="text"
                               onClick={handleCancel}
                             >
@@ -397,4 +414,6 @@ export default function Types({
       )}
     </div>
   );
-}
+};
+
+export default Types;

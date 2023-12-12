@@ -1,95 +1,17 @@
-import {  useEffect, useState } from "react";
-import "./Overview.css";
-import axios from "axios";
-import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
-import Loader from "../../../../Components/Loader/Loader";
-import { config } from "../../../../../config";
-export default function Overview() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [users, setUsers] = useState([]);
-  const [popupUser, setPopupUser] = useState(null);
-  const [showPopup, setShowPopup] = useState(false);
-
-  useEffect(() => {
-    const getUserData = async () => {
-      const token = Cookies.get("token");
-      setIsLoading(true);
-      try {
-        const response = await axios.get(`${config.APIURI}/api/v1/role`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setUsers(response.data.lowerUsers);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    getUserData();
-  }, []);
-
-  const handlePopUp = async (userId) => {
-    const token = Cookies.get("token");
-    setIsLoading(true);
-    try {
-      const response = await axios.get(
-        `${config.APIURI}/api/v1/user/${userId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      console.log(response.data.userData);
-      setPopupUser(response.data.userData); // Assuming the response has the user data
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const openEditPopup = (user) => {
-    handlePopUp(user.id);
-    setShowPopup(true);
-  };
-
-  const closePopup = () => {
-    setPopupUser(null);
-    setShowPopup(false);
-  };
-
+export default function Overview({ allUserData }) {
   return (
-    <div className="user-overview grid-common main-content-holder position-relative">
-      {isLoading ? (
-        <Loader />
-      ) : (
-        <>
-          <h1>User Overview</h1>
-          <div className="user-list">
-            {users.map((user) => (
-              <div
-                className="user-card"
-                key={user.id}
-                onClick={() => openEditPopup(user)}
-              >
-                <h2>{user.name}</h2>
-                <p>Username: {user.userName}</p>
-              </div>
-            ))}
+    <div className="user-overview position-relative">
+      <div className="content-grid-one main-content-holder">
+        {allUserData.map((user) => (
+          <div
+            className="grid-common"
+            key={user.id}
+          >
+            <h2>{user.name}</h2>
+            <p>Role: {user.roles.roleType}</p>
           </div>
-        </>
-      )}
-      {showPopup && (
-        <div className="popup">
-          <div className="popup-content">
-            <span className="close-popup" onClick={closePopup}>
-              &times;
-            </span>
-            {/* Display popupUser details here */}
-          </div>
-        </div>
-      )}
+        ))}
+      </div>
     </div>
   );
 }

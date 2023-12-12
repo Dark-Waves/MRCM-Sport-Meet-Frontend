@@ -1,11 +1,12 @@
 import React from "react";
 import "./Button.css"; // Import your CSS file for styling
 import Button2 from "@mui/material/Button";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 interface ButtonProps {
-  onClick: () => void;
+  onClick?: () => void;
   children: React.ReactNode;
-  btnType:
+  color?:
     | "inherit"
     | "primary"
     | "secondary"
@@ -13,37 +14,42 @@ interface ButtonProps {
     | "error"
     | "info"
     | "warning";
-  type: "button" | "submit" | "reset" | undefined;
-  className: "";
-  variant: "text" | "outlined" | "contained";
-  startIcon: React.ReactNode;
-  endIcon: React.ReactNode;
-  disabled: boolean;
+  type?: "button" | "submit" | "reset" | undefined;
+  className?: string; // Changed empty string to 'string' type
+  variant?: "text" | "outlined" | "contained";
+  startIcon?: React.ReactNode;
+  endIcon?: React.ReactNode;
+  disabled?: boolean;
+  loading?: boolean;
 }
 
-export default function Button({
+const Button: React.FC<ButtonProps> = ({
   onClick,
   children,
-  btnType,
-  type,
-  className,
-  variant,
+  color = "primary", // Default value for btnType
+  type = "button", // Default value for type
+  className = "", // Default value for className
+  variant = "contained", // Default value for variant
   startIcon,
   endIcon,
-  disabled,
-}: ButtonProps) {
+  disabled = false,
+  loading = false,
+}: ButtonProps) => {
   return (
-    <Button2
+    <LoadingButton
       disabled={disabled}
       variant={variant}
       type={type}
       onClick={onClick}
       startIcon={startIcon}
       endIcon={endIcon}
-      color={btnType}
+      color={color}
       className={`button ${className}`}
+      loading={loading}
     >
       {children}
-    </Button2>
+    </LoadingButton>
   );
-}
+};
+
+export default Button;

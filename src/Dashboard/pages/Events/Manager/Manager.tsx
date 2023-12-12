@@ -1,21 +1,52 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useReducer, useState } from "react";
-import "./Manager.css";
+import React, { useEffect, useReducer } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { config } from "../../../utils/config";
 import PopUp from "../../../UI/PopUp/PopUp";
 import Button from "../../../UI/Button/Button";
-import { useAutocomplete } from "@mui/base/useAutocomplete";
-import { styled } from "@mui/system";
-import { Autocomplete, InputLabel, TextField } from "@mui/material";
-import { async } from "parse/lib/browser/Storage";
 import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { InputLabel, TextField } from "@mui/material";
 
-const initialValue = {
+interface Places {
+  minimumMarks: number;
+  place: number;
+  _id: string;
+}
+
+interface Types {
+  option: string;
+  selection: string;
+  _id: string;
+}
+
+interface State {
+  popUpModal: boolean;
+  tempeventData: {
+    name: string;
+    description: string;
+    places: Places[];
+    types: Types[]; // Define the type for types as needed
+  };
+  selectedEvent: any; // Define the type for selectedEvent as needed
+  saveStatus: string;
+  saveResponse: any; // Define the type for saveResponse as needed
+  submitErrors: { [key: string]: string };
+}
+
+type Action =
+  | { type: "setPopUp"; payload: boolean }
+  | { type: "setSelectedEvent"; payload: any } // Define the payload type for setSelectedEvent as needed
+  | { type: "setEventData"; payload: any } // Define the payload type for setEventData as needed
+  | { type: "setSaveStatus"; payload: string }
+  | { type: "setSubmitErrors"; payload: { [key: string]: string } }
+  | { type: "setSaveResponse"; payload: any }
+  | { type: "reset" };
+
+const initialValue: State = {
   popUpModal: false,
   tempeventData: { name: "", description: "", places: [], types: [] },
   selectedEvent: {},
@@ -23,7 +54,8 @@ const initialValue = {
   saveResponse: null,
   submitErrors: {},
 };
-const reducer = function (state, action) {
+
+const reducer = function (state: State, action: Action): State {
   switch (action.type) {
     case "setPopUp": {
       return { ...state, popUpModal: action.payload };
@@ -47,27 +79,34 @@ const reducer = function (state, action) {
       return { ...initialValue };
     }
     default:
-      return new Error("method not found");
+      throw new Error("method not found");
   }
 };
-export default function Manager({
+
+interface ManagerProps {
+  eventTypes: any[]; // Define the type for eventTypes as needed
+  eventData: any[]; // Define the type for eventData as needed
+  dispatch: React.Dispatch<Action>;
+}
+
+interface Errors {
+  message: string;
+  type: string;
+}
+
+const Manager: React.FC<ManagerProps> = ({
   eventTypes,
   eventData,
   dispatch: dispatchEvent,
-}) {
+}) => {
   const [state, dispatch] = useReducer(reducer, initialValue);
-  const {
-    popUpModal,
-    tempeventData,
-    selectedEvent,
-    saveStatus,
-    saveResponse,
-    submitErrors,
-  } = state;
+  const { popUpModal, tempeventData, selectedEvent, saveStatus, submitErrors } =
+    state;
+
   console.log(tempeventData);
   const handleSubmit = async function (force) {
     if (!force) {
-      const errors = [];
+      const errors: Errors[] = [];
       if (!tempeventData.name) {
         errors.push({
           message: "Please Enter a name to the event.",
@@ -154,37 +193,29 @@ export default function Manager({
   };
 
   const handleAddPlaces = async function () {
-    let updatedPlaces = [];
+    let updatedPlaces: Places[] = [];
+
     if (!tempeventData.places || tempeventData.places.length === 0) {
-      const newPlace = {
+      const newPlace: Places = {
         place: 1,
         minimumMarks: 0,
+        _id: "",
         // Other place properties
       };
       updatedPlaces = [newPlace];
     } else {
       const nextPlace = tempeventData.places.length + 1;
-      const newPlace = {
+      const newPlace: Places = {
         place: nextPlace,
         minimumMarks: 0,
+        _id: "",
         // Other place properties
       };
       updatedPlaces = [...tempeventData.places, newPlace];
     }
+
     console.log(updatedPlaces);
-    dispatch({
-      type: "setEventData",
-      payload: {
-        ...tempeventData,
-        places: updatedPlaces,
-      },
-    });
-  };
-  const handlePlaces = async function (e, place, index) {
-    e.preventDefault();
-    console.log(e.target.value);
-    const updatedPlaces = [...tempeventData.places];
-    updatedPlaces[index].minimumMarks = e.target.value;
+
     dispatch({
       type: "setEventData",
       payload: {
@@ -194,6 +225,23 @@ export default function Manager({
     });
   };
 
+  const handlePlaces = async function (
+    e: React.ChangeEvent<HTMLInputElement>,
+    place: Places,
+    index: number
+  ) {
+    e.preventDefault();
+    const updatedPlaces = [...tempeventData.places];
+    updatedPlaces[index].minimumMarks = parseInt(e.target.value, 10); // Convert to number if needed
+
+    dispatch({
+      type: "setEventData",
+      payload: {
+        ...tempeventData,
+        places: updatedPlaces,
+      },
+    });
+  };
   useEffect(
     function () {
       const submitData = async function () {
@@ -312,7 +360,7 @@ export default function Manager({
                 Edit
               </Button>
               <Button
-                btnType="error"
+                color="error"
                 variant="outlined"
                 onClick={() => handleDelete(event._id)}
               >
@@ -332,7 +380,7 @@ export default function Manager({
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              handleSubmit();
+              handleSubmit(e);
             }}
             className="m-t-5 m-b-4 flex-col-center g-4"
           >
@@ -449,7 +497,7 @@ export default function Manager({
               <Button
                 type="button"
                 className="m-t-4"
-                btnType={submitErrors.places ? "error" : "primary"}
+                color={submitErrors.places ? "error" : "primary"}
                 startIcon={
                   submitErrors.places ? (
                     <FontAwesomeIcon icon="fa-solid fa-triangle-exclamation" />
@@ -473,4 +521,6 @@ export default function Manager({
       )}
     </div>
   );
-}
+};
+
+export default Manager;

@@ -390,7 +390,7 @@ export default function Submits() {
                       ))}
 
                     <div className="buttons flex-row-eve g-3 m-4">
-                      <Button type="submit" btnType="info" variant="contained">
+                      <Button type="submit" color="info" variant="contained">
                         {progress ? <CircularProgress size={25} /> : "submit"}
                       </Button>
                     </div>

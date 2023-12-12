@@ -336,7 +336,7 @@ export default function AddMembers({ setAllMembersData }) {
                       <Button type="submit" variant="contained">
                         OK
                       </Button>
-                      <Button btnType="primary" onClick={clearCreateNew}>
+                      <Button color="primary" onClick={clearCreateNew}>
                         Cancel
                       </Button>
                     </div>
@@ -460,7 +460,7 @@ export default function AddMembers({ setAllMembersData }) {
                     <div className="buttons flex-row-center g-4">
                       <>
                         <Button
-                          btnType="error"
+                          color="error"
                           variant="outlined"
                           onClick={() => handleRemove(index)}
                           className="bg-scarlet-1 rounded-md font-weight-600 font-md"
@@ -478,7 +478,7 @@ export default function AddMembers({ setAllMembersData }) {
                               OK
                             </Button>
                             <Button
-                              btnType="primary"
+                              color="primary"
                               variant="text"
                               onClick={handleCancel}
                               className="bg-secondary rounded-md font-weight-600 font-md"

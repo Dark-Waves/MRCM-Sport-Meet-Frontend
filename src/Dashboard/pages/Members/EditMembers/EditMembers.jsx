@@ -207,7 +207,7 @@ export default function EditMembers({ allMembersData, setAllMembersData }) {
                 <div className="buttons flex-row-center g-4">
                   <>
                     <Button
-                      btnType="error"
+                      color="error"
                       variant="outlined"
                       onClick={() => handleRemoveMember(member.HouseID)}
                       className="bg-scarlet-1 rounded-md font-weight-600 font-md"
@@ -224,7 +224,7 @@ export default function EditMembers({ allMembersData, setAllMembersData }) {
                           OK
                         </Button>
                         <Button
-                          btnType="primary"
+                          color="primary"
                           variant="text"
                           onClick={handleCancel}
                           className="bg-secondary rounded-md font-weight-600 font-md"

@@ -270,7 +270,7 @@ export default function Manager({ allEvents, setAllEvents }) {
                   Edit
                 </Button>
                 <Button
-                  btnType="error"
+                  color="error"
                   variant="outlined"
                   onClick={() => handleDeleteEvent(event)}
                 >
@@ -398,7 +398,7 @@ export default function Manager({ allEvents, setAllEvents }) {
               <Button
                 type="button"
                 className="m-t-4"
-                btnType={submitErrors.places ? "error" : "primary"}
+                color={submitErrors.places ? "error" : "primary"}
                 startIcon={
                   submitErrors.places ? (
                     <FontAwesomeIcon icon="fa-solid fa-triangle-exclamation" />

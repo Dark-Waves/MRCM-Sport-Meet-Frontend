@@ -250,7 +250,7 @@ export default function Houses() {
                     <div className="house__buttons buttons flex-row-center g-4">
                       <Button
                       className="houses_submit_btn"
-                        btnType="error"
+                        color="error"
                         variant="outlined"
                         onClick={() => handleRemoveHouse(house._id)}
                       >
@@ -264,7 +264,7 @@ export default function Houses() {
                           </Button>
                           <Button
                           className="houses_submit_btn"
-                            btnType="primary"
+                            color="primary"
                             variant="text"
                             onClick={handleCancel}
                           >
