@@ -12,6 +12,7 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
+import { ConstructionOutlined } from "@mui/icons-material";
 
 enum LoadingType {
   RemoveUser = "removeUser",
@@ -34,12 +35,11 @@ interface UserData {
 }
 
 interface RolesData {
-  id: string;
-  name: string;
-  role: string;
-  userName: string;
-  // Define other properties as needed
+  roleIndex: 1 | 2 | 3;
+  roleType: "Owner" | "Admin" | "Staff";
 }
+
+type RoleType = "Owner" | "Admin" | "Staff" | "";
 
 interface AddUsersProps {
   allRoles: RolesData[];
@@ -64,7 +64,7 @@ const AddUsers: React.FC<AddUsersProps> = ({
     name: "",
     userName: "",
     password: "",
-    role: null,
+    role: "" as RoleType,
   });
 
   const handleUserAction = async (userId: string, actionType: LoadingType) => {
@@ -117,12 +117,12 @@ const AddUsers: React.FC<AddUsersProps> = ({
 
   const createUser = () => {
     if (loading.loading) return;
-    setSelected(null);
+    // setSelected(null);
     setFormState({
       name: "",
       userName: "",
       password: "",
-      role: null,
+      role: "",
     });
     setPopup(true);
   };
@@ -132,11 +132,12 @@ const AddUsers: React.FC<AddUsersProps> = ({
   ) => {
     e.preventDefault();
     const { name, value } = e.target;
-    console.log(name, value)
+    console.log(name, value);
     setFormState((prev) => ({ ...prev, [name!]: value }));
   };
 
-  const handleFormSubmit = async () => {
+  const handleFormSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+    e.preventDefault();
     try {
       const token = jsCookie.get("token");
       const userData = {
@@ -145,12 +146,31 @@ const AddUsers: React.FC<AddUsersProps> = ({
         password: formState.password,
         role: formState.role,
       };
-
+      console.log(userData);
       if (loading.loaderFor === LoadingType.CreateUser) {
-        // Make a request to create a new user
+        console.log("creating");
+        const { data } = await axios.put(
+          `${config.APIURI}/api/v1/role/access`,
+          { signupData: userData },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        ); // Make a request to create a new user
         // Dispatch an action for adding the user
+        console.log(data);
+
         // Example dispatch usage: dispatch({ type: 'ADD_USER', payload: userData });
       } else if (loading.loaderFor === LoadingType.EditUser) {
+        console.log("creating");
+
+        const { data } = await axios.post(
+          `${config.APIURI}/api/v1/role/access`,
+          { signupData: userData },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
         // Make a request to update the existing user
         // Dispatch an action for updating the user
         // Example dispatch usage: dispatch({ type: 'UPDATE_USER', payload: userData });
@@ -254,7 +274,7 @@ const AddUsers: React.FC<AddUsersProps> = ({
                   id="role-select"
                   name="role"
                   label="Role selection"
-                  value={formState.role}
+                  value={formState.role ? formState.role : ""}
                   onChange={handleFormChange}
                 >
                   {/* Map over your roles array to generate MenuItem components */}
