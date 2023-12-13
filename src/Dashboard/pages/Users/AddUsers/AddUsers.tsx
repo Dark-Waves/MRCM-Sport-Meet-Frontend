@@ -62,21 +62,46 @@ const AddUsers: React.FC<AddUsersProps> = ({ userData, dispatch }) => {
     // Dispatch an action for removing the user
     // Example dispatch usage: dispatch({ type: 'REMOVE_USER', payload: userId });
   };
-
-  const editUser = (userId: string) => {
+  const editUser = async (userId: string) => {
     if (loading.loading) return;
     setLoading({
       loading: true,
       loaderFor: "editUser",
       loaderForValue: userId,
     });
+    try {
+      const token = jsCookie.get("token");
+      const { data } = await axios.get(
+        `${config.APIURI}/api/v1/user/${userId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setSelected(data.userData as UserData);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading({
+        loading: false,
+        loaderFor: "",
+        loaderForValue: "",
+      });
+    }
+
     // Dispatch an action for editing the user
     // Example dispatch usage: dispatch({ type: 'EDIT_USER', payload: userId });
   };
 
   const createUser = () => {
     if (loading.loading) return;
+    setLoading({
+      loading: true,
+      loaderFor: "createUser",
+      loaderForValue: "",
+    });
     setSelected({});
+    setPopup(true);
+
     // Dispatch an action for editing the user
     // Example dispatch usage: dispatch({ type: 'EDIT_USER', payload: userId });
   };
