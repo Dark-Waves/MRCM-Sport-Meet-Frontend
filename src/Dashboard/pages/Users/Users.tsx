@@ -14,6 +14,8 @@ interface State {
   userDataStatus: "loading" | "error" | "ready";
   allUserData: any[] | null;
   allUserDataStatus: "loading" | "error" | "ready";
+  allRoles: any[] | null;
+  allRolesStatus: "loading" | "error" | "ready";
 }
 
 type Action =
@@ -21,7 +23,9 @@ type Action =
   | { type: "setUserData"; payload: any[] }
   | { type: "setUserDataStatus"; payload: "loading" | "error" | "ready" }
   | { type: "setAllUserData"; payload: any[] }
-  | { type: "setAllUserDataStatus"; payload: "loading" | "error" | "ready" };
+  | { type: "setAllUserDataStatus"; payload: "loading" | "error" | "ready" }
+  | { type: "setAllRoles"; payload: any[] }
+  | { type: "setAllRolesStatus"; payload: "loading" | "error" | "ready" };
 
 const initialValue: State = {
   status: "loading",
@@ -29,6 +33,8 @@ const initialValue: State = {
   userDataStatus: "loading",
   allUserData: null,
   allUserDataStatus: "loading",
+  allRoles: null,
+  allRolesStatus: "loading",
 };
 
 const reducer = function (state: State, action: Action): State {
@@ -43,6 +49,10 @@ const reducer = function (state: State, action: Action): State {
       return { ...state, allUserData: action.payload };
     case "setAllUserDataStatus":
       return { ...state, allUserDataStatus: action.payload };
+    case "setAllRoles":
+      return { ...state, allRoles: action.payload };
+    case "setAllRolesStatus":
+      return { ...state, allRolesStatus: action.payload };
     default:
       throw new Error("Method not found");
   }
@@ -50,21 +60,28 @@ const reducer = function (state: State, action: Action): State {
 
 const Users: React.FC = () => {
   const [state, dispatch] = useReducer(reducer, initialValue);
-  const { status, userData, userDataStatus, allUserData, allUserDataStatus } =
-    state;
+  const {
+    status,
+    userData,
+    userDataStatus,
+    allUserData,
+    allUserDataStatus,
+    allRoles,
+    allRolesStatus,
+  } = state;
 
   useEffect(() => {
     if (
       userDataStatus === "loading" ||
       allUserDataStatus === "loading" ||
+      allRolesStatus === "loading" ||
       !allUserData ||
-      !userData
+      !userData ||
+      !allRoles
     ) {
       return;
     }
-    if (allUserData.length && userData.length) {
-      dispatch({ type: "setStatus", payload: "ready" });
-    }
+    dispatch({ type: "setStatus", payload: "ready" });
   }, [userData, allUserData, allUserDataStatus, userDataStatus]);
 
   useEffect(() => {
@@ -103,7 +120,28 @@ const Users: React.FC = () => {
     };
     getData();
   }, [allUserDataStatus]);
-
+  useEffect(() => {
+    const getData = async () => {
+      if (allUserDataStatus !== "loading") return;
+      try {
+        const token = Cookies.get("token");
+        const { data } = await axios.get(
+          `${config.APIURI}/api/v1/role/access`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        dispatch({ type: "setAllRolesStatus", payload: "ready" });
+        dispatch({
+          type: "setAllRoles",
+          payload: data.lowerRoles,
+        });
+      } catch (error) {
+        dispatch({ type: "setStatus", payload: "error" });
+      }
+    };
+    getData();
+  }, [allUserDataStatus]);
   return (
     <div className="events main-content-holder">
       {status === "loading" && <Loader />}
