@@ -18,6 +18,7 @@ enum LoadingType {
   RemoveUser = "removeUser",
   EditUser = "editUser",
   CreateUser = "createUser",
+  SubmitUser = "submitUser",
 }
 
 interface LoadingState {
@@ -45,12 +46,14 @@ interface AddUsersProps {
   allRoles: RolesData[];
   userData: UserData[];
   dispatch: Dispatch; // Update with the appropriate type for your dispatch function
+  allUserData: UserData[];
 }
 
 const AddUsers: React.FC<AddUsersProps> = ({
   userData,
   dispatch,
   allRoles: roles,
+  allUserData,
 }) => {
   const [popup, setPopup] = useState(false);
   const [selected, setSelected] = useState<UserData | {}>({});
@@ -67,35 +70,109 @@ const AddUsers: React.FC<AddUsersProps> = ({
     role: "" as RoleType,
   });
 
-  const handleUserAction = async (userId: string, actionType: LoadingType) => {
+  const openPopup = (actionType: LoadingType, userId?: string) => {
     if (loading.loading) return;
 
+    setLoading({
+      loading: false,
+      loaderFor: actionType,
+      loaderForValue: userId || "",
+    });
+
+    if (actionType === LoadingType.CreateUser) {
+      // Clear form data for creating a new user
+      setFormState({
+        name: "",
+        userName: "",
+        password: "",
+        role: "",
+      });
+    }
+
+    setPopup(true);
+  };
+
+  const handleUserAction = async (userId: string, actionType: LoadingType) => {
+    if (loading.loading) return;
+    console.log({ userId, actionType });
     setLoading({
       loading: true,
       loaderFor: actionType,
       loaderForValue: userId,
     });
+    if (actionType === LoadingType.EditUser) {
+      try {
+        const token = jsCookie.get("token");
+        const response = await axios.get(
+          `${config.APIURI}/api/v1/user/${userId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        console.log(response.data.userData);
+
+        setSelected(response.data.userData as UserData);
+        setFormState({
+          name: response.data.userData.name,
+          userName: response.data.userData.userName,
+          password: "", // Assuming you don't want to populate the password during editing
+          role: response.data.userData.roles.roleIndex,
+        });
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading({
+          loading: false,
+          loaderFor: actionType,
+          loaderForValue: "",
+        });
+        openPopup(actionType, userId);
+      }
+    } else {
+      setLoading({
+        loading: false,
+        loaderFor: actionType,
+        loaderForValue: "",
+      });
+      openPopup(actionType, userId);
+    }
+  };
+
+  const removeUser = async (userId: string) => {
+    if (loading.loading) return;
+
+    setLoading({
+      loading: true,
+      loaderFor: LoadingType.RemoveUser,
+      loaderForValue: userId,
+    });
 
     try {
       const token = jsCookie.get("token");
-      const response = await axios.get(
+      const response = await axios.delete(
         `${config.APIURI}/api/v1/user/${userId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      if (actionType === LoadingType.EditUser) {
-        setSelected(response.data.userData as UserData);
-        setFormState({
-          name: response.data.userData.name,
-          userName: response.data.userData.userName,
-          password: "", // Assuming you don't want to populate the password during editing
-          role: response.data.userData.role,
+      if (response.data.message === "ok") {
+        // Remove the user from allUserData and userData
+        const updatedAllUserData = allUserData.filter(
+          (user) => user.id !== userId
+        );
+        const updatedUserData = userData.filter((user) => user.id !== userId);
+
+        dispatch({
+          type: "setAllUserData",
+          payload: updatedAllUserData,
+        });
+
+        dispatch({
+          type: "setUserData",
+          payload: updatedUserData,
         });
       }
-
-      // Add logic for Remove User if needed
     } catch (error) {
       console.log(error);
     } finally {
@@ -107,24 +184,86 @@ const AddUsers: React.FC<AddUsersProps> = ({
     }
   };
 
-  const removeUser = (userId: string) => {
-    handleUserAction(userId, LoadingType.RemoveUser);
-  };
+  const handleFormSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const token = jsCookie.get("token");
+      const updateUserData = {
+        name: formState.name,
+        userName: formState.userName,
+        password: formState.password,
+        role: formState.role,
+      };
+      console.log(updateUserData);
+      console.log(loading);
+      if (loading.loaderFor === LoadingType.CreateUser) {
+        setLoading({
+          loading: false,
+          loaderFor: LoadingType.SubmitUser,
+          loaderForValue: "",
+        });
 
-  const editUser = (userId: string) => {
-    handleUserAction(userId, LoadingType.EditUser);
-  };
+        const { data } = await axios.put(
+          `${config.APIURI}/api/v1/user`,
+          { signupData: updateUserData },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        console.log(data);
+        if (data.message === "ok") {
+          setPopup(false);
+          dispatch({
+            type: "setUserData",
+            payload: [...userData, data.userSchema],
+          });
 
-  const createUser = () => {
-    if (loading.loading) return;
-    // setSelected(null);
-    setFormState({
-      name: "",
-      userName: "",
-      password: "",
-      role: "",
-    });
-    setPopup(true);
+          dispatch({
+            type: "setAllUserData",
+            payload: [...allUserData, data.userSchema],
+          });
+        }
+      } else if (loading.loaderFor === LoadingType.EditUser) {
+        setLoading({
+          loading: false,
+          loaderFor: LoadingType.SubmitUser,
+          loaderForValue: "",
+        });
+        const { data } = await axios.post(
+          `${config.APIURI}/api/v1/role/access`,
+          { signupData: updateUserData },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        console.log(data);
+        if (data.message === "ok") {
+          const updatedAllUserData = allUserData.map((user) =>
+            user.id === loading.loaderForValue ? data.updatedUser : user
+          );
+          const updatedUserData = userData.map((user) =>
+            user.id === loading.loaderForValue ? data.updatedUser : user
+          );
+          dispatch({
+            type: "setAllUserData",
+            payload: updatedAllUserData,
+          });
+          dispatch({
+            type: "setUserData",
+            payload: updatedUserData,
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      // setPopup(false);
+      setLoading({
+        loading: false,
+        loaderFor: "",
+        loaderForValue: "",
+      });
+    }
   };
 
   const handleFormChange = (
@@ -136,57 +275,6 @@ const AddUsers: React.FC<AddUsersProps> = ({
     setFormState((prev) => ({ ...prev, [name!]: value }));
   };
 
-  const handleFormSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      const token = jsCookie.get("token");
-      const userData = {
-        name: formState.name,
-        userName: formState.userName,
-        password: formState.password,
-        role: formState.role,
-      };
-      console.log(userData);
-      if (loading.loaderFor === LoadingType.CreateUser) {
-        console.log("creating");
-        const { data } = await axios.put(
-          `${config.APIURI}/api/v1/role/access`,
-          { signupData: userData },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        ); // Make a request to create a new user
-        // Dispatch an action for adding the user
-        console.log(data);
-
-        // Example dispatch usage: dispatch({ type: 'ADD_USER', payload: userData });
-      } else if (loading.loaderFor === LoadingType.EditUser) {
-        console.log("creating");
-
-        const { data } = await axios.post(
-          `${config.APIURI}/api/v1/role/access`,
-          { signupData: userData },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        // Make a request to update the existing user
-        // Dispatch an action for updating the user
-        // Example dispatch usage: dispatch({ type: 'UPDATE_USER', payload: userData });
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setPopup(false);
-      setLoading({
-        loading: false,
-        loaderFor: "",
-        loaderForValue: "",
-      });
-    }
-  };
-
   const handleAddUserClose = () => {
     setPopup(false);
     setSelected({});
@@ -196,30 +284,40 @@ const AddUsers: React.FC<AddUsersProps> = ({
       password: "",
       role: "",
     });
+    setLoading({
+      loading: false,
+      loaderFor: "",
+      loaderForValue: "",
+    });
   };
 
   return (
     <div className="user_controller position-relative">
       <div className="top_actions m-b-4">
-        <Button onClick={() => createUser()} variant="outlined" color="primary">
+        <Button
+          onClick={() => openPopup(LoadingType.CreateUser)}
+          variant="outlined"
+          color="primary"
+        >
           Add User
         </Button>
       </div>
       <div className="content-grid-one main-content-holder">
-        {userData.map((user) => (
-          <div className="grid-common" key={user.id}>
+        {userData.map((user, index) => (
+          <div className="grid-common" key={index}>
             <div className="details">
               <h2>{user.name}</h2>
               <p>Role: {user.role}</p>
             </div>
             <div className="buttons flex-row-aro m-t-4 w-full ">
               <Button
-                onClick={() => editUser(user.id)}
+                onClick={() => handleUserAction(user.id, LoadingType.EditUser)}
                 variant="contained"
                 color="primary"
                 loading={
                   loading.loaderFor === LoadingType.EditUser &&
-                  loading.loaderForValue === user.id
+                  loading.loaderForValue === user.id &&
+                  loading.loading
                 }
               >
                 Edit
@@ -230,7 +328,8 @@ const AddUsers: React.FC<AddUsersProps> = ({
                 color="error"
                 loading={
                   loading.loaderFor === LoadingType.RemoveUser &&
-                  loading.loaderForValue === user.id
+                  loading.loaderForValue === user.id &&
+                  loading.loading
                 }
               >
                 Remove
@@ -244,7 +343,11 @@ const AddUsers: React.FC<AddUsersProps> = ({
           {/* Contents for adding/editing a user */}
           {/* You can add form elements or other content for adding/editing users here */}
           <div className="popup_content m-4">
-            <h1>{selected ? "Edit user" : "User Create"}</h1>
+            <h1>
+              {loading.loaderFor === LoadingType.EditUser
+                ? "Edit user"
+                : "User Create"}
+            </h1>
             <form onSubmit={handleFormSubmit} className="flex-col w-full g-5">
               <TextField
                 fullWidth
@@ -262,8 +365,13 @@ const AddUsers: React.FC<AddUsersProps> = ({
               />
               <TextField
                 fullWidth
-                label="Password"
+                label={
+                  loading.loaderFor === LoadingType.EditUser
+                    ? "New Password"
+                    : "Password"
+                }
                 name="password"
+                type="password"
                 value={formState.password}
                 onChange={handleFormChange}
               />
@@ -274,7 +382,13 @@ const AddUsers: React.FC<AddUsersProps> = ({
                   id="role-select"
                   name="role"
                   label="Role selection"
-                  value={formState.role ? formState.role : ""}
+                  value={
+                    formState.role
+                      ? formState.role
+                      : formState.roles
+                      ? formState.roles.roleIndex
+                      : ""
+                  }
                   onChange={handleFormChange}
                 >
                   {/* Map over your roles array to generate MenuItem components */}
@@ -285,7 +399,12 @@ const AddUsers: React.FC<AddUsersProps> = ({
                   ))}
                 </Select>
               </FormControl>
-              <Button type="submit" variant="contained" color="primary">
+              <Button
+                loading={loading.loaderFor === LoadingType.SubmitUser}
+                type="submit"
+                variant="contained"
+                color="primary"
+              >
                 Save
               </Button>
             </form>

@@ -143,7 +143,7 @@ const Users: React.FC = () => {
     getData();
   }, [allUserDataStatus]);
   return (
-    <div className="events main-content-holder">
+    <div className="events main-content-holder position-relative h-full">
       {status === "loading" && <Loader />}
       {status === "error" && <ErrorPage code={400} />}
       {status === "ready" && (
