@@ -13,8 +13,8 @@ export default function Houses({ houseData }) {
     <div className="main__Houses m-t-5">
       <h2 className="title font-xl font-weight-700 m-b-4">Houses</h2>
       <Grid container spacing={3} className="grid-houses">
-        {houseData.map((data) => (
-          <Grid item xs={11} sm={5} md={3} key={data._id}>
+        {houseData.map((data, index) => (
+          <Grid item xs={11} sm={5} md={3} key={index}>
             <Card sx={{ minWidth: 275 }}>
               <CardContent>
                 <Typography

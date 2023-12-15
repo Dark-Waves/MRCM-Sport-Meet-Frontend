@@ -1,20 +1,9 @@
 import { iconsImgs } from "../../../utils/images";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./System.css";
-import { useContext, useEffect, useState } from "react";
-import DashboardContext from "../../../../context/DashboardContext";
 import Loader from "../../../../Components/Loader/Loader";
 
-const System = () => {
-  const [systemData, setSystemData] = useState([]);
-  const { socket } = useContext(DashboardContext);
-  useEffect(() => {
-    socket.on("server-message", (args) => {
-      if (!(args.type === "systemInfo")) return;
-      setSystemData(args.payload);
-    });
-  }, [socket]);
-
+const System = ({ systemData }) => {
   return (
     <div className="system subgrid-two-item grid-common grid-c6">
       <div className="grid-c-title">
@@ -49,8 +38,8 @@ const System = () => {
                 </div>
                 <div className="data grid-item-bottom">
                   <div className="grid-item-badges">
-                    {system.data.map((data) => (
-                      <span className="grid-item-badge" key={data._id}>
+                    {system.data.map((data, index) => (
+                      <span className="grid-item-badge" key={index}>
                         {data.title} - {data.amount}
                       </span>
                     ))}

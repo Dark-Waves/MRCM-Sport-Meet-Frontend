@@ -49,8 +49,8 @@ const Usage = () => {
             <span>25</span>
             <span>0</span>
           </div>
-          {UsageData.map((Usage) => (
-            <div className="grid-chart-bar" key={Usage.id}>
+          {UsageData.map((Usage,index) => (
+            <div className="grid-chart-bar" key={index}>
               <div className="bar-wrapper">
                 <div
                   className="bar-item1"

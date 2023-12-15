@@ -1,24 +1,22 @@
-import "./ContentTop.css";
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import Cookies from "js-cookie";
 import DashboardContext from "../../../context/DashboardContext";
+import "./ContentTop.css";
 
-const ContentTop = () => {
+const ContentTop: React.FC = () => {
   const location = useLocation();
   const path = location.pathname;
   const pathName = path.substring(1);
 
-  const { dispatch, status } = useContext(DashboardContext)
+  const { dispatch, status } = useContext(DashboardContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
     Cookies.remove("token");
-    // setIsLoggedIn(false);
     navigate("/");
-    // Redirect to login page or update the state
   };
 
   return (
@@ -36,7 +34,11 @@ const ContentTop = () => {
       <div className="content-top-btns">
         <button className="notification-btn content-top-btn">
           {status === "ready" && (
-            <FontAwesomeIcon onClick={handleLogout} icon={faRightFromBracket} className="font-md" />
+            <FontAwesomeIcon
+              onClick={handleLogout}
+              icon={faRightFromBracket}
+              className="font-md"
+            />
           )}
         </button>
       </div>

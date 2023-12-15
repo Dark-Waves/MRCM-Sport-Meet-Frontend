@@ -13,8 +13,8 @@ const Info = () => {
       </div>
 
       <div className="grid-items">
-        {info.map((Info) => (
-          <div key={Info.id} className="box flex-row-aro grid-c4-content bg-jet">
+        {info.map((Info, index) => (
+          <div key={index} className="box flex-row-aro grid-c4-content bg-jet">
             <h4 className="title">{Info.title}</h4>
             <span className="count">{Info.count}</span>
           </div>

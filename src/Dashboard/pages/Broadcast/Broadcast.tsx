@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import "./Broadcast.css";
 import DashboardContext from "../../../context/DashboardContext";
 import axios from "axios";
@@ -15,18 +15,23 @@ import { faBullhorn, faLock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loader from "../../../Components/Loader/Loader";
 
-const Broadcast = () => {
-  const [messageContent, setMessageContent] = useState("");
-  const [messageType, setMessageType] = useState("public");
-  const [receivedMessages, setReceivedMessages] = useState([]);
-  const [error, setError] = useState("");
+interface Message {
+  content: string;
+  type: string;
+}
+
+const Broadcast: React.FC = () => {
+  const [messageContent, setMessageContent] = useState<string>("");
+  const [messageType, setMessageType] = useState<string>("public");
+  const [receivedMessages, setReceivedMessages] = useState<Message[]>([]);
+  const [error, setError] = useState<string>("");
   const { socket } = useContext(DashboardContext);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const handleSend = () => {
-    const message = { content: messageContent, type: messageType };
+    const message: Message = { content: messageContent, type: messageType };
     if (!messageContent) {
-      return setError("Please set a messsage");
+      return setError("Please set a message");
     } else {
       setError("");
     }
@@ -34,26 +39,20 @@ const Broadcast = () => {
     setMessageContent("");
   };
 
-  const handleMessageType = (e, value) => {
+  const handleMessageType = (e: React.MouseEvent<HTMLElement>, value: string | null) => {
     if (value) {
       setMessageType(value);
     }
   };
 
-  useEffect(function () {
+  useEffect(() => {
     const token = Cookies.get("token");
     const getBroadcasts = async () => {
       try {
-        const response = await axios.get(
-          `${config.APIURI}/api/v1/broadcast/private`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        console.log(response);
-        setReceivedMessages((prev) =>
-          [...response.data.messages, ...prev].reverse()
-        );
+        const response = await axios.get(`${config.APIURI}/api/v1/broadcast/private`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setReceivedMessages((prev) => [...response.data.messages, ...prev].reverse());
       } catch (error) {
         console.error(error);
       } finally {
@@ -66,14 +65,13 @@ const Broadcast = () => {
   useEffect(() => {
     socket.on("server-message", (message) => {
       if (message.type === "message") {
-        console.log(message);
         setReceivedMessages((prev) => [{ ...message.payload }, ...prev]);
       }
     });
   }, [socket]);
 
   return (
-    <div className="broadcast grid-common">
+    <div className="broadcast grid-common position-relative h-full">
       {isLoading ? (
         <Loader />
       ) : (

@@ -2,10 +2,10 @@ import { Route, Routes } from "react-router";
 import "./App.css";
 import "./utils/icons.js";
 import Home from "./Home/Home.jsx";
-import Dashboard from "./Dashboard/Dashboard.jsx";
+import Dashboard from "./Dashboard/Dashboard";
 import Auth from "./Auth/Auth.jsx";
 import Error from "./Components/Error/Error";
-import Loader from "./Components/Loader/Loader.jsx";
+import Loader from "./Components/Loader/Loader";
 import "./Components/Loader/Loader.css";
 
 

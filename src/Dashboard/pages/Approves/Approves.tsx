@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import DashboardContext from "../../../context/DashboardContext";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -7,10 +7,21 @@ import Loader from "../../../Components/Loader/Loader";
 import Button from "../../UI/Button/Button";
 import { CircularProgress } from "@mui/material";
 
+interface SubmitData {
+  _id: string;
+  name: string;
+  places: Array<{
+    place: string;
+    name: string;
+    inputAdmission: string;
+    house: string;
+  }>;
+}
+
 export default function Approves() {
   const { socket } = useContext(DashboardContext);
-  const [incomingSubmits, setIncomingSubmits] = useState([]);
-  const [approved, setApproved] = useState([]);
+  const [incomingSubmits, setIncomingSubmits] = useState<SubmitData[]>([]);
+  const [approved, setApproved] = useState<SubmitData[]>([]);
   const [submitLoaded, setSubmitLoaded] = useState(false);
   const [approveLoaded, setApproveLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -144,7 +155,7 @@ export default function Approves() {
     }
   };
   return (
-    <div className="approve__submits">
+    <div className="approve__submits position-relative h-full">
       {loading ? (
         <Loader />
       ) : (

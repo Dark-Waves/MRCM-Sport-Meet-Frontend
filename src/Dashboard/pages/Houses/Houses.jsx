@@ -203,7 +203,7 @@ export default function Houses() {
           {allHousesData.length ? (
             <>
               {allHousesData.map((house, index) => (
-                <div className="house__container" key={house._id}>
+                <div className="house__container" key={index}>
                   <form
                     onSubmit={handleOk}
                     className="house__content content grid-common m-4 flex-col"
@@ -249,7 +249,7 @@ export default function Houses() {
                     </div>
                     <div className="house__buttons buttons flex-row-center g-4">
                       <Button
-                      className="houses_submit_btn"
+                        className="houses_submit_btn"
                         color="error"
                         variant="outlined"
                         onClick={() => handleRemoveHouse(house._id)}
@@ -259,11 +259,14 @@ export default function Houses() {
                       {editIndex === index ? (
                         <>
                           <Button
-                          className="houses_submit_btn" variant="contained" type="submit">
+                            className="houses_submit_btn"
+                            variant="contained"
+                            type="submit"
+                          >
                             OK
                           </Button>
                           <Button
-                          className="houses_submit_btn"
+                            className="houses_submit_btn"
                             color="primary"
                             variant="text"
                             onClick={handleCancel}
@@ -273,7 +276,7 @@ export default function Houses() {
                         </>
                       ) : (
                         <Button
-                        className="houses_submit_btn"
+                          className="houses_submit_btn"
                           variant="contained"
                           onClick={() => handleEdit(index)}
                         >
@@ -287,7 +290,7 @@ export default function Houses() {
             </>
           ) : (
             <div className="empty_houses">
-              <h2>We can't find any houses</h2>
+              <h2>{"We can't find any houses"}</h2>
             </div>
           )}
         </>

@@ -20,6 +20,16 @@ interface Types {
   _id: string;
 }
 
+interface EventTypesOptions {
+  _id: string;
+  option: string;
+}
+export interface EventTypes {
+  _id: string;
+  name: string;
+  options: EventTypesOptions[];
+}
+
 interface Event {
   _id: string;
   description: string;
@@ -27,19 +37,17 @@ interface Event {
   places: Places[];
   state: string;
   types: Types[];
-  // Define other properties as needed
 }
 
-interface State {
+export interface State {
   status: string;
   eventData: Event[] | null;
   eventDataStatus: string;
-  eventTypes: any | null; // Define the type for eventTypes as needed
+  eventTypes: EventTypes[] | null;
   eventTypesStatus: string;
-  // loading, error, ready
 }
 
-type Action =
+export type Action =
   | { type: "setStatus"; payload: string }
   | { type: "setEventData"; payload: Event[] }
   | { type: "setEventDataStatus"; payload: string }
@@ -154,7 +162,7 @@ const Events: React.FC = () => {
   }, [eventTypesStatus]);
 
   return (
-    <div className="events main-content-holder">
+    <div className="events main-content-holder position-relative h-full">
       {status === "loading" && <Loader />}
       {status === "ready" && (
         <div>

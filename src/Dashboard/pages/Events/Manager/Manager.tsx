@@ -10,6 +10,8 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { InputLabel, TextField } from "@mui/material";
+import { Action as MainAction, State as MainState } from "../Events";
+import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 
 interface Places {
   minimumMarks: number;
@@ -83,20 +85,8 @@ const reducer = function (state: State, action: Action): State {
   }
 };
 
-interface Event {
-  _id: string;
-  description: string;
-  name: string;
-  places: Places[];
-  state: string;
-  types: Types[];
-  // Define other properties as needed
-}
-
-interface ManagerProps {
-  eventTypes: any[]; // Define the type for eventTypes as needed
-  eventData: Event[]; // Define the type for eventData as needed
-  dispatch: React.Dispatch<any>;
+interface ManagerProps extends MainState {
+  dispatch: React.Dispatch<MainAction>;
 }
 
 interface Errors {
@@ -163,7 +153,7 @@ const Manager: React.FC<ManagerProps> = ({
     dispatch({ type: "setPopUp", payload: true });
   };
   const handleEdit = async function (eventId) {
-    const event = eventData.find((val) => val._id === eventId);
+    const event = eventData && eventData.find((val) => val._id === eventId);
     if (!event) return;
     console.log(event);
     dispatch({ type: "setPopUp", payload: true });
@@ -171,7 +161,7 @@ const Manager: React.FC<ManagerProps> = ({
     dispatch({ type: "setEventData", payload: event });
   };
   const handleDelete = async function (eventId) {
-    const event = eventData.find((val) => val._id === eventId);
+    const event = eventData && eventData.find((val) => val._id === eventId);
     if (!event) return;
     dispatch({ type: "setSelectedEvent", payload: event });
     dispatch({
@@ -236,8 +226,7 @@ const Manager: React.FC<ManagerProps> = ({
   };
 
   const handlePlaces = async function (
-    e: React.ChangeEvent<HTMLInputElement>,
-    place: Places,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     index: number
   ) {
     e.preventDefault();
@@ -345,41 +334,55 @@ const Manager: React.FC<ManagerProps> = ({
           Create New Event
         </Button>
       </div>
-      <div className="content-grid-one flex-col g-4 w-full">
-        {eventData.map((event, index) => (
-          <div className="grid-common" key={index}>
-            <div className="flex-col-center g-4 m-t-4">
-              {event.name && (
-                <div className="event-name font-weight-500 font-md">
-                  <span className="font-weight-600">{event.name}</span>
-                </div>
-              )}
-              {event.type && (
-                <div className="event-des m-b-4 font-weight-500 font-md">
-                  <span className="font-weight-600">{event.type.name}</span>
-                </div>
-              )}
-              {event.description && (
-                <div className="event-des m-b-4 font-weight-500 font-md">
-                  <span className="font-weight-600">{event.description}</span>
-                </div>
-              )}
+      {eventData && (
+        <div className="content-grid-one flex-col g-4 w-full">
+          {eventData.map((event, index) => (
+            <div className="grid-common" key={index}>
+              <div className="flex-col-center g-4 m-t-4">
+                {event.name && (
+                  <div className="event-name font-weight-500 font-md">
+                    <span className="font-weight-600">{event.name}</span>
+                  </div>
+                )}
+                {event.types.length && (
+                  <div className="event_types_selected flex-row g-5">
+                    {event.types.map((name, index) => (
+                      <div
+                        key={index}
+                        className="event-des m-b-4 font-weight-500 font-md"
+                      >
+                        <span className="font-weight-600">
+                          {name.selection}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {event.description && (
+                  <div className="event-des m-b-4 font-weight-500 font-md">
+                    <span className="font-weight-600">{event.description}</span>
+                  </div>
+                )}
+              </div>
+              <div className="g-4 flex-row-center">
+                <Button
+                  variant="contained"
+                  onClick={() => handleEdit(event._id)}
+                >
+                  Edit
+                </Button>
+                <Button
+                  color="error"
+                  variant="outlined"
+                  onClick={() => handleDelete(event._id)}
+                >
+                  Delete
+                </Button>
+              </div>
             </div>
-            <div className="g-4 flex-row-center">
-              <Button variant="contained" onClick={() => handleEdit(event._id)}>
-                Edit
-              </Button>
-              <Button
-                color="error"
-                variant="outlined"
-                onClick={() => handleDelete(event._id)}
-              >
-                Delete
-              </Button>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
       {popUpModal && (
         <PopUp closePopup={closePopUp}>
           <h2>
@@ -405,7 +408,7 @@ const Manager: React.FC<ManagerProps> = ({
                 });
               }}
               label="Enter Event Name"
-              error={submitErrors.name}
+              error={submitErrors.name ? true : false}
             />
             <TextField
               minRows={4}
@@ -422,63 +425,66 @@ const Manager: React.FC<ManagerProps> = ({
                   payload: { ...tempeventData, description: e.target.value },
                 });
               }}
-              error={submitErrors.description}
+              error={submitErrors.description ? true : false}
             />
-            <div className="event_types_selection w-full flex-col-center g-4">
-              {eventTypes.map((eventType, index) => (
-                <FormControl fullWidth key={index}>
-                  <InputLabel id="event-type-select-label">
-                    {eventType.name}
-                  </InputLabel>
-                  <Select
-                    labelId="event-type-select-label"
-                    id="event-type-select"
-                    value={
-                      tempeventData.types?.find(
-                        (type) => type._id === eventType._id
-                      )?.option ||
-                      selectedEvent?.types?.find(
-                        (type) => type._id === eventType._id
-                      )?.option ||
-                      ""
-                    }
-                    label="Type"
-                    onChange={(e) => {
-                      const selectedOptionId = e.target.value;
-                      const selectedEventType = eventTypes.find((eventType) =>
-                        eventType.options.some(
-                          (option) => option._id === selectedOptionId
-                        )
-                      );
-                      const updatedTypes = [
-                        ...(tempeventData.types || []).filter(
-                          (type) => type._id !== selectedEventType._id
-                        ),
-                        {
-                          _id: selectedEventType._id,
-                          option: selectedOptionId,
-                        },
-                      ];
-
-                      dispatch({
-                        type: "setEventData",
-                        payload: {
-                          ...tempeventData,
-                          types: updatedTypes,
-                        },
-                      });
-                    }}
-                    error={submitErrors.type}
-                  >
-                    {eventType.options.map((data, index) => (
-                      <MenuItem key={index} value={data._id}>
-                        {data.option}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              ))}
-            </div>
+            {eventTypes && (
+              <div className="event_types_selection w-full flex-col-center g-4">
+                {eventTypes.map((eventType, index) => (
+                  <FormControl fullWidth key={index}>
+                    <InputLabel id="event-type-select-label">
+                      {eventType.name}
+                    </InputLabel>
+                    <Select
+                      labelId="event-type-select-label"
+                      id="event-type-select"
+                      value={
+                        tempeventData.types?.find(
+                          (type) => type._id === eventType._id
+                        )?.option ||
+                        selectedEvent?.types?.find(
+                          (type) => type._id === eventType._id
+                        )?.option ||
+                        ""
+                      }
+                      label="Type"
+                      onChange={(e) => {
+                        const selectedOptionId = e.target.value;
+                        const selectedEventType = eventTypes.find((eventType) =>
+                          eventType.options.some(
+                            (option) => option._id === selectedOptionId
+                          )
+                        );
+                        if (selectedEventType && selectedEventType._id) {
+                          const updatedTypes = [
+                            ...(tempeventData.types || []).filter(
+                              (type) => type._id !== selectedEventType._id
+                            ),
+                            {
+                              _id: selectedEventType._id,
+                              option: selectedOptionId,
+                            },
+                          ];
+                          dispatch({
+                            type: "setEventData",
+                            payload: {
+                              ...tempeventData,
+                              types: updatedTypes,
+                            },
+                          });
+                        }
+                      }}
+                      error={submitErrors.type ? true : false}
+                    >
+                      {eventType.options.map((data, index) => (
+                        <MenuItem key={index} value={data._id}>
+                          {data.option}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                ))}
+              </div>
+            )}
 
             <div className="places-section">
               {tempeventData.places && tempeventData.places.length > 0 && (
@@ -495,8 +501,10 @@ const Manager: React.FC<ManagerProps> = ({
                         style={{ width: "100%" }}
                         placeholder="Score"
                         value={place.minimumMarks}
-                        onChange={(e) => handlePlaces(e, place, index)}
-                        error={submitErrors[`place - ${place.place}`]}
+                        onChange={(e) => handlePlaces(e, index)}
+                        error={
+                          submitErrors[`place - ${place.place}`] ? true : false
+                        }
                         className="w-85"
                       />
                       {/* <FontAwesomeIcon icon="fa-solid fa-triangle-exclamation" /> */}
@@ -510,7 +518,7 @@ const Manager: React.FC<ManagerProps> = ({
                 color={submitErrors.places ? "error" : "primary"}
                 startIcon={
                   submitErrors.places ? (
-                    <FontAwesomeIcon icon="fa-solid fa-triangle-exclamation" />
+                    <FontAwesomeIcon icon={faTriangleExclamation} />
                   ) : (
                     ""
                   )

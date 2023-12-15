@@ -7,26 +7,23 @@ import { useSnackbar } from "notistack";
 import "./Types.css";
 import Loader from "../../../../Components/Loader/Loader";
 import { TextField } from "@mui/material";
+import {
+  State as MainState,
+  Action as MainAction,
+  EventTypes,
+} from "../Events";
 
-interface EventType {
-  _id: string;
-  name: string;
-  options: { option: string; _id: string }[];
-}
-
-interface TypesProps {
-  eventTypes: EventType[];
-  dispatch: React.Dispatch<any>; // Define the type for dispatch as needed
+interface TypesProps extends MainState {
+  dispatch: React.Dispatch<MainAction>; // Define the type for dispatch as needed
 }
 
 const Types: React.FC<TypesProps> = ({
   eventTypes,
   dispatch: dispatchEvent,
 }) => {
-  const [setAllEventTypes] = useState<any[]>([]);
   const { enqueueSnackbar } = useSnackbar();
   const [editIndex, setEditIndex] = useState<number | null>(null);
-  const [editedEventType, setEditedEventType] = useState<EventType>({
+  const [editedEventType, setEditedEventType] = useState<EventTypes>({
     _id: "",
     name: "",
     options: [],
@@ -62,7 +59,7 @@ const Types: React.FC<TypesProps> = ({
   const handleEdit = (index) => {
     setEditIndex(index);
     setCreateForm(false);
-    setEditedEventType({ ...eventTypes[index] });
+    setEditedEventType({ ...(eventTypes ? eventTypes : [])[index] });
   };
 
   const handleOk = async (e) => {
@@ -115,7 +112,7 @@ const Types: React.FC<TypesProps> = ({
         dispatchEvent({
           type: "setEventTypes",
           payload: [
-            ...eventTypes,
+            ...(eventTypes ? eventTypes : []),
             {
               name: updatedEventTypes.name,
               options: updatedEventTypes.options,
@@ -149,8 +146,9 @@ const Types: React.FC<TypesProps> = ({
 
       if (response.data.message === "ok") {
         console.log(eventTypes);
-        const updatedEventTypes = eventTypes.map((eventType) =>
-          eventType._id === updatedData._id ? updatedData : eventType
+        const updatedEventTypes = (eventTypes ? eventTypes : []).map(
+          (eventType) =>
+            eventType._id === updatedData._id ? updatedData : eventType
         );
         dispatchEvent({
           type: "setEventTypes",
@@ -179,7 +177,7 @@ const Types: React.FC<TypesProps> = ({
       );
 
       if (response.data.message === "ok") {
-        const updatedEventType = eventTypes.filter(
+        const updatedEventType = (eventTypes ? eventTypes : []).filter(
           (eventType) => eventType._id !== eventID
         );
         dispatchEvent({
@@ -277,136 +275,134 @@ const Types: React.FC<TypesProps> = ({
                 </form>
               </div>
             )}
-            {eventTypes.length ? (
-              <>
-                {eventTypes.map((eventType, index) => (
-                  <div className="event__container" key={index}>
-                    <form
-                      onSubmit={handleOk}
-                      className="create_event_type house__content content grid-common m-4 flex-col"
-                    >
-                      <div className="data-content inputs w-full p-4 g-3">
-                        {editIndex === index ? (
-                          <>
-                            <TextField
-                              id="name"
-                              type="text"
-                              placeholder="Description"
-                              value={
-                                (editedEventType && editedEventType.name) ||
-                                eventType.name ||
-                                ""
-                              }
-                              onChange={(e) => (
-                                e.preventDefault(),
-                                handleInputChanges("name", e.target.value)
-                              )}
-                              required
-                            />
-                            <div className="event_types flex-col g-3">
-                              {editedEventType.options.map((data, index) => (
-                                <TextField
-                                  fullWidth
-                                  id="option"
-                                  type="text"
-                                  value={(data && data.option) || ""}
-                                  label={`Option ${index + 1}`}
-                                  key={index}
-                                  onChange={(e) => (
-                                    e.preventDefault(),
-                                    handleInputChanges(
-                                      "option",
-                                      e.target.value,
-                                      index
-                                    )
-                                  )}
-                                  required
-                                />
-                              ))}
-                              <Button
-                                onClick={() => {
-                                  setEditedEventType((prev) => ({
-                                    ...prev,
-                                    options: [
-                                      ...(prev.options || []), // Preserve previous options
-                                      { option: "", _id: "" }, // Add a new empty option
-                                    ],
-                                  }));
-                                }}
-                                variant="contained"
-                              >
-                                Create Option
-                              </Button>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            <span
-                              onClick={() => handleEdit(index)}
-                              className="font-md p-3 bg-primary rounded-md font-weight-500"
-                            >
-                              Name: {eventType.name}
-                            </span>
-                            {eventType.options && (
-                              <div
-                                className="types flex-row g-2"
-                                onClick={() => handleEdit(index)}
-                                style={{ overflow: "auto" }}
-                              >
-                                {eventType.options.map((option) => (
-                                  <span
-                                    key={option._id}
-                                    className="type p-3 bg-primary rounded"
-                                  >
-                                    {option.option}
-                                  </span>
-                                ))}
-                              </div>
+            {eventTypes && eventTypes.length ? (
+              eventTypes.map((eventType, index) => (
+                <div className="event__container" key={index}>
+                  <form
+                    onSubmit={handleOk}
+                    className="create_event_type house__content content grid-common m-4 flex-col"
+                  >
+                    <div className="data-content inputs w-full p-4 g-3">
+                      {editIndex === index ? (
+                        <>
+                          <TextField
+                            id="name"
+                            type="text"
+                            placeholder="Description"
+                            value={
+                              (editedEventType && editedEventType.name) ||
+                              eventType.name ||
+                              ""
+                            }
+                            onChange={(e) => (
+                              e.preventDefault(),
+                              handleInputChanges("name", e.target.value)
                             )}
-                          </>
-                        )}
-                      </div>
-                      <div className="event__buttons buttons flex-row-center m-auto g-4">
-                        <Button
-                          className="houses_submit_btn"
-                          color="error"
-                          variant="outlined"
-                          onClick={() => handleRemoveEventType(eventType._id)}
-                        >
-                          Remove
-                        </Button>
-                        {editIndex === index ? (
-                          <>
+                            required
+                          />
+                          <div className="event_types flex-col g-3">
+                            {editedEventType.options.map((data, index) => (
+                              <TextField
+                                fullWidth
+                                id="option"
+                                type="text"
+                                value={(data && data.option) || ""}
+                                label={`Option ${index + 1}`}
+                                key={index}
+                                onChange={(e) => (
+                                  e.preventDefault(),
+                                  handleInputChanges(
+                                    "option",
+                                    e.target.value,
+                                    index
+                                  )
+                                )}
+                                required
+                              />
+                            ))}
                             <Button
-                              className="houses_submit_btn"
+                              onClick={() => {
+                                setEditedEventType((prev) => ({
+                                  ...prev,
+                                  options: [
+                                    ...(prev.options || []), // Preserve previous options
+                                    { option: "", _id: "" }, // Add a new empty option
+                                  ],
+                                }));
+                              }}
                               variant="contained"
-                              type="submit"
                             >
-                              OK
+                              Create Option
                             </Button>
-                            <Button
-                              className="houses_submit_btn"
-                              color="primary"
-                              variant="text"
-                              onClick={handleCancel}
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <span
+                            onClick={() => handleEdit(index)}
+                            className="font-md p-3 bg-primary rounded-md font-weight-500"
+                          >
+                            Name: {eventType.name}
+                          </span>
+                          {eventType.options && (
+                            <div
+                              className="types flex-row g-2"
+                              onClick={() => handleEdit(index)}
+                              style={{ overflow: "auto" }}
                             >
-                              Cancel
-                            </Button>
-                          </>
-                        ) : (
+                              {eventType.options.map((option, index) => (
+                                <span
+                                  key={index}
+                                  className="type p-3 bg-primary rounded"
+                                >
+                                  {option.option}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+                    <div className="event__buttons buttons flex-row-center m-auto g-4">
+                      <Button
+                        className="houses_submit_btn"
+                        color="error"
+                        variant="outlined"
+                        onClick={() => handleRemoveEventType(eventType._id)}
+                      >
+                        Remove
+                      </Button>
+                      {editIndex === index ? (
+                        <>
                           <Button
                             className="houses_submit_btn"
                             variant="contained"
-                            onClick={() => handleEdit(index)}
+                            type="submit"
                           >
-                            Edit
+                            OK
                           </Button>
-                        )}
-                      </div>
-                    </form>
-                  </div>
-                ))}
-              </>
+                          <Button
+                            className="houses_submit_btn"
+                            color="primary"
+                            variant="text"
+                            onClick={handleCancel}
+                          >
+                            Cancel
+                          </Button>
+                        </>
+                      ) : (
+                        <Button
+                          className="houses_submit_btn"
+                          variant="contained"
+                          onClick={() => handleEdit(index)}
+                        >
+                          Edit
+                        </Button>
+                      )}
+                    </div>
+                  </form>
+                </div>
+              ))
             ) : (
               <div className="empty_houses">
                 <h2>{"We can't find any types"}</h2>

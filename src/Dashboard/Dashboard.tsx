@@ -1,33 +1,56 @@
-import "./Dashboard.css";
+import React, { useEffect, useReducer } from "react";
+import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
+import socketio from "socket.io-client";
+import axios from "axios";
+import { config } from "./utils/config";
+import { siteImgs } from "./utils/images";
+import Sidebar from "./components/Sidebar/Sidebar";
+import ContentTop from "./components/ContentTop/ContentTop";
+import ErrorPage from "../Components/Error/Error";
+import Loader from "../Components/Loader/Loader";
+import { SnackbarProvider } from "notistack";
+import { useLocation } from "react-router-dom";
+import Cookies from "js-cookie";
 import DashboardContext from "../context/DashboardContext";
 import Home from "./pages/Home/Home";
 import Events from "./pages/Events/Events";
 import Broadcast from "./pages/Broadcast/Broadcast";
 import Users from "./pages/Users/Users";
 import Website from "./pages/Website/Website";
-import ContentTop from "./components/ContentTop/ContentTop"; // Heading
-import ErrorPage from "../Components/Error/Error";
-import Loader from "../Components/Loader/Loader";
-import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
-import { useEffect, useReducer } from "react";
-import useAuth from "../hooks/useAuth";
-import socketio from "socket.io-client";
-import axios from "axios";
-import { config } from "./utils/config.js";
-import { siteImgs } from "./utils/images.js";
-import Sidebar from "./components/Sidebar/Sidebar";
-const defaultLogo = siteImgs.Logo;
-const SiteName = config.SiteName;
-import { useLocation } from "react-router-dom";
-import Cookies from "js-cookie";
 import Approves from "./pages/Approves/Approves";
 import Submits from "./pages/Submits/Submits";
 import Members from "./pages/Members/Members";
-import { SnackbarProvider } from "notistack";
 import Houses from "./pages/Houses/Houses";
+
+import "./Dashboard.css";
+
+const defaultLogo = siteImgs.Logo;
+const SiteName = config.SiteName;
 const APIURI = config.APIURI;
 
-const initialValue = {
+interface State {
+  status: string;
+  navigationLinks: any;
+  navigationStatus: string;
+  profileStatus: string;
+  profile: any;
+  sidebarOpen: boolean;
+  wsShoketAuthenticated: boolean | null;
+  socket: any;
+}
+
+type Action =
+  | { type: "setStatus"; payload: string }
+  | { type: "toggleSideBar" }
+  | { type: "setProfile"; payload: any }
+  | { type: "setProfileStatus"; payload: string }
+  | { type: "setNavigationStatus"; payload: string }
+  | { type: "setNavigationLinks"; payload: any }
+  | { type: "setWsAuth"; payload: boolean }
+  | { type: "setWs"; payload: any };
+
+const initialValue: State = {
   status: "loading",
   navigationLinks: null,
   navigationStatus: "loading",
@@ -36,68 +59,60 @@ const initialValue = {
   sidebarOpen: true,
   wsShoketAuthenticated: null,
   socket: null,
-  // loading , error ,ready
 };
-const reducer = function (state, action) {
+
+const reducer = (state: State, action: Action): State => {
   switch (action.type) {
-    case "setStatus": {
+    case "setStatus":
       return { ...state, status: action.payload };
-    }
-    case "toggleSideBar": {
+    case "toggleSideBar":
       return { ...state, sidebarOpen: !state.sidebarOpen };
-    }
-    case "setProfile": {
+    case "setProfile":
       return { ...state, profile: action.payload };
-    }
-    case "setProfileStatus": {
+    case "setProfileStatus":
       return { ...state, profileStatus: action.payload };
-    }
-    case "setNavigationStatus": {
+    case "setNavigationStatus":
       return { ...state, navigationStatus: action.payload };
-    }
-    case "setNavigationLinks": {
+    case "setNavigationLinks":
       return { ...state, navigationLinks: action.payload };
-    }
-    case "setWsAuth": {
+    case "setWsAuth":
       return { ...state, wsShoketAuthenticated: action.payload };
-    }
-    case "setWs": {
+    case "setWs":
       return { ...state, socket: action.payload };
-    }
     default:
-      return new Error("method not found");
+      throw new Error("method not found");
   }
 };
 
-const getPageComponent = (title) => {
-  // Map the title to the corresponding component
-  const pages = {
-    Home: Home,
-    Events: Events,
-    Broadcast: Broadcast,
-    Users: Users,
-    Website: Website,
-    Approves: Approves,
+const getPageComponent = (title: string): React.FC | null => {
+  const pages: Record<string, React.FC> = {
+    Home,
+    Events,
+    Broadcast,
+    Users,
+    Website,
+    Approves,
     Submit: Submits,
-    Members: Members,
-    Houses: Houses,
+    Members,
+    Houses,
     // ... map other titles to components
   };
 
-  return pages[title] || null; // Return the component or null if not found
+  return pages[title] || null;
 };
 
-const renderRoutes = (links) => {
-  return links.map((link) => {
+const renderRoutes = (links: any): JSX.Element[] => {
+  return links.map((link: any, index: number) => {
     const PageComponent = getPageComponent(link.title);
-    if (!PageComponent) return null; // Skip if no matching component
+    if (!PageComponent) return <></>; // Skip if no matching component
     return (
-      <Route key={link._id} path={link.path} element={<PageComponent />} />
+      <Route key={index} path={link.path} element={<PageComponent />} />
       // Note: If subMenu exists, you might want to handle nested routes here
     );
   });
 };
-export default function Dashboard() {
+
+const Dashboard: React.FC = () => {
   const [state, dispatch] = useReducer(reducer, initialValue);
   const {
     status,
@@ -110,37 +125,30 @@ export default function Dashboard() {
   } = state;
   const [{ authenticated, status: authStatus }, dispatchAuth] = useAuth();
   const navigate = useNavigate();
-  /**Client Updates Checking */
-
   const location = useLocation();
 
   useEffect(() => {
     dispatchAuth({ type: "setStatus", payload: "loading" });
   }, [dispatchAuth, location]);
 
-  useEffect(function () {
+  useEffect(() => {
     document.title = `${SiteName} Dashboard`;
   }, []);
 
-  useEffect(
-    function () {
-      if (authStatus === "error") navigate("/auth");
-    },
-    [navigate, authStatus]
-  );
+  useEffect(() => {
+    if (authStatus === "error") Cookies.remove("token");
+    if (authStatus === "error") navigate("/auth");
+  }, [navigate, authStatus]);
 
-  useEffect(
-    function () {
-      if (!authenticated) return;
-      if (!wsShoketAuthenticated) return;
-      if (!navigationLinks) return;
-      if (!profile) return;
-      dispatch({ type: "setStatus", payload: "ready" });
-    },
-    [authenticated, wsShoketAuthenticated, profile, navigationLinks]
-  );
+  useEffect(() => {
+    if (!authenticated) return;
+    if (!wsShoketAuthenticated) return;
+    if (!navigationLinks) return;
+    if (!profile) return;
+    dispatch({ type: "setStatus", payload: "ready" });
+  }, [authenticated, wsShoketAuthenticated, profile, navigationLinks]);
 
-  useEffect(function () {
+  useEffect(() => {
     const socket = socketio(`${APIURI}/v1/home`, {
       transports: ["websocket"],
     });
@@ -152,10 +160,6 @@ export default function Dashboard() {
         payload: Cookies.get("token"),
       });
     });
-
-    return () => {
-      socket.close();
-    };
   }, []);
 
   /**Event handler */
@@ -269,4 +273,5 @@ export default function Dashboard() {
       )}
     </>
   );
-}
+};
+export default Dashboard;
