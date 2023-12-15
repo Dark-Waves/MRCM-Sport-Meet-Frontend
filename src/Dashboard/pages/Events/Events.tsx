@@ -77,15 +77,17 @@ const reducer = function (state: State, action: Action): State {
     case "deleteEvent": {
       return {
         ...state,
-        eventData: state.eventData?.filter(
-          (event) => event._id !== action.payload._id
-        ),
+        eventData: state.eventData
+          ? state.eventData?.filter((event) => event._id !== action.payload._id)
+          : [],
       };
     }
     case "addEvent": {
       return {
         ...state,
-        eventData: state.eventData ? [...state.eventData, action.payload] : [],
+        eventData: state.eventData
+          ? [...state.eventData, action.payload]
+          : [action.payload],
       };
     }
     case "editEvent": {

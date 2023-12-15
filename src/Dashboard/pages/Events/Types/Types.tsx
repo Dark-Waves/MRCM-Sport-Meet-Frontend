@@ -44,7 +44,7 @@ const Types: React.FC<TypesProps> = ({
     if (field === "option" && index !== undefined) {
       setEditedEventType((prev) => {
         const updatedOptions = [...prev.options];
-        updatedOptions[index] = { option: value };
+        updatedOptions[index] = { option: value, _id: "" };
 
         return {
           ...prev,
@@ -72,6 +72,7 @@ const Types: React.FC<TypesProps> = ({
       setEditedEventType({
         name: "",
         options: [],
+        _id: "",
       });
     }
     setEditIndex(null);
@@ -83,6 +84,7 @@ const Types: React.FC<TypesProps> = ({
     setEditedEventType({
       name: "",
       options: [],
+      _id: "",
     });
   };
 
@@ -92,6 +94,7 @@ const Types: React.FC<TypesProps> = ({
     setEditedEventType({
       name: "",
       options: [],
+      _id: "",
     });
   };
 
@@ -326,7 +329,7 @@ const Types: React.FC<TypesProps> = ({
                                     ...prev,
                                     options: [
                                       ...(prev.options || []), // Preserve previous options
-                                      { option: "" }, // Add a new empty option
+                                      { option: "", _id: "" }, // Add a new empty option
                                     ],
                                   }));
                                 }}

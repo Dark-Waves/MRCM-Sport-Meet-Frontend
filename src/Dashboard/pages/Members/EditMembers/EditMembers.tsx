@@ -8,25 +8,32 @@ import Button from "../../../UI/Button/Button";
 import Alert from "@mui/material/Alert";
 import { useSnackbar } from "notistack";
 import { TextField } from "@mui/material";
+import React from "react";
+import { Action, State as MainState, MemberData } from "../Members";
 
+interface EditMembersProps extends MainState {
+  dispatch: React.Dispatch<Action>;
+}
 
-export default function EditMembers({ allMembersData, setAllMembersData }) {
+const editMembers: React.FC<EditMembersProps> = function ({
+  allMembersData,
+  dispatch,
+}) {
   const { enqueueSnackbar } = useSnackbar();
-  const [submitErrors, setSubmitErrors] = useState({});
-  const [emptyErrors, setEmptyErrors] = useState({});
-  const [editIndex, setEditIndex] = useState(null);
-  const [editedMember, setEditedMember] = useState(null);
+  const [submitErrors, setSubmitErrors] = useState<Record<string, any>>({});
+  const [emptyErrors, setEmptyErrors] = useState<Record<string, any>>({});
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [editedMember, setEditedMember] = useState<MemberData | null>(null);
 
-  const handleInputChanges = (field, value) => {
-    setEditedMember((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  const handleInputChanges = (field: keyof MemberData, value: string) => {
+    if (editedMember) {
+      setEditedMember((prev) => (prev ? { ...prev, [field]: value } : null));
+    }
   };
 
-  const handleEdit = (index) => {
+  const handleEdit = (index: number) => {
     setEditIndex(index);
-    setEditedMember({ ...allMembersData[index] });
+    setEditedMember({ ...(allMembersData ? allMembersData : [])[index] });
   };
 
   const handleOk = async () => {
@@ -42,8 +49,7 @@ export default function EditMembers({ allMembersData, setAllMembersData }) {
     setEditedMember(null);
   };
 
-  const handleUpdateMember = async (updatedMemberData) => {
-    console.log(updatedMemberData);
+  const handleUpdateMember = async (updatedMemberData: MemberData) => {
     try {
       if (
         !updatedMemberData.Name ||
@@ -63,25 +69,27 @@ export default function EditMembers({ allMembersData, setAllMembersData }) {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log(response.data);
       if (response.data.message === "ok") {
-        const updatedMembers = allMembersData.map((member) =>
-          member.HouseID === updatedMemberData.HouseID
-            ? updatedMemberData
-            : member
-        );
-        setAllMembersData(updatedMembers);
+        const updatedMembers = allMembersData
+          ? allMembersData.map((member) =>
+              member.HouseID === updatedMemberData.HouseID
+                ? updatedMemberData
+                : member
+            )
+          : [];
+        dispatch({ type: "setAllMembersData", payload: updatedMembers });
+
         enqueueSnackbar("Member updated successfully.", { variant: "success" });
       }
     } catch (error) {
-      if (error.response.data.error) {
+      if (error.response?.data.error) {
         enqueueSnackbar(error.response.data.message, { variant: "error" });
       }
       console.error("Error updating member:", error);
     }
   };
 
-  const handleRemoveMember = async (memId) => {
+  const handleRemoveMember = async (memId: number) => {
     try {
       const token = Cookies.get("token");
       const response = await axios.delete(
@@ -90,12 +98,11 @@ export default function EditMembers({ allMembersData, setAllMembersData }) {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log(response);
       if (response.data.message === "ok") {
-        const updatedMembers = allMembersData.filter(
-          (member) => member._id !== memId
-        );
-        setAllMembersData(updatedMembers);
+        const updatedMembers = allMembersData
+          ? allMembersData.filter((member) => member.HouseID !== memId)
+          : [];
+        dispatch({ type: "setAllMembersData", payload: updatedMembers });
         enqueueSnackbar("Member removed successfully.", { variant: "success" });
       }
     } catch (error) {
@@ -105,7 +112,7 @@ export default function EditMembers({ allMembersData, setAllMembersData }) {
 
   return (
     <div className="member__add">
-      {allMembersData.length ? (
+      {allMembersData && allMembersData.length ? (
         <>
           {allMembersData.map((member, index) => (
             <div className="div" key={index}>
@@ -209,7 +216,9 @@ export default function EditMembers({ allMembersData, setAllMembersData }) {
                     <Button
                       color="error"
                       variant="outlined"
-                      onClick={() => handleRemoveMember(member.HouseID)}
+                      onClick={() =>
+                        member.HouseID && handleRemoveMember(member.HouseID)
+                      }
                       className="bg-scarlet-1 rounded-md font-weight-600 font-md"
                     >
                       Remove
@@ -254,4 +263,6 @@ export default function EditMembers({ allMembersData, setAllMembersData }) {
       )}
     </div>
   );
-}
+};
+
+export default editMembers;

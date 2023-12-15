@@ -83,10 +83,20 @@ const reducer = function (state: State, action: Action): State {
   }
 };
 
+interface Event {
+  _id: string;
+  description: string;
+  name: string;
+  places: Places[];
+  state: string;
+  types: Types[];
+  // Define other properties as needed
+}
+
 interface ManagerProps {
   eventTypes: any[]; // Define the type for eventTypes as needed
-  eventData: any[]; // Define the type for eventData as needed
-  dispatch: React.Dispatch<Action>;
+  eventData: Event[]; // Define the type for eventData as needed
+  dispatch: React.Dispatch<any>;
 }
 
 interface Errors {

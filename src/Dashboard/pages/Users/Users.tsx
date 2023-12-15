@@ -7,18 +7,33 @@ import axios from "axios";
 import { config } from "../../utils/config";
 import Loader from "../../../Components/Loader/Loader";
 import ErrorPage from "../../../Components/Error/Error";
+import React from "react";
 
-interface State {
+export type RoleType = "Owner" | "Admin" | "Staff" | "";
+
+export interface RolesData {
+  roleIndex: 1 | 2 | 3;
+  roleType: RoleType;
+}
+export interface UserData {
+  id: string;
+  name: string;
+  role: string;
+  userName: string;
+  // Define other properties as needed
+}
+
+export interface State {
   status: "loading" | "error" | "ready";
-  userData: any[] | null;
+  userData: UserData[] | null;
   userDataStatus: "loading" | "error" | "ready";
-  allUserData: any[] | null;
+  allUserData: UserData[] | null;
   allUserDataStatus: "loading" | "error" | "ready";
-  allRoles: any[] | null;
+  allRoles: RolesData[] | null;
   allRolesStatus: "loading" | "error" | "ready";
 }
 
-type Action =
+export type Action =
   | { type: "setStatus"; payload: "loading" | "error" | "ready" }
   | { type: "setUserData"; payload: any[] }
   | { type: "setUserDataStatus"; payload: "loading" | "error" | "ready" }
@@ -149,11 +164,7 @@ const Users: React.FC = () => {
       {status === "ready" && (
         <div>
           <Routes>
-            <Route
-              path="/"
-              index
-              element={<Overview {...state} dispatch={dispatch} />}
-            />
+            <Route path="/" index element={<Overview {...state} />} />
             <Route
               path="/Add"
               element={<AddUsers {...state} dispatch={dispatch} />}

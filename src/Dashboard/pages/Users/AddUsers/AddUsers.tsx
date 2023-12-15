@@ -1,9 +1,10 @@
 import Button from "../../../UI/Button/Button";
-import { useState } from "react";
+import React, { useState } from "react";
 import PopUp from "../../../UI/PopUp/PopUp";
 import jsCookie from "js-cookie";
 import axios from "axios";
-import { Dispatch } from "redux"; // Update with the appropriate import based on your state management library
+import { RoleType, UserData, State as MainState, Action } from "../Users";
+// import { Dispatch } from "redux"; // Update with the appropriate import based on your state management library
 import { config } from "../../../utils/config";
 import {
   TextField,
@@ -13,6 +14,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import { ConstructionOutlined } from "@mui/icons-material";
+import { ActionFunction } from "react-router-dom";
 
 enum LoadingType {
   RemoveUser = "removeUser",
@@ -27,26 +29,8 @@ interface LoadingState {
   loaderForValue: string;
 }
 
-interface UserData {
-  id: string;
-  name: string;
-  role: string;
-  userName: string;
-  // Define other properties as needed
-}
-
-interface RolesData {
-  roleIndex: 1 | 2 | 3;
-  roleType: "Owner" | "Admin" | "Staff";
-}
-
-type RoleType = "Owner" | "Admin" | "Staff" | "";
-
-interface AddUsersProps {
-  allRoles: RolesData[];
-  userData: UserData[];
-  dispatch: Dispatch; // Update with the appropriate type for your dispatch function
-  allUserData: UserData[];
+interface AddUsersProps extends MainState {
+  dispatch: React.Dispatch<Action>; // Update with the appropriate type for your dispatch function
 }
 
 const AddUsers: React.FC<AddUsersProps> = ({
@@ -158,10 +142,12 @@ const AddUsers: React.FC<AddUsersProps> = ({
 
       if (response.data.message === "ok") {
         // Remove the user from allUserData and userData
-        const updatedAllUserData = allUserData.filter(
-          (user) => user.id !== userId
-        );
-        const updatedUserData = userData.filter((user) => user.id !== userId);
+        const updatedAllUserData = allUserData
+          ? allUserData.filter((user) => user.id !== userId)
+          : [];
+        const updatedUserData = userData
+          ? userData.filter((user) => user.id !== userId)
+          : [];
 
         dispatch({
           type: "setAllUserData",
@@ -215,12 +201,12 @@ const AddUsers: React.FC<AddUsersProps> = ({
           setPopup(false);
           dispatch({
             type: "setUserData",
-            payload: [...userData, data.userSchema],
+            payload: [...(userData ? userData : []), data.userSchema],
           });
 
           dispatch({
             type: "setAllUserData",
-            payload: [...allUserData, data.userSchema],
+            payload: [...(allUserData ? allUserData : []), data.userSchema],
           });
         }
       } else if (loading.loaderFor === LoadingType.EditUser) {
@@ -238,12 +224,16 @@ const AddUsers: React.FC<AddUsersProps> = ({
         );
         console.log(data);
         if (data.message === "ok") {
-          const updatedAllUserData = allUserData.map((user) =>
-            user.id === loading.loaderForValue ? data.updatedUser : user
-          );
-          const updatedUserData = userData.map((user) =>
-            user.id === loading.loaderForValue ? data.updatedUser : user
-          );
+          const updatedAllUserData = allUserData
+            ? allUserData.map((user) =>
+                user.id === loading.loaderForValue ? data.updatedUser : user
+              )
+            : [];
+          const updatedUserData = userData
+            ? userData.map((user) =>
+                user.id === loading.loaderForValue ? data.updatedUser : user
+              )
+            : [];
           dispatch({
             type: "setAllUserData",
             payload: updatedAllUserData,
@@ -303,40 +293,43 @@ const AddUsers: React.FC<AddUsersProps> = ({
         </Button>
       </div>
       <div className="content-grid-one main-content-holder">
-        {userData.map((user, index) => (
-          <div className="grid-common" key={index}>
-            <div className="details">
-              <h2>{user.name}</h2>
-              <p>Role: {user.role}</p>
+        {userData &&
+          userData.map((user, index) => (
+            <div className="grid-common" key={index}>
+              <div className="details">
+                <h2>{user.name}</h2>
+                <p>Role: {user.role}</p>
+              </div>
+              <div className="buttons flex-row-aro m-t-4 w-full ">
+                <Button
+                  onClick={() =>
+                    handleUserAction(user.id, LoadingType.EditUser)
+                  }
+                  variant="contained"
+                  color="primary"
+                  loading={
+                    loading.loaderFor === LoadingType.EditUser &&
+                    loading.loaderForValue === user.id &&
+                    loading.loading
+                  }
+                >
+                  Edit
+                </Button>
+                <Button
+                  onClick={() => removeUser(user.id)}
+                  variant="outlined"
+                  color="error"
+                  loading={
+                    loading.loaderFor === LoadingType.RemoveUser &&
+                    loading.loaderForValue === user.id &&
+                    loading.loading
+                  }
+                >
+                  Remove
+                </Button>
+              </div>
             </div>
-            <div className="buttons flex-row-aro m-t-4 w-full ">
-              <Button
-                onClick={() => handleUserAction(user.id, LoadingType.EditUser)}
-                variant="contained"
-                color="primary"
-                loading={
-                  loading.loaderFor === LoadingType.EditUser &&
-                  loading.loaderForValue === user.id &&
-                  loading.loading
-                }
-              >
-                Edit
-              </Button>
-              <Button
-                onClick={() => removeUser(user.id)}
-                variant="outlined"
-                color="error"
-                loading={
-                  loading.loaderFor === LoadingType.RemoveUser &&
-                  loading.loaderForValue === user.id &&
-                  loading.loading
-                }
-              >
-                Remove
-              </Button>
-            </div>
-          </div>
-        ))}
+          ))}
       </div>
       {popup && (
         <PopUp closePopup={handleAddUserClose}>
@@ -382,21 +375,16 @@ const AddUsers: React.FC<AddUsersProps> = ({
                   id="role-select"
                   name="role"
                   label="Role selection"
-                  value={
-                    formState.role
-                      ? formState.role
-                      : formState.roles
-                      ? formState.roles.roleIndex
-                      : ""
-                  }
-                  onChange={handleFormChange}
+                  value={formState.role || ""}
+                  onChange={(e) => handleFormChange(e as any)}
                 >
                   {/* Map over your roles array to generate MenuItem components */}
-                  {roles.map((role, index) => (
-                    <MenuItem key={index} value={role.roleIndex}>
-                      {role.roleType}
-                    </MenuItem>
-                  ))}
+                  {roles &&
+                    roles.map((role, index) => (
+                      <MenuItem key={index} value={role.roleIndex}>
+                        {role.roleType}
+                      </MenuItem>
+                    ))}
                 </Select>
               </FormControl>
               <Button

@@ -3,9 +3,9 @@ import { parse } from "papaparse";
 import axios from "axios";
 import { config } from "../../../utils/config";
 import Cookies from "js-cookie";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleXmark } from "@fortawesome/free-regular-svg-icons";
-import Input from "../../../UI/Input/Input";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faCircleXmark } from "@fortawesome/free-regular-svg-icons";
+// import Input from "../../../UI/Input/Input";
 import "./AddMembers.css";
 import Button from "../../../UI/Button/Button";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -23,7 +23,7 @@ import {
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import Loader from "../../../../Components/Loader/Loader";
-
+import { Action, State as MainState } from "../Members";
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
@@ -36,20 +36,47 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-export default function AddMembers({ setAllMembersData }) {
+interface House {
+  Name: string;
+  // Define other house properties
+}
+
+interface Member {
+  HouseID: number | null;
+  Grade: string;
+  House: string;
+  Name: string;
+  _id: string;
+  // Add more fields here according to your data structure
+}
+
+interface AddMembersProps extends MainState {
+  dispatch: React.Dispatch<Action>;
+}
+
+const AddMembers: React.FC<AddMembersProps> = ({
+  dispatch,
+  allMembersData,
+}) => {
   const { enqueueSnackbar } = useSnackbar();
-  const [membersData, setMembersData] = useState([]);
-  const [submitErrors, setSubmitErrors] = useState([]);
-  const [emptyErrors, setEmptyErrors] = useState([]);
-  const [editIndex, setEditIndex] = useState(null);
-  const [newMember, setNewMember] = useState({});
+  const [membersData, setMembersData] = useState<Member[]>([]);
+  const [submitErrors, setSubmitErrors] = useState<any[]>([]);
+  const [emptyErrors, setEmptyErrors] = useState<any[]>([]);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [newMember, setNewMember] = useState<Member>({
+    HouseID: 0,
+    Name: "",
+    Grade: "",
+    House: "",
+    _id: "",
+  });
   const [createNew, setCreateNew] = useState(false);
   const [inProgress, setInProgress] = useState(false);
-  const [houses, setHouses] = useState([]);
+  const [houses, setHouses] = useState<House[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
+  // console.log(houses);
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
       parse(file, {
         header: true,
@@ -58,11 +85,9 @@ export default function AddMembers({ setAllMembersData }) {
 
           const hasRequiredKeys = requiredKeys.every((key) => {
             const foundKey = parsedData.meta.fields.find(
-              (field) => field.toLowerCase() === key.toLowerCase()
+              (field: string) => field.toLowerCase() === key.toLowerCase()
             );
-            return (
-              foundKey !== undefined || key.toLowerCase() === "HouseID"
-            );
+            return foundKey !== undefined || key.toLowerCase() === "houseid";
           });
 
           if (!hasRequiredKeys) {
@@ -73,28 +98,26 @@ export default function AddMembers({ setAllMembersData }) {
             return;
           }
           const transformedData = parsedData.data
-            .map((entry) => {
-              const transformedEntry = {};
+            .map((entry: any) => {
+              const transformedEntry: any = {};
               let newKey = "";
               for (const key in entry) {
-                if (key === "name") newKey = "Name"; // Convert 'Name' to 'name'
-                else if (key === "grade")
-                  newKey = "Grade"; // Convert 'Grade' to 'grade'
-                else if (key === "house")
-                  newKey = "House"; // Convert 'House' to 'house'
+                if (key.toLowerCase() === "name") newKey = "Name";
+                else if (key.toLowerCase() === "grade") newKey = "Grade";
+                else if (key.toLowerCase() === "house") newKey = "House";
                 else if (
-                  key === "HouseID" ||
-                  key === "HouseID" ||
-                  key === "HouseID"
+                  key.toLowerCase() === "houseid" ||
+                  key.toLowerCase() === "houseid" ||
+                  key.toLowerCase() === "houseid"
                 )
-                  newKey = "HouseID"; // Preserve 'HouseID' as is
+                  newKey = "HouseID";
                 transformedEntry[newKey] = entry[key];
               }
               return transformedEntry;
             })
-            .filter((obj) =>
+            .filter((obj: any) =>
               Object.values(obj).some((val) => val !== "" && val !== null)
-            ); // Filter out objects with at least one non-empty value for any key
+            );
           setMembersData(transformedData);
         },
         error: (err) => {
@@ -107,7 +130,7 @@ export default function AddMembers({ setAllMembersData }) {
   const handleSubmit = async () => {
     try {
       setInProgress(true);
-      const emptyIndexes = [];
+      const emptyIndexes: number[] = [];
       const isEmptyRow = membersData.some((member, index) => {
         const isEmpty =
           !member.Name || !member.Grade || !member.House || !member.HouseID;
@@ -139,7 +162,7 @@ export default function AddMembers({ setAllMembersData }) {
         setInProgress(false);
         return;
       }
-      console.log(membersData)
+      console.log(membersData);
       const token = Cookies.get("token");
       const response = await axios.put(
         `${config.APIURI}/api/v1/members/add`,
@@ -148,7 +171,7 @@ export default function AddMembers({ setAllMembersData }) {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log(response)
+      console.log(response);
       if (response.data) {
         setInProgress(false);
       }
@@ -162,13 +185,26 @@ export default function AddMembers({ setAllMembersData }) {
         console.log(response.data.data);
       }
       if (response.data.message === "ok") {
-        setAllMembersData((prev) => [...prev, ...membersData]);
+        dispatch({
+          type: "setAllMembersData",
+          payload: [
+            ...(allMembersData ? allMembersData : []),
+            ...response.data.memberData,
+          ],
+        });
+
         console.log(response.data);
         enqueueSnackbar("Successfully imported data.", { variant: "success" });
         setMembersData([]);
         setEmptyErrors([]);
         setEditIndex(null);
-        setNewMember({});
+        setNewMember({
+          Name: "",
+          House: "",
+          HouseID: null,
+          Grade: "",
+          _id: "",
+        });
         setCreateNew(false);
         setSubmitErrors([]);
       }
@@ -215,12 +251,24 @@ export default function AddMembers({ setAllMembersData }) {
   const addCreateNew = () => {
     setMembersData([newMember, ...membersData]);
     setCreateNew(false);
-    setNewMember({});
+    setNewMember({
+      Name: "",
+      House: "",
+      HouseID: null,
+      Grade: "",
+      _id: "",
+    });
   };
 
   const clearCreateNew = () => {
     setCreateNew(false);
-    setNewMember({});
+    setNewMember({
+      Name: "",
+      House: "",
+      HouseID: null,
+      Grade: "",
+      _id: "",
+    });
   };
 
   useEffect(() => {
@@ -287,7 +335,7 @@ export default function AddMembers({ setAllMembersData }) {
                         onChange={(e) =>
                           setNewMember({
                             ...newMember,
-                            HouseID: e.target.value,
+                            HouseID: parseInt(e.target.value, 10) || null,
                           })
                         }
                         required
@@ -313,7 +361,7 @@ export default function AddMembers({ setAllMembersData }) {
                         <InputLabel id="House-select-label">House</InputLabel>
                         <Select
                           labelId="House-select-label"
-                          // value={age}
+                          value={newMember.House}
                           id="House"
                           required
                           label="House"
@@ -512,4 +560,5 @@ export default function AddMembers({ setAllMembersData }) {
       )}
     </div>
   );
-}
+};
+export default AddMembers;

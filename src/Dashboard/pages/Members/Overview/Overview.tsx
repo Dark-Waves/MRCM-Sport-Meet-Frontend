@@ -1,28 +1,31 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import { DataGrid } from "@mui/x-data-grid";
-export default function Overview({ allMembersData }) {
-  const [rows, setRows] = useState([]);
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { State as MainState } from "../Members";
 
+const Overview: React.FC<MainState> = ({ allMembersData }) => {
+  const [rows, setRows] = useState<any[]>([]);
   useEffect(() => {
-      const formattedRows = allMembersData.map((member) => ({
+    const formattedRows =
+      allMembersData &&
+      allMembersData.map((member) => ({
         id: member.HouseID || "", // You can choose your unique identifier
         Name: member.Name || "",
-        Grade: parseInt(member.Grade) || "",
+        Grade: parseInt(member.Grade) || 0,
         House: member.House || "",
         // Add more fields here according to your data structure
       }));
-      setRows(formattedRows);
+    setRows(formattedRows ? formattedRows : []);
   }, [allMembersData]);
 
-  const columns = [
+  const columns: GridColDef[] = [
     { field: "id", headerName: "Admission ID", width: 150 },
     { field: "Name", headerName: "Name", width: 200 },
     { field: "Grade", headerName: "Grade", width: 150 },
     { field: "House", headerName: "House", width: 150 },
     // Add more columns as needed based on your data structure
   ];
-
+  console.log(rows);
   return (
     <Box
       sx={{
@@ -35,10 +38,10 @@ export default function Overview({ allMembersData }) {
       <DataGrid
         rows={rows}
         columns={columns}
-        pageSize={5}
         checkboxSelection
-        disableSelectionOnClick
+        disableRowSelectionOnClick={true}
       />
     </Box>
   );
-}
+};
+export default Overview;
