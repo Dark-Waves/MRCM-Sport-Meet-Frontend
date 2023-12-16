@@ -4,14 +4,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { iconsImgs } from "../../../utils/images";
 import "./Broadcast.css";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import React from "react";
 
-const Broadcast = () => {
+const Broadcast: React.FC = () => {
+
+
   return (
     <div className="subgrid-two-item grid-common grid-c5">
       <div className="grid-c-title">
         <h3 className="grid-c-title-text">Top Broadcast Messages</h3>
         <button className="grid-c-title-icon">
-          <img src={iconsImgs.plus} />
+          <FontAwesomeIcon icon={faPlus} />
         </button>
       </div>
       <div className="grid-c5-content">

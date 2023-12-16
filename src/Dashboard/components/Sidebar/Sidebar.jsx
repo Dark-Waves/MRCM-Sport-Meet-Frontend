@@ -28,14 +28,14 @@ const Sidebar = () => {
   const renderSubMenu = (subMenuItems) => {
     return (
       <ul className="sub-menu">
-        {subMenuItems.map((subMenuItem) => (
+        {subMenuItems.map((subMenuItem, index) => (
           <li
             className={`sub-menu-item flex-row-start ${
               location.pathname === "/Dashboard" + subMenuItem.url
                 ? "active"
                 : ""
             }`} // Check if the current location matches the sub-menu item's URL
-            key={subMenuItem._id}
+            key={index}
           >
             <NavLink
               to={"/Dashboard" + subMenuItem.url}
@@ -64,7 +64,7 @@ const Sidebar = () => {
       <nav className="navigation">
         <ul className="nav-list">
           {navigationLinks &&
-            navigationLinks.map((navigationLink) => (
+            navigationLinks.map((navigationLink, index) => (
               <li
                 className={`nav-item ${
                   location.pathname.startsWith(
@@ -73,7 +73,7 @@ const Sidebar = () => {
                     ? "active"
                     : ""
                 }`}
-                key={navigationLink._id}
+                key={index}
               >
                 <NavLink
                   activeclassname="active"

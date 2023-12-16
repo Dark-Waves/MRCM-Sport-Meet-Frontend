@@ -1,6 +1,8 @@
 import "./Info.css";
 import { iconsImgs } from "../../../utils/images";
 import { info } from "../../../data/data";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Info = () => {
   return (
@@ -8,7 +10,7 @@ const Info = () => {
       <div className="grid-c-title">
         <h3 className="grid-c-title-text">Info</h3>
         <button className="grid-c-title-icon">
-          <img src={iconsImgs.plus} />
+        <FontAwesomeIcon icon={faPlus} />
         </button>
       </div>
 

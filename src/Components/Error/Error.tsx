@@ -1,11 +1,12 @@
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
 interface ErrorMessage {
-  code: number;
+  code?: number | 404 | 400 | 310;
   message: string | null;
 }
 
-const ErrorPage: React.FC<{ code: number }> = ({ code }) => {
+const ErrorPage: React.FC<{ code?: number | 404 | 400 | 310 }> = ({ code }) => {
   const errorMessage: ErrorMessage = {
     code,
     message: null,
@@ -26,6 +27,7 @@ const ErrorPage: React.FC<{ code: number }> = ({ code }) => {
     }
     default:
       errorMessage.message = "Unknown error occurred.";
+      errorMessage.code = 500;
   }
 
   return (

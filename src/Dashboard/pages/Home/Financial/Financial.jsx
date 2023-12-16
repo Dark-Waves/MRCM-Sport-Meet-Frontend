@@ -1,4 +1,6 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { iconsImgs } from "../../../utils/images"
+import { faPlus } from "@fortawesome/free-solid-svg-icons"
 
 const Financial = () => {
   return (
@@ -6,7 +8,7 @@ const Financial = () => {
         <div className="grid-c-title">
             <h3 className="grid-c-title-text">Financial Advice</h3>
             <button className="grid-c-title-icon">
-                <img src={ iconsImgs.plus } />
+            <FontAwesomeIcon icon={faPlus} />
             </button>
         </div>
         <div className="grid-c8-content">
