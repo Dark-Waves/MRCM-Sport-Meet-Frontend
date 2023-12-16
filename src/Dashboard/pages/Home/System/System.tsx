@@ -17,7 +17,6 @@ export interface SystemData {
 }
 
 const System: React.FC = () => {
-
   const { socket } = useContext(DashboardContext);
   const [systemData, setSystemData] = useState<SystemData[]>([]); // Initialize with an empty array
 
@@ -34,7 +33,7 @@ const System: React.FC = () => {
       socket.off("server-message", handleServerMessage);
     };
   }, [socket]);
-  
+
   return (
     <div className="system subgrid-two-item grid-common grid-c6">
       <div className="grid-c-title">
@@ -44,7 +43,7 @@ const System: React.FC = () => {
         </button>
       </div>
       <div className="grid-c6-content position-relative">
-        {!systemData ? (
+        {(!systemData || !systemData.length) ? (
           <div>
             {[...Array(3)].map((_, index) => (
               <div className="grid-item" key={index}>

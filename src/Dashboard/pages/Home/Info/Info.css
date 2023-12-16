@@ -5,8 +5,9 @@
   justify-content: space-between;
 }
 .grid-c4-content {
+  background-color: var(--color-primar-light);
   margin-top: 20px;
-  border-radius: 16px;
+  border-radius: 4px;
 }
 .grid-c4 .grid-c4-content {
   padding: 12px;

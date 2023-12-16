@@ -52,7 +52,7 @@ const Broadcast: React.FC = () => {
         const response = await axios.get(`${config.APIURI}/api/v1/broadcast/private`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setReceivedMessages((prev) => [...response.data.messages, ...prev].reverse());
+        setReceivedMessages(response.data.messages);
       } catch (error) {
         console.error(error);
       } finally {
