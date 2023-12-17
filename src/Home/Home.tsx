@@ -13,6 +13,7 @@ import axios from "axios";
 import Loader from "../Components/Loader/Loader";
 import HomeContext from "../context/HomeContext";
 import "./Home.css";
+import { Members } from "./Members/Members";
 
 const APIURI = config.APIURI;
 
@@ -218,6 +219,7 @@ const Home: React.FC = () => {
                 <Route path="/live" element={<Live />} />
                 <Route path="/events" element={<Events />} />
                 <Route path="/houses" element={<Houses />} />
+                <Route path="/members" element={<Members />} />
                 <Route path={"*"} element={<ErrorPage code={404} />} />
               </Routes>
               <Footer />

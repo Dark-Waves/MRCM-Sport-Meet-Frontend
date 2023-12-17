@@ -12,6 +12,10 @@ export const navLinks = [
     url: "/events",
   },
   {
+    name: "Members",
+    url: "/members",
+  },
+  {
     name: "Houses",
     url: "/houses",
   },
