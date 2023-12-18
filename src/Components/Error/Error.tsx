@@ -31,7 +31,10 @@ const ErrorPage: React.FC<{ code?: number | 404 | 400 | 310 }> = ({ code }) => {
   }
 
   return (
-    <div className="m-auto h-full w-full flex-col-center">
+    <div
+      className="m-auto h-full w-full flex-col-center"
+      style={{ zIndex: 111 }}
+    >
       <div className="box p-8 bg-jet flex-col-center rounded-lg g-2">
         <h1>Error Occurred</h1>
         <p>
