@@ -1,29 +1,24 @@
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import "./Submits.css";
 import { config } from "../../utils/config";
 import DashboardContext from "../../../context/DashboardContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCircle,
-  faCircleCheck,
-  faCircleExclamation,
-  faCircleXmark,
-  faHourglass,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import Button from "../../UI/Button/Button";
 import {
-  Input,
   InputBase,
   TextField,
   styled,
   alpha,
-  ToggleButtonGroup,
-  ToggleButton,
   Autocomplete,
   Checkbox,
   CircularProgress,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
 import PopUp from "../../UI/PopUp/PopUp";
@@ -74,20 +69,61 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function Submits() {
-  const [events, setEvents] = useState([]);
-  const { socket } = useContext(DashboardContext);
-  const [selectedEvent, setSelectedEvent] = useState({});
-  const [submitedEvent, setSubmitedEvent] = useState({});
-  const [isPopUp, setIsPopUp] = useState(false);
-  const [admissionNumbers, setAdmissionNumbers] = useState([]);
-  const [error, setError] = useState([]);
+interface Place {
+  place: number;
+  minimumMarks: number;
+  inputMarks: number;
+  inputID: string;
+  house: string;
+  name: string;
+}
+
+interface Event {
+  _id: string;
+  name: string;
+  description: string;
+  types: string[];
+  places: Place[];
+  state: string;
+  inputType?: string;
+}
+
+interface AdmissionNumbers {
+  inputID: number | string;
+  inputType: string;
+  place: number;
+}
+
+interface Errors {
+  message: string;
+  place: number;
+}
+
+interface House {
+  Name: string;
+  _id: string;
+  // Define other house properties
+}
+
+const Submits: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const [searchQuery, setSearchQuery] = useState("");
+  const { socket } = useContext(DashboardContext);
+
+  const [events, setEvents] = useState<Event[]>([]);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [submitedEvent, setSubmitedEvent] = useState<Event | null>(null);
+  const [isPopUp, setIsPopUp] = useState<boolean>(false);
+  const [admissionNumbers, setAdmissionNumbers] = useState<AdmissionNumbers[]>(
+    []
+  );
+  const [error, setError] = useState<Errors[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedStates, setSelectedStates] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [progress, setProgress] = useState<boolean>(false);
+  const [houses, setHouses] = useState<House[]>([]);
+
   const allStates = [...new Set(events.map((event) => event.state))];
-  const [selectedStates, setSelectedStates] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [progress, setProgress] = useState(false);
 
   useEffect(() => {
     const handleSocketMessage = (message) => {
@@ -155,48 +191,80 @@ export default function Submits() {
     getData();
   }, []);
 
+  useEffect(() => {
+    const fetchHouses = async () => {
+      try {
+        const response = await axios.get(`${config.APIURI}/api/v1/houses`);
+        if (response.data && response.data.HouseData) {
+          setHouses(response.data.HouseData);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchHouses(); // Fetch data when Autocomplete is opened
+  }, []);
+
   const handlePopup = (data) => {
     setSelectedEvent(data);
     setIsPopUp(true);
     setAdmissionNumbers(
-      Array(data.places.length).fill({ inputAdmission: 0, place: "" })
+      Array(data.places.length).fill({ inputID: 0, place: "" })
     );
   };
 
   const closePopup = () => {
     setIsPopUp(false);
-    setSelectedEvent({});
+    setSelectedEvent(null);
     setAdmissionNumbers([]);
-    setSubmitedEvent({});
+    setSubmitedEvent(null);
   };
 
-  const handleInputChange = (index, value, place) => {
+  const handleInputChange = (
+    index: number,
+    value: string,
+    place: number,
+    inputType: string | undefined
+  ) => {
     setAdmissionNumbers((prevAdmissions) => {
       const updatedAdmissions = [...prevAdmissions];
-      updatedAdmissions[index] = {
-        ...updatedAdmissions[index],
-        inputAdmission: parseInt(value), // Ensure the input is parsed as a number
-        place: place,
-      };
+      if (inputType === "MemberID") {
+        // Use house.memberId
+        updatedAdmissions[index] = {
+          ...updatedAdmissions[index],
+          inputID: parseInt(value), // Ensure the input is parsed as a number
+          place: place,
+          inputType: inputType,
+        };
+      } else if (inputType === "HouseName") {
+        // Use house._id
+        updatedAdmissions[index] = {
+          ...updatedAdmissions[index],
+          inputID: value, // Assuming value is already a string
+          place: place,
+          inputType: inputType,
+        };
+      }
       return updatedAdmissions;
     });
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const errors = [];
+    const errors: Errors[] = [];
     for (const place of admissionNumbers) {
-      if (!place.inputAdmission) {
+      if (!place.inputID) {
         errors.push({ message: "Fill the input fields", place: place.place });
       }
       continue;
     }
     if (errors.length > 0) {
-      console.log(errors)
+      console.log(errors);
       return setError(errors);
     }
     try {
       setProgress(true);
+      if (!selectedEvent) return;
       const token = Cookies.get("token");
       const response = await axios.post(
         `${config.APIURI}/api/v1/event/${selectedEvent._id}`,
@@ -217,12 +285,18 @@ export default function Submits() {
         }
         return setError(response.data.data);
       }
+      enqueueSnackbar(`Event Submitted successful.`, {
+        variant: "success",
+      });
       setSelectedEvent(null);
       setSubmitedEvent(response.data.submitedEvent);
       setAdmissionNumbers([]);
 
       // Add logic to handle the response if needed
     } catch (error) {
+      enqueueSnackbar(`Event Submit Error`, {
+        variant: "error",
+      });
       setProgress(false);
       console.log(error);
     } finally {
@@ -237,8 +311,8 @@ export default function Submits() {
   const filteredEvents =
     selectedStates.length > 0
       ? searchFilteredEvents.filter((event) =>
-        selectedStates.includes(event.state)
-      )
+          selectedStates.includes(event.state)
+        )
       : searchFilteredEvents;
 
   return (
@@ -323,7 +397,7 @@ export default function Submits() {
                       }
                       onClick={
                         data.state === "rejected" ||
-                          data.state === "notSubmitted"
+                        data.state === "notSubmitted"
                           ? () => handlePopup(data)
                           : undefined
                       }
@@ -331,13 +405,13 @@ export default function Submits() {
                       {data.state === "approved"
                         ? "Approved"
                         : data.state === "rejected"
-                          ? "Try again"
-                          : data.state === "pending"
-                            ? "Submitted"
-                            : "Enter Event Winners Data"}
+                        ? "Try again"
+                        : data.state === "pending"
+                        ? "Submitted"
+                        : "Enter Event Winners Data"}
                     </Button>
                   </div>
-                </div>{" "}
+                </div>
               </div>
             ))}
           </div>
@@ -347,47 +421,129 @@ export default function Submits() {
                 <>
                   <h2>{selectedEvent.name}</h2>
                   <form onSubmit={handleSubmit} className="p-t-3">
-                    {selectedEvent.places &&
-                      selectedEvent.places.map((place, index) => (
-                        <div
-                          className="m-t-4 score__submit flex-row-aro position-relative"
-                          key={index}
-                        >
-                          <TextField
-                            type="number"
-                            label={`${place.place} Place`}
-                            placeholder="Admission Number"
-                            value={
-                              admissionNumbers[index]?.inputAdmission || ""
-                            }
-                            onChange={(e) =>
-                              handleInputChange(
-                                index,
-                                e.target.value,
-                                place.place
-                              )
-                            }
-                            error={error.find(
-                              (err) => err.place === place.place
-                            )}
-                          />
-
-                          {error.find((err) => err.place === place.place) ? (
-                            <span
-                              title={
-                                error.find((err) => err.place === place.place)
-                                  .message
+                    {selectedEvent.inputType === "MemberID"
+                      ? selectedEvent.places &&
+                        selectedEvent.places.map((place, index) => (
+                          <div
+                            className="m-t-4 score__submit flex-row-aro position-relative"
+                            key={index}
+                          >
+                            <TextField
+                              type="number"
+                              label={`${place.place} Place`}
+                              placeholder="House Member ID"
+                              value={admissionNumbers[index]?.inputID || ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  index,
+                                  e.target.value,
+                                  place.place,
+                                  selectedEvent.inputType
+                                )
                               }
-                              className="position-absolute"
-                              style={{ right: 0 }}
-                            >
-                              <FontAwesomeIcon icon={faCircleExclamation} />
-                            </span>
-                          ) : (
-                            ""
-                          )}
-                        </div>
-                      ))}
+                              error={
+                                error.find((err) => err.place === place.place)
+                                  ? true
+                                  : false
+                              }
+                            />
+
+                            {error &&
+                            error.find((err) => err.place === place.place) ? (
+                              <span
+                                title={
+                                  error &&
+                                  error.find((err) => err.place === place.place)
+                                    ?.message // Added '?'
+                                }
+                                className="position-absolute"
+                                style={{ right: 0 }}
+                              >
+                                <FontAwesomeIcon icon={faCircleExclamation} />
+                              </span>
+                            ) : (
+                              ""
+                            )}
+                          </div>
+                        ))
+                      : selectedEvent.inputType === "HouseName"
+                      ? selectedEvent.places &&
+                        selectedEvent.places.map((place, index) => (
+                          <div
+                            className="m-t-4 score__submit flex-row-aro position-relative"
+                            key={index}
+                          >
+                            {/* <TextField
+                              type="number"
+                              label={`${place.place} Place`}
+                              placeholder="House Name"
+                              value={
+                                admissionNumbers[index]?.inputID || ""
+                              }
+                              onChange={(e) =>
+                                handleInputChange(
+                                  index,
+                                  e.target.value,
+                                  place.place
+                                )
+                              }
+                              error={
+                                error.find((err) => err.place === place.place)
+                                  ? true
+                                  : false
+                              }
+                            /> */}
+                            <FormControl fullWidth>
+                              <InputLabel id="event-type-select-label">
+                                Submit Input Type
+                              </InputLabel>
+                              <Select
+                                required
+                                labelId="event-type-select-label"
+                                id="event-type-select"
+                                value={admissionNumbers[index]?.inputID || ""}
+                                label="Submit Input Type"
+                                onChange={(e) => {
+                                  handleInputChange(
+                                    index,
+                                    String(e.target.value), // Convert to string explicitly
+                                    place.place,
+                                    selectedEvent.inputType
+                                  );
+                                }}
+                                error={
+                                  error.find((err) => err.place === place.place)
+                                    ? true
+                                    : false
+                                }
+                              >
+                                {houses.map((data, index) => (
+                                  <MenuItem key={index} value={data._id}>
+                                    {data.Name}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
+
+                            {error &&
+                            error.find((err) => err.place === place.place) ? (
+                              <span
+                                title={
+                                  error &&
+                                  error.find((err) => err.place === place.place)
+                                    ?.message // Added '?'
+                                }
+                                className="position-absolute"
+                                style={{ right: 0 }}
+                              >
+                                <FontAwesomeIcon icon={faCircleExclamation} />
+                              </span>
+                            ) : (
+                              ""
+                            )}
+                          </div>
+                        ))
+                      : "Submit Type Not Found"}
 
                     <div className="buttons flex-row-eve g-3 m-4">
                       <Button type="submit" color="info" variant="contained">
@@ -405,8 +561,14 @@ export default function Submits() {
                         <tr>
                           <th>Place</th>
                           <th>Score</th>
-                          <th>Winner Name</th>
-                          <th>Admision No</th>
+                          {submitedEvent.inputType === "MemberID" ? (
+                            <>
+                              <th>Winner Name</th>
+                              <th>Admision No</th>
+                            </>
+                          ) : (
+                            ""
+                          )}
                           <th>Winner House</th>
                         </tr>
                         {submitedEvent.places &&
@@ -414,8 +576,15 @@ export default function Submits() {
                             <tr key={placeIndex} className="submitted__places">
                               <td>{place.place}</td>
                               <td>{place.minimumMarks}</td>
-                              <td>{place.name}</td>
-                              <td>{place.inputAdmission}</td>
+                              {submitedEvent.inputType === "MemberID" ? (
+                                <>
+                                  <td>{place.name}</td>
+                                  <td>{place.inputID}</td>
+                                </>
+                              ) : (
+                                ""
+                              )}
+
                               <td>{place.house}</td>
                             </tr>
                           ))}
@@ -440,4 +609,5 @@ export default function Submits() {
       )}
     </div>
   );
-}
+};
+export default Submits;

@@ -10,7 +10,7 @@ interface MemberData {
   Name: string;
   House: string;
   Grade: string;
-  HouseID: number;
+  MemberID: number;
 }
 
 export const Members: FC = () => {
@@ -19,7 +19,7 @@ export const Members: FC = () => {
 
   // Define columns based on the data structure
   const columns: GridColDef[] = [
-    { field: "HouseID", headerName: "House ID", width: 150, type: "number" },
+    { field: "MemberID", headerName: "House ID", width: 150, type: "number" },
     { field: "Name", headerName: "Name", width: 200 },
     { field: "House", headerName: "House", width: 200 },
     { field: "Grade", headerName: "Grade", width: 150 },

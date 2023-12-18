@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { InputLabel, TextField } from "@mui/material";
 import { Action as MainAction, State as MainState } from "../Events";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { useSnackbar } from "notistack";
 
 interface Places {
   minimumMarks: number;
@@ -30,6 +31,7 @@ interface State {
   tempeventData: {
     name: string;
     description: string;
+    inputType: string;
     places: Places[];
     types: Types[]; // Define the type for types as needed
   };
@@ -50,7 +52,13 @@ type Action =
 
 const initialValue: State = {
   popUpModal: false,
-  tempeventData: { name: "", description: "", places: [], types: [] },
+  tempeventData: {
+    name: "",
+    description: "",
+    inputType: "",
+    places: [],
+    types: [],
+  },
   selectedEvent: {},
   saveStatus: "none",
   saveResponse: null,
@@ -102,15 +110,22 @@ const Manager: React.FC<ManagerProps> = ({
   const [state, dispatch] = useReducer(reducer, initialValue);
   const { popUpModal, tempeventData, selectedEvent, saveStatus, submitErrors } =
     state;
+  const { enqueueSnackbar } = useSnackbar();
 
   console.log(tempeventData);
   const handleSubmit = async function (force) {
-    if (!force) {
+    if (force) {
       const errors: Errors[] = [];
       if (!tempeventData.name) {
         errors.push({
           message: "Please Enter a name to the event.",
           type: "name",
+        });
+      }
+      if (!tempeventData.inputType) {
+        errors.push({
+          message: "Please Enter a inputType to the event.",
+          type: "inputType",
         });
       }
       if (!(tempeventData.types && tempeventData.types.length)) {
@@ -168,7 +183,7 @@ const Manager: React.FC<ManagerProps> = ({
       type: "setEventData",
       payload: { name: "", description: "", places: [], types: [] },
     });
-    handleSubmit(true);
+    handleSubmit(false);
   };
   const closePopUp = async function () {
     dispatch({ type: "reset" });
@@ -263,8 +278,14 @@ const Manager: React.FC<ManagerProps> = ({
               type: "deleteEvent",
               payload: selectedEvent,
             });
+            enqueueSnackbar("Event Delete successful.", {
+              variant: "success",
+            });
             closePopUp();
           } catch (error) {
+            enqueueSnackbar("Event Delete Error.", {
+              variant: "error",
+            });
             dispatch({ type: "setSaveStatus", payload: "error" });
             dispatch({ type: "setSaveResponse", payload: error });
           }
@@ -287,13 +308,19 @@ const Manager: React.FC<ManagerProps> = ({
               type: "editEvent",
               payload: data.eventSchema,
             });
-
+            enqueueSnackbar(`Event ${tempeventData.name} Edit successful.`, {
+              variant: "success",
+            });
             closePopUp();
           } catch (error) {
+            enqueueSnackbar(`Event ${tempeventData.name} Edit Error.`, {
+              variant: "error",
+            });
             dispatch({ type: "setSaveStatus", payload: "error" });
             dispatch({ type: "setSaveResponse", payload: error });
           }
         }
+
         // creating event
         if (
           Object.keys(tempeventData).length &&
@@ -311,8 +338,14 @@ const Manager: React.FC<ManagerProps> = ({
               type: "addEvent",
               payload: data.eventSchema,
             });
+            enqueueSnackbar(`Event ${tempeventData.name} Create successful.`, {
+              variant: "success",
+            });
             closePopUp();
           } catch (error) {
+            enqueueSnackbar(`Event ${tempeventData.name} Create Error.`, {
+              variant: "error",
+            });
             dispatch({ type: "setSaveStatus", payload: "error" });
             dispatch({ type: "setSaveResponse", payload: error });
           }
@@ -363,6 +396,11 @@ const Manager: React.FC<ManagerProps> = ({
                     <span className="font-weight-600">{event.description}</span>
                   </div>
                 )}
+                {event.inputType && (
+                  <div className="event-des m-b-4 font-weight-500 font-md">
+                    <span className="font-weight-600">{event.inputType}</span>
+                  </div>
+                )}
               </div>
               <div className="g-4 flex-row-center">
                 <Button
@@ -398,6 +436,7 @@ const Manager: React.FC<ManagerProps> = ({
             className="m-t-5 m-b-4 flex-col-center g-4"
           >
             <TextField
+              required
               type="text"
               style={{ width: "100%" }}
               value={tempeventData?.name ? tempeventData?.name : ""}
@@ -427,6 +466,28 @@ const Manager: React.FC<ManagerProps> = ({
               }}
               error={submitErrors.description ? true : false}
             />
+            <FormControl fullWidth>
+              <InputLabel id="event-type-select-label">
+                Submit Input Type
+              </InputLabel>
+              <Select
+                required
+                labelId="event-type-select-label"
+                id="event-type-select"
+                value={tempeventData?.inputType ? tempeventData?.inputType : ""}
+                label="Submit Input Type"
+                onChange={(e) => {
+                  dispatch({
+                    type: "setEventData",
+                    payload: { ...tempeventData, inputType: e.target.value },
+                  });
+                }}
+                error={submitErrors.type ? true : false}
+              >
+                <MenuItem value={"MemberID"}>MemberID</MenuItem>
+                <MenuItem value={"HouseName"}>HouseName</MenuItem>
+              </Select>
+            </FormControl>
             {eventTypes && (
               <div className="event_types_selection w-full flex-col-center g-4">
                 {eventTypes.map((eventType, index) => (
@@ -435,6 +496,7 @@ const Manager: React.FC<ManagerProps> = ({
                       {eventType.name}
                     </InputLabel>
                     <Select
+                      required
                       labelId="event-type-select-label"
                       id="event-type-select"
                       value={
@@ -446,7 +508,7 @@ const Manager: React.FC<ManagerProps> = ({
                         )?.option ||
                         ""
                       }
-                      label="Type"
+                      label={eventType.name}
                       onChange={(e) => {
                         const selectedOptionId = e.target.value;
                         const selectedEventType = eventTypes.find((eventType) =>
@@ -496,6 +558,7 @@ const Manager: React.FC<ManagerProps> = ({
                       className="flex-row-bet m-3 text-center position-relative"
                     >
                       <TextField
+                        required
                         label={getOrdinal(place.place)}
                         type="number"
                         style={{ width: "100%" }}

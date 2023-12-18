@@ -210,6 +210,8 @@ const Dashboard: React.FC = () => {
           dispatch({ type: "setProfileStatus", payload: "ready" });
         } catch (error) {
           dispatch({ type: "setProfileStatus", payload: "error" });
+          Cookies.remove("token");
+          navigate("/auth");
         }
       };
       getData();

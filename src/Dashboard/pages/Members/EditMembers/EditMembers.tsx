@@ -57,13 +57,13 @@ const editMembers: React.FC<EditMembersProps> = function ({
         !updatedMemberData.House
       ) {
         return setEmptyErrors({
-          HouseID: updatedMemberData.HouseID,
+          MemberID: updatedMemberData.MemberID,
           message: "Empty fields. Please fill in all required fields.",
         });
       }
       const token = Cookies.get("token");
       const response = await axios.patch(
-        `${config.APIURI}/api/v1/member/${updatedMemberData.HouseID}`,
+        `${config.APIURI}/api/v1/member/${updatedMemberData.MemberID}`,
         { updatedMemberData },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -72,7 +72,7 @@ const editMembers: React.FC<EditMembersProps> = function ({
       if (response.data.message === "ok") {
         const updatedMembers = allMembersData
           ? allMembersData.map((member) =>
-              member.HouseID === updatedMemberData.HouseID
+              member.MemberID === updatedMemberData.MemberID
                 ? updatedMemberData
                 : member
             )
@@ -100,7 +100,7 @@ const editMembers: React.FC<EditMembersProps> = function ({
       );
       if (response.data.message === "ok") {
         const updatedMembers = allMembersData
-          ? allMembersData.filter((member) => member.HouseID !== memId)
+          ? allMembersData.filter((member) => member.MemberID !== memId)
           : [];
         dispatch({ type: "setAllMembersData", payload: updatedMembers });
         enqueueSnackbar("Member removed successfully.", { variant: "success" });
@@ -122,7 +122,7 @@ const editMembers: React.FC<EditMembersProps> = function ({
                     {editIndex === index ? (
                       <>
                         <span className="font-md p-3 bg-primary rounded-md font-weight-500">
-                          HouseID: {member.HouseID}
+                          MemberID: {member.MemberID}
                         </span>
                         <TextField
                           id="name"
@@ -174,7 +174,7 @@ const editMembers: React.FC<EditMembersProps> = function ({
                           onClick={() => handleEdit(index)}
                           className="font-md p-3 bg-primary rounded-md font-weight-500"
                         >
-                          HouseID: {member.HouseID}
+                          MemberID: {member.MemberID}
                         </span>
                         <span
                           onClick={() => handleEdit(index)}
@@ -197,16 +197,16 @@ const editMembers: React.FC<EditMembersProps> = function ({
                       </>
                     )}
 
-                    {submitErrors.HouseID === member.HouseID && (
+                    {submitErrors.MemberID === member.MemberID && (
                       <>
                         <Alert severity="error">
-                          {submitErrors.HouseID === member.HouseID &&
+                          {submitErrors.MemberID === member.MemberID &&
                             submitErrors.message}
                         </Alert>
                       </>
                     )}
 
-                    {emptyErrors.HouseID === member.HouseID && (
+                    {emptyErrors.MemberID === member.MemberID && (
                       <Alert severity="warning">{emptyErrors.message}</Alert>
                     )}
                   </div>
@@ -217,7 +217,7 @@ const editMembers: React.FC<EditMembersProps> = function ({
                       color="error"
                       variant="outlined"
                       onClick={() =>
-                        member.HouseID && handleRemoveMember(member.HouseID)
+                        member.MemberID && handleRemoveMember(member.MemberID)
                       }
                       className="bg-scarlet-1 rounded-md font-weight-600 font-md"
                     >

@@ -9,7 +9,7 @@ const Overview: React.FC<MainState> = ({ allMembersData }) => {
     const formattedRows =
       allMembersData &&
       allMembersData.map((member) => ({
-        id: member.HouseID || "", // You can choose your unique identifier
+        id: member.MemberID || "", // You can choose your unique identifier
         Name: member.Name || "",
         Grade: parseInt(member.Grade) || 0,
         House: member.House || "",

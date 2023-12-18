@@ -37,6 +37,7 @@ interface Event {
   places: Places[];
   state: string;
   types: Types[];
+  inputType: "MemberID" | "HouseName";
 }
 
 export interface State {

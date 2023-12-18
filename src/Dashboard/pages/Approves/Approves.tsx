@@ -6,6 +6,7 @@ import { config } from "../../../../config";
 import Loader from "../../../Components/Loader/Loader";
 import Button from "../../UI/Button/Button";
 import { CircularProgress } from "@mui/material";
+import { useSnackbar } from "notistack";
 
 interface SubmitData {
   _id: string;
@@ -13,9 +14,13 @@ interface SubmitData {
   places: Array<{
     place: string;
     name: string;
-    inputAdmission: string;
+    inputID: string;
     house: string;
   }>;
+  description: string;
+  types: any[];
+  state: string;
+  inputType: string;
 }
 
 export default function Approves() {
@@ -27,6 +32,7 @@ export default function Approves() {
   const [loading, setLoading] = useState(true);
   const [approoving, setApprooving] = useState(false);
   const [rejecting, setRejecting] = useState(false);
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     const handleSocketMessage = (message) => {
@@ -128,9 +134,15 @@ export default function Approves() {
           token: token,
         }
       );
+      enqueueSnackbar(`Event Approve successful.`, {
+        variant: "success",
+      });
       console.log(response.data);
     } catch (error) {
       setApprooving(false);
+      enqueueSnackbar("Event Approve Error.", {
+        variant: "error",
+      });
       console.log(error);
     } finally {
       setApprooving(false);
@@ -147,8 +159,14 @@ export default function Approves() {
         }
       );
       console.log(response.data);
+      enqueueSnackbar(`Event Reaject successful.`, {
+        variant: "success",
+      });
     } catch (error) {
       setRejecting(false);
+      enqueueSnackbar("Event Reject Error.", {
+        variant: "error",
+      });
       console.log(error);
     } finally {
       setRejecting(false);
@@ -159,7 +177,7 @@ export default function Approves() {
       {loading ? (
         <Loader />
       ) : (
-        <>
+        <div className="flex-col">
           {incomingSubmits.length ? (
             <div className="incoming_submits">
               <h1 className="font-weight-600 font-lg">Incoming Submits</h1>
@@ -177,8 +195,14 @@ export default function Approves() {
                         <tbody>
                           <tr>
                             <th>Place</th>
-                            <th>Winner Name</th>
-                            <th>Admision No</th>
+                            {data.inputType === "MemberID" ? (
+                              <>
+                                <th>Winner Name</th>
+                                <th>Admision No</th>
+                              </>
+                            ) : (
+                              ""
+                            )}
                             <th>Winner House</th>
                           </tr>
                           {data.places &&
@@ -188,8 +212,14 @@ export default function Approves() {
                                 className="submitted__places"
                               >
                                 <td>{place.place}</td>
-                                <td>{place.name}</td>
-                                <td>{place.inputAdmission}</td>
+                                {data.inputType === "MemberID" ? (
+                                  <>
+                                    <td>{place.name}</td>
+                                    <td>{place.inputID}</td>
+                                  </>
+                                ) : (
+                                  ""
+                                )}
                                 <td>{place.house}</td>
                               </tr>
                             ))}
@@ -245,15 +275,27 @@ export default function Approves() {
                         <tbody>
                           <tr>
                             <th>Place</th>
-                            <th>Winner Name</th>
-                            <th>Admision No</th>
+                            {data.inputType === "MemberID" ? (
+                              <>
+                                <th>Winner Name</th>
+                                <th>Admision No</th>
+                              </>
+                            ) : (
+                              ""
+                            )}
                             <th>Winner House</th>
                           </tr>
                           {data.places.map((place, placeIndex) => (
                             <tr key={placeIndex} className="submitted__places">
                               <td>{place.place}</td>
-                              <td>{place.name}</td>
-                              <td>{place.inputAdmission}</td>
+                              {data.inputType === "MemberID" ? (
+                                <>
+                                  <td>{place.name}</td>
+                                  <td>{place.inputID}</td>
+                                </>
+                              ) : (
+                                ""
+                              )}
                               <td>{place.house}</td>
                             </tr>
                           ))}
@@ -267,7 +309,7 @@ export default function Approves() {
           ) : (
             "You Don't have any Approved submits."
           )}
-        </>
+        </div>
       )}
     </div>
   );

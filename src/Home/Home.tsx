@@ -33,7 +33,7 @@ interface MemberData {
   Name: string;
   House: string;
   Grade: string;
-  HouseID: number;
+  MemberID: number;
 }
 
 interface EventData {

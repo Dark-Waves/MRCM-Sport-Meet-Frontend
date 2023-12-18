@@ -15,7 +15,7 @@ export default function Houses() {
   const [editIndex, setEditIndex] = useState(null);
   const [editedHouse, setEditedHouse] = useState(null);
   const [createForm, setCreateForm] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(false);
 
   useEffect(() => {
@@ -121,11 +121,11 @@ export default function Houses() {
     }
   };
 
-  const handleRemoveHouse = async (houseId) => {
+  const handleRemoveHouse = async (MemberID) => {
     try {
       const token = Cookies.get("token");
       const response = await axios.delete(
-        `${config.APIURI}/api/v1/house/${houseId}`,
+        `${config.APIURI}/api/v1/house/${MemberID}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -133,7 +133,7 @@ export default function Houses() {
 
       if (response.data.message === "ok") {
         const updatedHouses = allHousesData.filter(
-          (house) => house._id !== houseId
+          (house) => house._id !== MemberID
         );
         setAllHousesData(updatedHouses);
         enqueueSnackbar("House removed successfully.", { variant: "success" });
@@ -144,7 +144,7 @@ export default function Houses() {
   };
 
   return (
-    <div className="houses__container">
+    <div className="houses__container position-relative h-full">
       {loading ? (
         <Loader />
       ) : (
