@@ -16,6 +16,7 @@ interface SubmitData {
     name: string;
     inputID: string;
     house: string;
+    minimumMarks: number;
   }>;
   description: string;
   types: any[];
@@ -195,6 +196,7 @@ export default function Approves() {
                         <tbody>
                           <tr>
                             <th>Place</th>
+                            <th>Score</th>
                             {data.inputType === "MemberID" ? (
                               <>
                                 <th>Winner Name</th>
@@ -212,6 +214,7 @@ export default function Approves() {
                                 className="submitted__places"
                               >
                                 <td>{place.place}</td>
+                                <td>{place.minimumMarks}</td>
                                 {data.inputType === "MemberID" ? (
                                   <>
                                     <td>{place.name}</td>
