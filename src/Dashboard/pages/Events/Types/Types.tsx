@@ -41,7 +41,7 @@ const Types: React.FC<TypesProps> = ({
     if (field === "option" && index !== undefined) {
       setEditedEventType((prev) => {
         const updatedOptions = [...prev.options];
-        updatedOptions[index] = { option: value, _id: "" };
+        updatedOptions[index] = { option: value };
 
         return {
           ...prev,
