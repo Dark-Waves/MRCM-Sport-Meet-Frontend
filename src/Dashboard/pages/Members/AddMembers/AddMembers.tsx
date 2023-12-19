@@ -64,58 +64,88 @@ const AddMembers: React.FC<AddMembersProps> = ({
   });
   const [createNew, setCreateNew] = useState(false);
   const [inProgress, setInProgress] = useState(false);
-  // const [houseData, setHouses] = useState<House[]>([]);
-  // const [loading, setLoading] = useState(true);
-  // console.log(houseData);
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      parse(file, {
-        header: true,
-        complete: (parsedData) => {
-          const requiredKeys = ["Name", "Grade", "House", "MemberID"];
-
-          const hasRequiredKeys = requiredKeys.every((key) => {
-            const foundKey = parsedData.meta.fields.find(
-              (field: string) => field.toLowerCase() === key.toLowerCase()
-            );
-            return foundKey !== undefined || key.toLowerCase() === "MemberID";
-          });
-
-          if (!hasRequiredKeys) {
-            enqueueSnackbar(
-              "Import a valid data format (Name, Grade, House, MemberID)",
-              { variant: "error" }
-            );
-            return;
+      if (file.type === "application/json") {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const jsonData = JSON.parse(event.target?.result as string);
+            if (
+              Array.isArray(jsonData) &&
+              jsonData.every((obj) => typeof obj === "object")
+            ) {
+              // Check if JSON data is an array of objects
+              setMembersData(jsonData);
+            } else {
+              enqueueSnackbar(
+                "Invalid JSON format. Expected an array of objects.",
+                { variant: "error" }
+              );
+            }
+          } catch (error) {
+            console.error("Error parsing JSON file:", error);
+            enqueueSnackbar("Error parsing JSON file", { variant: "error" });
           }
-          const transformedData = parsedData.data
-            .map((entry: any) => {
-              const transformedEntry: any = {};
-              let newKey = "";
-              for (const key in entry) {
-                if (key.toLowerCase() === "name") newKey = "Name";
-                else if (key.toLowerCase() === "grade") newKey = "Grade";
-                else if (key.toLowerCase() === "house") newKey = "House";
-                else if (
-                  key.toLowerCase() === "admissionid" ||
-                  key.toLowerCase() === "memberid" ||
-                  key.toLowerCase() === "MemberID"
-                )
-                  newKey = "MemberID";
-                transformedEntry[newKey] = entry[key];
-              }
-              return transformedEntry;
-            })
-            .filter((obj: any) =>
-              Object.values(obj).some((val) => val !== "" && val !== null)
-            );
-          setMembersData(transformedData);
-        },
-        error: (err) => {
-          console.error(err);
-        },
-      });
+        };
+        reader.readAsText(file);
+      } else if (
+        file.type === "text/csv" ||
+        file.type === "application/vnd.ms-excel"
+      ) {
+        parse(file, {
+          header: true,
+          complete: (parsedData) => {
+            const requiredKeys = ["Name", "Grade", "House", "MemberID"];
+
+            const hasRequiredKeys = requiredKeys.every((key) => {
+              const foundKey = parsedData.meta.fields.find(
+                (field: string) => field.toLowerCase() === key.toLowerCase()
+              );
+              return foundKey !== undefined || key.toLowerCase() === "MemberID";
+            });
+
+            if (!hasRequiredKeys) {
+              enqueueSnackbar(
+                "Import a valid data format (Name, Grade, House, MemberID)",
+                { variant: "error" }
+              );
+              return;
+            }
+            const transformedData = parsedData.data
+              .map((entry: any) => {
+                const transformedEntry: any = {};
+                let newKey = "";
+                for (const key in entry) {
+                  if (key.toLowerCase() === "name") newKey = "Name";
+                  else if (key.toLowerCase() === "grade") newKey = "Grade";
+                  else if (key.toLowerCase() === "house") newKey = "House";
+                  else if (
+                    key.toLowerCase() === "admissionid" ||
+                    key.toLowerCase() === "memberid" ||
+                    key.toLowerCase() === "houseid"
+                  )
+                    newKey = "MemberID";
+                  transformedEntry[newKey] = entry[key];
+                }
+                return transformedEntry;
+              })
+              .filter((obj: any) =>
+                Object.values(obj).some((val) => val !== "" && val !== null)
+              );
+
+            setMembersData(transformedData);
+          },
+          error: (err) => {
+            console.error("CSV Parsing Error:", err);
+            enqueueSnackbar("Error parsing CSV file", { variant: "error" });
+          },
+        });
+      } else {
+        enqueueSnackbar("Unsupported file type", { variant: "error" });
+      }
     }
   };
 
@@ -278,7 +308,7 @@ const AddMembers: React.FC<AddMembersProps> = ({
           Upload file
           <VisuallyHiddenInput
             type="file"
-            accept=".csv"
+            accept="application/json/text/csv/vnd.ms-excel"
             onChange={handleFileUpload}
           />
         </Button2>
