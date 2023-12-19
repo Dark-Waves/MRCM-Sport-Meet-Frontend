@@ -20,21 +20,30 @@ const Houses: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (!isLoading) return; // Skip fetching if data has been fetched or loading is false
     const getData = async () => {
       try {
         const response = await axios.get(`${config.APIURI}/api/v1/houses`);
-
         if (response.data.message === "ok") {
-          setHouseData(response.data.HouseData);
-          setIsLoading(false); // Set loading to false once data is fetched
+          let dummyHouseData: HouseData[] = [];
+          for (let house of response.data.HouseData) {
+            dummyHouseData.push({
+              _id: house._id,
+              houseScore: house.houseScore,
+              Name: house.Name,
+            });
+          }
+          setHouseData(dummyHouseData);
+          setIsLoading(false);
         }
+        console.log(response.data.HouseData);
       } catch (error) {
         console.log(error);
-        setIsLoading(false); // Set loading to false on error as well
+        setIsLoading(false);
       }
     };
     getData();
-  }, []);
+  }, [isLoading]);
 
   useEffect(() => {
     socket.on("server-message", (data) => {
@@ -109,14 +118,14 @@ const Houses: React.FC = () => {
         ) : (
           <div className="grid-chart">
             <div className="chart-vert-value">
-              {renderVerticalChartValues(highestScore)}
+              {/* {renderVerticalChartValues(highestScore)} */}
             </div>
             {houseData.map((data, index) => (
               <div className="grid-chart-bar" key={index}>
                 <div className="bar-wrapper">
                   <div
                     className="bar-item1"
-                    style={{ height: getScoreHeight(data.houseScore) }}
+                    // style={{ height: getScoreHeight(data.houseScore) }}
                   ></div>
                 </div>
                 <span className="grid-hortz-value">{data.Name}</span>
