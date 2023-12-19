@@ -76,6 +76,10 @@ const Houses: React.FC = () => {
   };
 
   const renderVerticalChartValues = (highestScore: number) => {
+    if (highestScore === 0) {
+      return <span>0</span>; // Render a single span with value 0 if highestScore is 0
+    }
+
     const maxVerticalValue = highestScore;
     const step = maxVerticalValue / 4;
     const values: JSX.Element[] = [];
@@ -118,14 +122,14 @@ const Houses: React.FC = () => {
         ) : (
           <div className="grid-chart">
             <div className="chart-vert-value">
-              {/* {renderVerticalChartValues(highestScore)} */}
+              {renderVerticalChartValues(highestScore)}
             </div>
             {houseData.map((data, index) => (
               <div className="grid-chart-bar" key={index}>
                 <div className="bar-wrapper">
                   <div
                     className="bar-item1"
-                    // style={{ height: getScoreHeight(data.houseScore) }}
+                    style={{ height: getScoreHeight(data.houseScore) }}
                   ></div>
                 </div>
                 <span className="grid-hortz-value">{data.Name}</span>
