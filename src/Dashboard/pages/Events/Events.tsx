@@ -26,7 +26,7 @@ interface EventTypesOptions {
 export interface EventTypes {
   _id: string;
   name: string;
-  options: EventTypesOptions[];
+  options: EventTypesOptions[] | null;
 }
 
 interface Event {

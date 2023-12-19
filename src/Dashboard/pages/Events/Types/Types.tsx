@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { config } from "../../../utils/config";
 import Cookies from "js-cookie";
@@ -26,7 +26,7 @@ const Types: React.FC<TypesProps> = ({
   const [editedEventType, setEditedEventType] = useState<EventTypes>({
     _id: "",
     name: "",
-    options: [],
+    options: null,
   });
   const [createForm, setCreateForm] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -40,7 +40,7 @@ const Types: React.FC<TypesProps> = ({
   ): void => {
     if (field === "option" && index !== undefined) {
       setEditedEventType((prev) => {
-        const updatedOptions = [...prev.options];
+        const updatedOptions = [...(prev.options ? prev.options : [])];
         updatedOptions[index] = { option: value };
 
         return {
@@ -237,7 +237,7 @@ const Types: React.FC<TypesProps> = ({
                         )}
                         required
                       />
-                      <div className="event_types">
+                      <div className="event_types g-4 flex-col">
                         {eventOptions.map((data, index) => (
                           <TextField
                             fullWidth
@@ -270,6 +270,14 @@ const Types: React.FC<TypesProps> = ({
                       <Button type="submit" variant="contained">
                         Create
                       </Button>
+                      <Button
+                        className="houses_submit_btn"
+                        color="primary"
+                        variant="text"
+                        onClick={handleCancel}
+                      >
+                        Cancel
+                      </Button>
                     </div>
                   </div>
                 </form>
@@ -301,25 +309,26 @@ const Types: React.FC<TypesProps> = ({
                             required
                           />
                           <div className="event_types flex-col g-3">
-                            {editedEventType.options.map((data, index) => (
-                              <TextField
-                                fullWidth
-                                id="option"
-                                type="text"
-                                value={(data && data.option) || ""}
-                                label={`Option ${index + 1}`}
-                                key={index}
-                                onChange={(e) => (
-                                  e.preventDefault(),
-                                  handleInputChanges(
-                                    "option",
-                                    e.target.value,
-                                    index
-                                  )
-                                )}
-                                required
-                              />
-                            ))}
+                            {editedEventType.options &&
+                              editedEventType.options.map((data, index) => (
+                                <TextField
+                                  fullWidth
+                                  id="option"
+                                  type="text"
+                                  value={(data && data.option) || ""}
+                                  label={`Option ${index + 1}`}
+                                  key={index}
+                                  onChange={(e) => (
+                                    e.preventDefault(),
+                                    handleInputChanges(
+                                      "option",
+                                      e.target.value,
+                                      index
+                                    )
+                                  )}
+                                  required
+                                />
+                              ))}
                             <Button
                               onClick={() => {
                                 setEditedEventType((prev) => ({
@@ -372,6 +381,7 @@ const Types: React.FC<TypesProps> = ({
                       >
                         Remove
                       </Button>
+
                       {editIndex === index ? (
                         <>
                           <Button

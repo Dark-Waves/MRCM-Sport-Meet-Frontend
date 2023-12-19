@@ -1,6 +1,6 @@
 export const config = {
   SiteName: "MRCM SPORTS MEET",
-  APIURI: "http://45.58.127.209:8080",
+  APIURI: "http://192.168.1.113:8080",
 };
 // APIURI: "http://45.58.127.209:8080",
 export const images = {
