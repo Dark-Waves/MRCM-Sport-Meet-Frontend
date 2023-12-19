@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer } from "react";
 import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
-import socketio from "socket.io-client";
+import socketio, { Socket } from "socket.io-client";
 import axios from "axios";
 import { config } from "./utils/config";
 import { siteImgs } from "./utils/images";
@@ -29,24 +29,41 @@ const defaultLogo = siteImgs.Logo;
 const SiteName = config.SiteName;
 const APIURI = config.APIURI;
 
-interface State {
-  status: string;
-  navigationLinks: any;
-  navigationStatus: string;
-  profileStatus: string;
-  profile: any;
+interface Profile {
+  userName: string;
+  id: string;
+  name: string;
+  role: "owner" | "admin" | "staff" | string;
+  editAcessRoles: any[];
+}
+
+interface NavigationLink {
+  title: string;
+  icon: string;
+  path: string;
+  url: string;
+  subMenu: any[];
+  _id: string;
+}
+
+export interface State {
+  status: "loading" | "error" | "ready";
+  navigationLinks: NavigationLink[] | null;
+  navigationStatus: "loading" | "error" | "ready";
+  profileStatus: "loading" | "error" | "ready";
+  profile: Profile | null;
   sidebarOpen: boolean;
   wsShoketAuthenticated: boolean | null;
   socket: any;
 }
 
 type Action =
-  | { type: "setStatus"; payload: string }
+  | { type: "setStatus"; payload: "loading" | "error" | "ready" }
   | { type: "toggleSideBar" }
-  | { type: "setProfile"; payload: any }
-  | { type: "setProfileStatus"; payload: string }
-  | { type: "setNavigationStatus"; payload: string }
-  | { type: "setNavigationLinks"; payload: any }
+  | { type: "setProfile"; payload: Profile }
+  | { type: "setProfileStatus"; payload: "loading" | "error" | "ready" }
+  | { type: "setNavigationStatus"; payload: "loading" | "error" | "ready" }
+  | { type: "setNavigationLinks"; payload: NavigationLink[] }
   | { type: "setWsAuth"; payload: boolean }
   | { type: "setWs"; payload: any };
 
@@ -60,7 +77,6 @@ const initialValue: State = {
   wsShoketAuthenticated: null,
   socket: null,
 };
-
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "setStatus":

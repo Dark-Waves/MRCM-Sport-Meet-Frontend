@@ -4,8 +4,8 @@
   left: 50%;
   top: 50%;
   margin: -100px; /* $w-margin */
-  width: 200px; /* $w-size */
-  height: 200px; /* $w-size */
+  width: 150px; /* $w-size */
+  height: 150px; /* $w-size */
   background-color: transparent;
   border: none;
   -webkit-user-select: none;

@@ -511,10 +511,12 @@ const Manager: React.FC<ManagerProps> = ({
                       label={eventType.name}
                       onChange={(e) => {
                         const selectedOptionId = e.target.value;
-                        const selectedEventType = eventTypes.find((eventType) =>
-                          eventType.options.some(
-                            (option) => option._id === selectedOptionId
-                          )
+                        const selectedEventType = eventTypes.find(
+                          (eventType) =>
+                            eventType.options &&
+                            eventType.options.some(
+                              (option) => option._id === selectedOptionId
+                            )
                         );
                         if (selectedEventType && selectedEventType._id) {
                           const updatedTypes = [
@@ -537,11 +539,12 @@ const Manager: React.FC<ManagerProps> = ({
                       }}
                       error={submitErrors.type ? true : false}
                     >
-                      {eventType.options.map((data, index) => (
-                        <MenuItem key={index} value={data._id}>
-                          {data.option}
-                        </MenuItem>
-                      ))}
+                      {eventType.options &&
+                        eventType.options.map((data, index) => (
+                          <MenuItem key={index} value={data._id}>
+                            {data.option}
+                          </MenuItem>
+                        ))}
                     </Select>
                   </FormControl>
                 ))}

@@ -21,6 +21,7 @@ interface ButtonProps {
   endIcon?: React.ReactNode;
   disabled?: boolean;
   loading?: boolean;
+  style?: React.CSSProperties
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -34,6 +35,7 @@ const Button: React.FC<ButtonProps> = ({
   endIcon,
   disabled = false,
   loading = false,
+  style
 }: ButtonProps) => {
   return (
     <LoadingButton
@@ -44,8 +46,9 @@ const Button: React.FC<ButtonProps> = ({
       startIcon={startIcon}
       endIcon={endIcon}
       color={color}
-      className={`button ${className}`}
+      className={`button ${className} button`}
       loading={loading}
+      style={style}
     >
       {children}
     </LoadingButton>

@@ -12,6 +12,8 @@ import {
   Action as MainAction,
   EventTypes,
 } from "../Events";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface TypesProps extends MainState {
   dispatch: React.Dispatch<MainAction>; // Define the type for dispatch as needed
@@ -33,28 +35,34 @@ const Types: React.FC<TypesProps> = ({
   const [progress, setProgress] = useState<boolean>(false);
   const [eventOptions, setEventOptions] = useState<any[]>([]);
 
-  const handleInputChanges = (
-    field: string,
-    value: string,
-    index?: number
-  ): void => {
-    if (field === "option" && index !== undefined) {
-      setEditedEventType((prev) => {
-        const updatedOptions = [...(prev.options ? prev.options : [])];
-        updatedOptions[index] = { option: value };
+const handleInputChanges = (
+  field: string,
+  value: string,
+  index?: number
+): void => {
+  if (field === "option" && index !== undefined) {
+    setEditedEventType((prev) => {
+      const updatedOptions = [...(prev.options ? prev.options : [])];
 
-        return {
-          ...prev,
-          options: updatedOptions,
-        };
-      });
-    } else {
-      setEditedEventType((prev) => ({
+      // If value is an empty string, it indicates removal
+      if (value === "") {
+        updatedOptions.splice(index, 1); // Remove the option at the specified index
+      } else {
+        updatedOptions[index] = { option: value, _id: "" };
+      }
+
+      return {
         ...prev,
-        [field]: value,
-      }));
-    }
-  };
+        options: updatedOptions,
+      };
+    });
+  } else {
+    setEditedEventType((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  }
+};
 
   const handleEdit = (index) => {
     setEditIndex(index);
@@ -71,6 +79,7 @@ const Types: React.FC<TypesProps> = ({
         options: [],
         _id: "",
       });
+      setEventOptions([]);
     }
     setEditIndex(null);
   };
@@ -83,6 +92,7 @@ const Types: React.FC<TypesProps> = ({
       options: [],
       _id: "",
     });
+    setEventOptions([]);
   };
 
   const setCreateNew = () => {
@@ -93,33 +103,43 @@ const Types: React.FC<TypesProps> = ({
       options: [],
       _id: "",
     });
+    setEventOptions([]);
   };
 
-  const handleCreateEventType = async (e, updatedEventTypes) => {
-    // console.log(updatedEventTypes);
+  const handleCreateEventType = async (
+    e: React.FormEvent<HTMLFormElement>,
+    updatedEventTypes: EventTypes
+  ): Promise<void> => {
+    e.preventDefault();
     try {
+      const eventOptions =
+        updatedEventTypes.options &&
+        updatedEventTypes.options.map((option) => option.option);
+
       const token = Cookies.get("token");
-      const response = await axios.put(
+      const response = await axios.post(
         `${config.APIURI}/api/v1/event-types`,
-        { eventTypes: updatedEventTypes },
+        {
+          name: updatedEventTypes.name,
+          options: eventOptions,
+        },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       if (response.data.message === "ok") {
-        setCreateForm(false);
+        const newEventType: EventTypes = {
+          _id: response.data.id, // Assuming the response contains the new ID
+          name: updatedEventTypes.name,
+          options: updatedEventTypes.options,
+        };
+
         dispatchEvent({
           type: "setEventTypes",
-          payload: [
-            ...(eventTypes ? eventTypes : []),
-            {
-              name: updatedEventTypes.name,
-              options: updatedEventTypes.options,
-            },
-          ],
+          payload: eventTypes ? [...eventTypes, newEventType] : [newEventType],
         });
-        console.log(eventTypes);
+
         enqueueSnackbar("Event Type created successfully.", {
           variant: "success",
         });
@@ -132,8 +152,7 @@ const Types: React.FC<TypesProps> = ({
     }
   };
 
-  const handleUpdateEventType = async (updatedData) => {
-    console.log(updatedData);
+  const handleUpdateEventType = async (updatedData: EventTypes) => {
     try {
       const token = Cookies.get("token");
       const response = await axios.patch(
@@ -166,7 +185,7 @@ const Types: React.FC<TypesProps> = ({
     }
   };
 
-  const handleRemoveEventType = async (eventID) => {
+  const handleRemoveEventType = async (eventID: string) => {
     try {
       const token = Cookies.get("token");
       const response = await axios.delete(
@@ -195,10 +214,30 @@ const Types: React.FC<TypesProps> = ({
 
   const createOption = () => {
     setEventOptions((prevOptions) => [...prevOptions, { option: "" }]);
-
     // Add a option and value = empty for the option
   };
-
+  const removeEventOption = (indexToRemove) => {
+    setEventOptions((prevOptions) => {
+      const updatedOptions = prevOptions.filter(
+        (_, index) => index !== indexToRemove
+      );
+      return updatedOptions;
+    });
+  };
+  
+  // Function to remove an option from editedEventType.options
+  const removeEditedOption = (indexToRemove) => {
+    setEditedEventType((prev) => {
+      const updatedOptions = (prev.options ? prev.options : []).filter(
+        (_, index) => index !== indexToRemove
+      );
+  
+      return {
+        ...prev,
+        options: updatedOptions,
+      };
+    });
+  };
   return (
     <div className="event_types__container">
       {loading ? (
@@ -239,22 +278,35 @@ const Types: React.FC<TypesProps> = ({
                       />
                       <div className="event_types g-4 flex-col">
                         {eventOptions.map((data, index) => (
-                          <TextField
-                            fullWidth
-                            id="option"
-                            type="text"
-                            label={`Option ${index + 1}`}
-                            key={index}
-                            onChange={(e) => (
-                              e.preventDefault(),
-                              handleInputChanges(
-                                "option",
-                                e.target.value,
-                                index
-                              )
-                            )}
-                            required
-                          />
+                          <div className="flex-row position-relative">
+                            <TextField
+                              fullWidth
+                              id="option"
+                              type="text"
+                              label={`Option ${index + 1}`}
+                              key={index}
+                              onChange={(e) => (
+                                e.preventDefault(),
+                                handleInputChanges(
+                                  "option",
+                                  e.target.value,
+                                  index
+                                )
+                              )}
+                              required
+                            />
+                            <Button
+                              onClick={() => {
+                                removeEventOption(index); // Pass the index of the option to remove
+                              }}
+                              variant="text"
+                              color="error"
+                              className="position-absolute"
+                              style={{ right: 0, top: 0, bottom: 0 }}
+                            >
+                              <FontAwesomeIcon icon={faTrash} />
+                            </Button>
+                          </div>
                         ))}
                         <Button
                           onClick={() => {
@@ -311,23 +363,36 @@ const Types: React.FC<TypesProps> = ({
                           <div className="event_types flex-col g-3">
                             {editedEventType.options &&
                               editedEventType.options.map((data, index) => (
-                                <TextField
-                                  fullWidth
-                                  id="option"
-                                  type="text"
-                                  value={(data && data.option) || ""}
-                                  label={`Option ${index + 1}`}
-                                  key={index}
-                                  onChange={(e) => (
-                                    e.preventDefault(),
-                                    handleInputChanges(
-                                      "option",
-                                      e.target.value,
-                                      index
-                                    )
-                                  )}
-                                  required
-                                />
+                                <div className="flex-row position-relative">
+                                  <TextField
+                                    fullWidth
+                                    id="option"
+                                    type="text"
+                                    value={(data && data.option) || ""}
+                                    label={`Option ${index + 1}`}
+                                    key={index}
+                                    onChange={(e) => (
+                                      e.preventDefault(),
+                                      handleInputChanges(
+                                        "option",
+                                        e.target.value,
+                                        index
+                                      )
+                                    )}
+                                    required
+                                  />
+                                  <Button
+                                    onClick={() => {
+                                      removeEditedOption(index); // Pass the index of the option to remove
+                                    }}
+                                    variant="text"
+                                    color="error"
+                                    className="position-absolute"
+                                    style={{ right: 0, top: 0, bottom: 0 }}
+                                  >
+                                    <FontAwesomeIcon icon={faTrash} />
+                                  </Button>
+                                </div>
                               ))}
                             <Button
                               onClick={() => {

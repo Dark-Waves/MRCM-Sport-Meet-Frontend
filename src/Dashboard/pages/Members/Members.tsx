@@ -138,7 +138,7 @@ const Members: React.FC = () => {
     fetchHouses(); // Fetch data when Autocomplete is opened
   }, []);
   return (
-    <div className="Members main-content-holder">
+    <div className="Members main-content-holder position-relative h-full">
       {status === "loading" ? (
         <Loader />
       ) : status === "error" ? (
