@@ -13,20 +13,44 @@ import axios from "axios";
 import Loader from "../Components/Loader/Loader";
 import HomeContext from "../context/HomeContext";
 import "./Home.css";
-import { Members } from "./Members/Members";
+import Score from "./Score/Score";
 
 const APIURI = config.APIURI;
 
 export type State = {
   status: string;
   publicDataStatus: string;
-  publicData: any;
   socket: any;
   soketStatus: string;
   houseData: HouseData[] | null;
   eventData: EventData[] | null;
   memberData: MemberData[] | null;
+  scoreData: ScoreData | null;
 };
+
+interface ScoreData {
+  scoreBoard: {
+    eventName: string;
+    eventType: {
+      option: string;
+    }[];
+    places: {
+      house: string;
+      score: number;
+      member: string;
+      MemberID: string;
+      place: number;
+    }[];
+  }[];
+  eventTypes: {
+    _id: string;
+    name: string;
+    options: {
+      _id: string;
+      option: string;
+    }[];
+  }[];
+}
 
 interface MemberData {
   _id: string;
@@ -72,32 +96,29 @@ interface HouseData {
 
 type Action =
   | { type: "setStatus"; payload: string }
-  | { type: "setPublicData"; payload: any }
   | { type: "setPublicDataStatus"; payload: string }
   | { type: "setSoketStatus"; payload: string }
   | { type: "setHouseData"; payload: any }
   | { type: "setEventData"; payload: any }
   | { type: "setMemberData"; payload: any }
+  | { type: "setScoreData"; payload: any }
   | { type: "setWs"; payload: any };
 
 const initialValue: State = {
   status: "loading",
   publicDataStatus: "loading",
-  publicData: null,
   socket: null,
   soketStatus: "loading",
   houseData: null,
   eventData: null,
   memberData: null,
+  scoreData: null,
 };
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "setStatus": {
       return { ...state, status: action.payload };
-    }
-    case "setPublicData": {
-      return { ...state, publicData: action.payload };
     }
     case "setPublicDataStatus": {
       return { ...state, publicDataStatus: action.payload };
@@ -113,6 +134,9 @@ const reducer = (state: State, action: Action): State => {
     }
     case "setMemberData": {
       return { ...state, memberData: action.payload };
+    }
+    case "setScoreData": {
+      return { ...state, scoreData: action.payload };
     }
     case "setWs": {
       return { ...state, socket: action.payload };
@@ -135,11 +159,12 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [houseResponse, eventResponse, memberResponse] =
+        const [houseResponse, eventResponse, memberResponse, scoreResponse] =
           await Promise.all([
             axios.get(`${config.APIURI}/api/v1/houses`),
             axios.get(`${config.APIURI}/api/v1/events/public`),
             axios.get(`${config.APIURI}/api/v1/members/public`),
+            axios.get(`${config.APIURI}/api/v1/public/data/scoreBoard`),
           ]);
 
         if (houseResponse.data.message === "ok") {
@@ -163,7 +188,13 @@ const Home: React.FC = () => {
           });
         }
 
-        dispatch({ type: "setPublicData", payload: "success" });
+        if (scoreResponse.data.message === "ok") {
+          dispatch({
+            type: "setScoreData",
+            payload: scoreResponse.data.payload,
+          });
+        }
+
         dispatch({ type: "setPublicDataStatus", payload: "ready" });
       } catch (error) {
         dispatch({ type: "setStatus", payload: "error" });
@@ -219,7 +250,7 @@ const Home: React.FC = () => {
                 <Route path="/live" element={<Live />} />
                 <Route path="/events" element={<Events />} />
                 <Route path="/houses" element={<Houses />} />
-                <Route path="/members" element={<Members />} />
+                <Route path="/score" element={<Score />} />
                 <Route path={"*"} element={<ErrorPage code={404} />} />
               </Routes>
               <Footer />

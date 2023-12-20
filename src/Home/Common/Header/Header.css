@@ -1,8 +1,7 @@
 
 .nav-links.visible {
  transition: min-height 300ms;
- min-height: 238px;
-}
+ min-height: 279px;}
 
 /* Style the menu icon button */
 .menu-icon {

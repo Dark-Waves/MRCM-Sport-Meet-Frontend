@@ -113,7 +113,7 @@ const Manager: React.FC<ManagerProps> = ({
   const { enqueueSnackbar } = useSnackbar();
 
   console.log(tempeventData);
-  const handleSubmit = async function (force) {
+  const handleSubmit = async function (force: any) {
     if (force) {
       const errors: Errors[] = [];
       if (!tempeventData.name) {
@@ -595,11 +595,21 @@ const Manager: React.FC<ManagerProps> = ({
               </Button>
             </div>
 
-            <Button variant="contained" type="submit" className="m-t-3">
-              {Object.keys(selectedEvent).length
-                ? "Save Changes"
-                : "Create Event"}
-            </Button>
+            <div className="buttons flex-row g-5">
+              <Button variant="contained" type="submit" className="m-t-3">
+                {Object.keys(selectedEvent).length
+                  ? "Save Changes"
+                  : "Create Event"}
+              </Button>
+              <Button
+              onClick={closePopUp}
+                variant="outlined"
+                color="error"
+                className="m-t-3"
+              >
+                Cancel
+              </Button>
+            </div>
           </form>
         </PopUp>
       )}

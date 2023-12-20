@@ -12,8 +12,8 @@ export const navLinks = [
     url: "/events",
   },
   {
-    name: "Members",
-    url: "/members",
+    name: "Score Board",
+    url: "/score",
   },
   {
     name: "Houses",

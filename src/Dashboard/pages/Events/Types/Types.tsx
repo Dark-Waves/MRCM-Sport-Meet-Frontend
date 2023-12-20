@@ -19,6 +19,11 @@ interface TypesProps extends MainState {
   dispatch: React.Dispatch<MainAction>; // Define the type for dispatch as needed
 }
 
+interface Progress {
+  progressTo: string;
+  progress: boolean;
+}
+
 const Types: React.FC<TypesProps> = ({
   eventTypes,
   dispatch: dispatchEvent,
@@ -32,37 +37,40 @@ const Types: React.FC<TypesProps> = ({
   });
   const [createForm, setCreateForm] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [progress, setProgress] = useState<boolean>(false);
+  const [progress, setProgress] = useState<Progress>({
+    progressTo: "",
+    progress: false,
+  });
   const [eventOptions, setEventOptions] = useState<any[]>([]);
 
-const handleInputChanges = (
-  field: string,
-  value: string,
-  index?: number
-): void => {
-  if (field === "option" && index !== undefined) {
-    setEditedEventType((prev) => {
-      const updatedOptions = [...(prev.options ? prev.options : [])];
+  const handleInputChanges = (
+    field: string,
+    value: string,
+    index?: number
+  ): void => {
+    if (field === "option" && index !== undefined) {
+      setEditedEventType((prev) => {
+        const updatedOptions = [...(prev.options ? prev.options : [])];
 
-      // If value is an empty string, it indicates removal
-      if (value === "") {
-        updatedOptions.splice(index, 1); // Remove the option at the specified index
-      } else {
-        updatedOptions[index] = { option: value, _id: "" };
-      }
+        // If value is an empty string, it indicates removal
+        if (value === "") {
+          updatedOptions.splice(index, 1); // Remove the option at the specified index
+        } else {
+          updatedOptions[index] = { option: value, _id: "" };
+        }
 
-      return {
+        return {
+          ...prev,
+          options: updatedOptions,
+        };
+      });
+    } else {
+      setEditedEventType((prev) => ({
         ...prev,
-        options: updatedOptions,
-      };
-    });
-  } else {
-    setEditedEventType((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  }
-};
+        [field]: value,
+      }));
+    }
+  };
 
   const handleEdit = (index) => {
     setEditIndex(index);
@@ -110,18 +118,24 @@ const handleInputChanges = (
     e: React.FormEvent<HTMLFormElement>,
     updatedEventTypes: EventTypes
   ): Promise<void> => {
+    setProgress({ progressTo: "create", progress: true });
     e.preventDefault();
     try {
       const eventOptions =
         updatedEventTypes.options &&
-        updatedEventTypes.options.map((option) => option.option);
+        updatedEventTypes.options.map((option) => ({
+          option: `${option.option}`,
+        }));
 
       const token = Cookies.get("token");
+      const cratingEventTypes = {
+        name: updatedEventTypes.name,
+        options: eventOptions,
+      };
       const response = await axios.put(
         `${config.APIURI}/api/v1/event-types`,
         {
-          name: updatedEventTypes.name,
-          options: eventOptions,
+          eventTypes: cratingEventTypes,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -129,31 +143,44 @@ const handleInputChanges = (
       );
 
       if (response.data.message === "ok") {
-        const newEventType: EventTypes = {
-          _id: response.data.id, // Assuming the response contains the new ID
-          name: updatedEventTypes.name,
-          options: updatedEventTypes.options,
-        };
-
+        setEditIndex(null);
+        setCreateForm(false);
+        setEditedEventType({
+          name: "",
+          options: [],
+          _id: "",
+        });
+        setEventOptions([]);
         dispatchEvent({
           type: "setEventTypes",
-          payload: eventTypes ? [...eventTypes, newEventType] : [newEventType],
+          payload: eventTypes
+            ? [...eventTypes, response.data.evenType]
+            : [response.data.evenType],
         });
 
         enqueueSnackbar("Event Type created successfully.", {
           variant: "success",
         });
       }
+      setProgress({
+        progressTo: "",
+        progress: false,
+      });
     } catch (error) {
       if (error.response && error.response.data && error.response.data.error) {
         enqueueSnackbar(error.response.data.message, { variant: "error" });
       }
+      setProgress({
+        progressTo: "",
+        progress: false,
+      });
       console.error("Error creating eventType:", error);
     }
   };
 
   const handleUpdateEventType = async (updatedData: EventTypes) => {
     try {
+      setProgress({ progressTo: "update", progress: true });
       const token = Cookies.get("token");
       const response = await axios.patch(
         `${config.APIURI}/api/v1/event-types/${updatedData._id}`,
@@ -169,6 +196,14 @@ const handleInputChanges = (
           (eventType) =>
             eventType._id === updatedData._id ? updatedData : eventType
         );
+        setEditIndex(null);
+        setCreateForm(false);
+        setEditedEventType({
+          name: "",
+          options: [],
+          _id: "",
+        });
+        setEventOptions([]);
         dispatchEvent({
           type: "setEventTypes",
           payload: updatedEventTypes,
@@ -177,15 +212,26 @@ const handleInputChanges = (
           variant: "success",
         });
       }
+      setProgress({
+        progressTo: "",
+        progress: false,
+      });
     } catch (error) {
       if (error.response && error.response.data && error.response.data.error) {
         enqueueSnackbar(error.response.data.message, { variant: "error" });
       }
+      setProgress({
+        progressTo: "",
+        progress: false,
+      });
+
       console.error("Error updating eventType:", error);
     }
   };
 
   const handleRemoveEventType = async (eventID: string) => {
+    setProgress({ progressTo: "remove" + eventID, progress: true });
+
     try {
       const token = Cookies.get("token");
       const response = await axios.delete(
@@ -199,6 +245,14 @@ const handleInputChanges = (
         const updatedEventType = (eventTypes ? eventTypes : []).filter(
           (eventType) => eventType._id !== eventID
         );
+        setEditIndex(null);
+        setCreateForm(false);
+        setEditedEventType({
+          name: "",
+          options: [],
+          _id: "",
+        });
+        setEventOptions([]);
         dispatchEvent({
           type: "setEventTypes",
           payload: updatedEventType,
@@ -207,7 +261,18 @@ const handleInputChanges = (
           variant: "success",
         });
       }
+      setProgress({
+        progressTo: "",
+        progress: false,
+      });
     } catch (error) {
+      setProgress({
+        progressTo: "",
+        progress: false,
+      });
+      if (error.response && error.response.data && error.response.data.error) {
+        enqueueSnackbar(error.response.data.message, { variant: "error" });
+      }
       console.error("Error removing eventType:", error);
     }
   };
@@ -224,14 +289,14 @@ const handleInputChanges = (
       return updatedOptions;
     });
   };
-  
+
   // Function to remove an option from editedEventType.options
   const removeEditedOption = (indexToRemove) => {
     setEditedEventType((prev) => {
       const updatedOptions = (prev.options ? prev.options : []).filter(
         (_, index) => index !== indexToRemove
       );
-  
+
       return {
         ...prev,
         options: updatedOptions,
@@ -319,7 +384,17 @@ const handleInputChanges = (
                       </div>
                     </div>
                     <div className="eventTypes_submit_btn m-auto p-t-4">
-                      <Button type="submit" variant="contained">
+                      <Button
+                        loading={
+                          progress &&
+                          progress.progressTo === "create" &&
+                          progress.progress
+                            ? true
+                            : false
+                        }
+                        type="submit"
+                        variant="contained"
+                      >
                         Create
                       </Button>
                       <Button
@@ -439,6 +514,10 @@ const handleInputChanges = (
                     </div>
                     <div className="event__buttons buttons flex-row-center m-auto g-4">
                       <Button
+                        loading={
+                          progress.progressTo === "remove" + eventType._id &&
+                          progress.progress
+                        }
                         className="houses_submit_btn"
                         color="error"
                         variant="outlined"
@@ -450,6 +529,10 @@ const handleInputChanges = (
                       {editIndex === index ? (
                         <>
                           <Button
+                            loading={
+                              progress.progressTo === "update" &&
+                              progress.progress
+                            }
                             className="houses_submit_btn"
                             variant="contained"
                             type="submit"
