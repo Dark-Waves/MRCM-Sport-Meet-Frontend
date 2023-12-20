@@ -117,7 +117,7 @@ const handleInputChanges = (
         updatedEventTypes.options.map((option) => option.option);
 
       const token = Cookies.get("token");
-      const response = await axios.post(
+      const response = await axios.put(
         `${config.APIURI}/api/v1/event-types`,
         {
           name: updatedEventTypes.name,
