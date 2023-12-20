@@ -231,19 +231,17 @@ export default function Approves() {
                     </div>
                     <div className="buttons flex-row-center g-4">
                       <Button
+                        loading={approoving}
                         variant="contained"
                         onClick={() => {
                           approveEvent(data._id);
                         }}
                         className="submit p-t-3 p-b-3 p-l-4 p-r-4 bg-main rounded"
                       >
-                        {approoving ? (
-                          <CircularProgress size={25} />
-                        ) : (
-                          "Approve"
-                        )}
+                        Approve
                       </Button>
                       <Button
+                        loading={rejecting}
                         variant="outlined"
                         color="error"
                         onClick={() => {
@@ -251,7 +249,7 @@ export default function Approves() {
                         }}
                         className="reject p-t-3 p-b-3 p-l-4 p-r-4 bg-scarlet-1 rounded"
                       >
-                        {rejecting ? <CircularProgress size={25} /> : "Reject"}
+                        Reject
                       </Button>
                     </div>
                   </div>
@@ -259,7 +257,7 @@ export default function Approves() {
               </div>
             </div>
           ) : (
-            "You Don't have any incoming submits."
+            <span>You Don't have any incoming submits.</span>
           )}
           {approved.length ? (
             <div className="approved">
@@ -310,7 +308,7 @@ export default function Approves() {
               </div>
             </div>
           ) : (
-            "You Don't have any Approved submits."
+            <span>You Don't have any Approved submits.</span>
           )}
         </div>
       )}

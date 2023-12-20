@@ -316,7 +316,7 @@ const Submits: React.FC = () => {
       : searchFilteredEvents;
 
   return (
-    <div className="event-submits">
+    <div className="event-submits position-relative h-full">
       {loading ? (
         <Loader />
       ) : (
@@ -546,8 +546,13 @@ const Submits: React.FC = () => {
                       : "Submit Type Not Found"}
 
                     <div className="buttons flex-row-eve g-3 m-4">
-                      <Button type="submit" color="info" variant="contained">
-                        {progress ? <CircularProgress size={25} /> : "submit"}
+                      <Button
+                        loading={progress}
+                        type="submit"
+                        color="info"
+                        variant="contained"
+                      >
+                        submit
                       </Button>
                     </div>
                   </form>
