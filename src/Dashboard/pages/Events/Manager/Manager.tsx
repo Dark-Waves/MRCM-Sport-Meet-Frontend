@@ -602,7 +602,7 @@ const Manager: React.FC<ManagerProps> = ({
                   : "Create Event"}
               </Button>
               <Button
-              onClick={closePopUp}
+                onClick={closePopUp}
                 variant="outlined"
                 color="error"
                 className="m-t-3"
