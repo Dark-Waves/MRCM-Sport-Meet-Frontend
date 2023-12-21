@@ -18,7 +18,7 @@ import Score from "./Score/Score";
 const APIURI = config.APIURI;
 /**
  * Public Home data Main state
-*/
+ */
 export type State = {
   status: string;
   publicDataStatus: string;
@@ -152,8 +152,15 @@ const reducer = (state: State, action: Action): State => {
 
 const Home: React.FC = () => {
   const [state, dispatch] = useReducer(reducer, initialValue);
-  const { status, socket, soketStatus, houseData, eventData, memberData } =
-    state;
+  const {
+    status,
+    socket,
+    soketStatus,
+    houseData,
+    eventData,
+    memberData,
+    scoreData,
+  } = state;
 
   useEffect(() => {
     document.title = `${config.SiteName}`;
@@ -222,6 +229,33 @@ const Home: React.FC = () => {
       socket.close();
     };
   }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleSocketMessage = (message: any) => {
+      if (message.type === "eventUpdate") {
+        console.log(message);
+
+        dispatch({
+          type: "setScoreData",
+          payload: {
+            eventTypes: [...(scoreData?.eventTypes || [])],
+            scoreBoard: [
+              ...(scoreData?.scoreBoard || []),
+              message.payload.scoreBoard,
+            ],
+          },
+        });
+      }
+    };
+
+    socket.on("server-message", handleSocketMessage);
+
+    return () => {
+      socket.off("server-message", handleSocketMessage);
+    };
+  }, [socket, dispatch]);
 
   useEffect(() => {
     const loading =
