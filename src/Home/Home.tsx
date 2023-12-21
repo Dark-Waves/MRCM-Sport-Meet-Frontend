@@ -16,7 +16,9 @@ import "./Home.css";
 import Score from "./Score/Score";
 
 const APIURI = config.APIURI;
-
+/**
+ * Public Home data Main state
+*/
 export type State = {
   status: string;
   publicDataStatus: string;
@@ -34,6 +36,7 @@ interface ScoreData {
     eventType: {
       option: string;
     }[];
+    inputType: string;
     places: {
       house: string;
       score: number;
