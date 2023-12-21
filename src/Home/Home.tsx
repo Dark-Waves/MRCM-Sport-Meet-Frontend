@@ -236,14 +236,15 @@ const Home: React.FC = () => {
     const handleSocketMessage = (message: any) => {
       if (message.type === "eventUpdate") {
         console.log(message);
-
+        console.log(scoreData?.eventTypes);
+        console.log(scoreData?.scoreBoard);
         dispatch({
           type: "setScoreData",
           payload: {
-            eventTypes: [...(scoreData?.eventTypes || [])],
+            eventTypes: scoreData?.eventTypes || [], // Keep the existing eventTypes
             scoreBoard: [
-              ...(scoreData?.scoreBoard || []),
-              message.payload.scoreBoard,
+              ...(scoreData?.scoreBoard || []), // Existing scoreBoard
+              ...(message.payload.scoreBoard || []), // Add incoming scoreBoard
             ],
           },
         });

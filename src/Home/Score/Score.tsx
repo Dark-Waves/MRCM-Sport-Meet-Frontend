@@ -159,9 +159,9 @@ const Score: FC = () => {
   return (
     <div className="m-t-8 p-t-7" style={{ zIndex: 1 }}>
       {/* All data types */}
-      <div className="flex-row g-5 m-5 bg-second p-3 rounded">
+      {/* <div className="flex-row g-5 m-5 bg-second p-3 rounded">
         {scoreData &&
-          scoreData.eventTypes.map((data) => (
+          scoreData.eventTypes?.map((data) => (
             <div className="option_selection w-40">
               <FormControl key={data._id} fullWidth>
                 <InputLabel id={`event-type-label-${data._id}`}>
@@ -192,7 +192,7 @@ const Score: FC = () => {
               </FormControl>
             </div>
           ))}
-      </div>
+      </div> */}
 
       <div className="table-scores m-5">
         <TableContainer component={Paper}>
