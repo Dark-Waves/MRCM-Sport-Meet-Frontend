@@ -167,6 +167,20 @@ const Home: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    console.log(status, houseData, eventData, memberData, socket, soketStatus);
+    const loading =
+      status !== "loading" ||
+      !houseData ||
+      !eventData ||
+      !memberData ||
+      !socket ||
+      !soketStatus;
+
+    if (!loading) {
+      dispatch({ type: "setStatus", payload: "ready" });
+    }
+  }, [status, houseData, eventData, memberData, socket, soketStatus]);
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const [houseResponse, eventResponse, memberResponse, scoreResponse] =
@@ -199,6 +213,7 @@ const Home: React.FC = () => {
         }
 
         if (scoreResponse.data.message === "ok") {
+          console.log(scoreResponse);
           dispatch({
             type: "setScoreData",
             payload: scoreResponse.data.payload,
@@ -213,20 +228,23 @@ const Home: React.FC = () => {
 
     fetchData();
   }, []);
+  useEffect(
+    function () {
+      console.log(scoreData);
+    },
+    [scoreData]
+  );
 
   useEffect(() => {
-    const socket = socketio(`${APIURI}/v1/public`, {
+    const wasocket = socketio(`${APIURI}/v1/public`, {
       transports: ["websocket"],
     });
-    dispatch({ type: "setWs", payload: socket });
-    socket.on("connect", () => {
+    dispatch({ type: "setWs", payload: wasocket });
+    wasocket.on("connect", () => {
       dispatch({ type: "setSoketStatus", payload: "ready" });
     });
-    socket.on("server-message", (message: any) => {
-      console.log(message);
-    });
     return () => {
-      socket.close();
+      wasocket.close();
     };
   }, []);
 
@@ -234,17 +252,16 @@ const Home: React.FC = () => {
     if (!socket) return;
 
     const handleSocketMessage = (message: any) => {
+      console.log(message);
       if (message.type === "eventUpdate") {
-        console.log(message);
-        console.log(scoreData?.eventTypes);
-        console.log(scoreData?.scoreBoard);
+        console.log(scoreData);
         dispatch({
           type: "setScoreData",
           payload: {
             eventTypes: scoreData?.eventTypes || [], // Keep the existing eventTypes
             scoreBoard: [
               ...(scoreData?.scoreBoard || []), // Existing scoreBoard
-              ...(message.payload.scoreBoard || []), // Add incoming scoreBoard
+              message.payload.scoreBoard, // Add incoming scoreBoard
             ],
           },
         });
@@ -256,21 +273,7 @@ const Home: React.FC = () => {
     return () => {
       socket.off("server-message", handleSocketMessage);
     };
-  }, [socket, dispatch]);
-
-  useEffect(() => {
-    const loading =
-      status !== "loading" ||
-      !houseData ||
-      !eventData ||
-      !memberData ||
-      !socket ||
-      !soketStatus;
-
-    if (!loading) {
-      dispatch({ type: "setStatus", payload: "ready" });
-    }
-  }, [status, houseData, eventData, memberData, socket, soketStatus]);
+  }, [socket, scoreData]);
 
   return (
     <div className="flex-col landing-page position-relative">

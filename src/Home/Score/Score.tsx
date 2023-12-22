@@ -88,18 +88,18 @@ const Score: FC = () => {
     const updatedEventTypes = [...selectedEventTypes];
     console.log("selectedEventTypes ", selectedEventTypes);
     // Find the index of the item with the provided eventType
-    const index = updatedEventTypes.findIndex(
-      (item) => item.option === eventType
-    );
-    console.log("index ", index);
+    // const index = updatedEventTypes.findIndex(
+    //   (item) => item.option === eventType
+    // );
+    console.log(updatedEventTypes);
     // Check conditions for adding or removing items from the array
-    if (index === -1 && event.target.value !== "") {
-      // Add a new object to updatedEventTypes if eventType doesn't exist and value is not empty
-      updatedEventTypes.push({ eventType, option: event.target.value });
-    } else if (index !== -1 && event.target.value === "") {
-      // Remove the object from updatedEventTypes if eventType exists and value is empty
-      updatedEventTypes.splice(index, 1);
-    }
+    // if (index === -1 && event.target.value !== "") {
+    //   // Add a new object to updatedEventTypes if eventType doesn't exist and value is not empty
+    //   updatedEventTypes.push({ eventType, option: event.target.value });
+    // } else if (index !== -1 && event.target.value === "") {
+    //   // Remove the object from updatedEventTypes if eventType exists and value is empty
+    //   updatedEventTypes.splice(index, 1);
+    // }
 
     // Update the selectedEventTypes state with the modified array
     setSelectedEventTypes(updatedEventTypes);
@@ -159,7 +159,7 @@ const Score: FC = () => {
   return (
     <div className="m-t-8 p-t-7" style={{ zIndex: 1 }}>
       {/* All data types */}
-      {/* <div className="flex-row g-5 m-5 bg-second p-3 rounded">
+      <div className="flex-row g-5 m-5 bg-second p-3 rounded">
         {scoreData &&
           scoreData.eventTypes?.map((data) => (
             <div className="option_selection w-40">
@@ -192,7 +192,7 @@ const Score: FC = () => {
               </FormControl>
             </div>
           ))}
-      </div> */}
+      </div>
 
       <div className="table-scores m-5">
         <TableContainer component={Paper}>
