@@ -29,7 +29,7 @@ const Broadcast: React.FC = () => {
     const getBroadcasts = async () => {
       try {
         const response = await axios.get(
-          `${config.APIURI}/api/v1/broadcast/private`,
+          `${config.APIURI}/api/v${config.Version}/broadcast/private`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

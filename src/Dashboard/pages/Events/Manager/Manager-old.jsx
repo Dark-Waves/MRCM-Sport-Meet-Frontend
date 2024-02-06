@@ -31,7 +31,7 @@ export default function Manager({ allEvents, setAllEvents }) {
   useEffect(() => {
     const getEventTypes = async () => {
       try {
-        let responce = await axios.get(`${config.APIURI}/api/v1/event-types`, {
+        let responce = await axios.get(`${config.APIURI}/api/v${config.Version}/event-types`, {
           headers: { Authorization: `Bearer ${Cookies.get("token")}` },
         });
         if (responce.data) {
@@ -81,7 +81,7 @@ export default function Manager({ allEvents, setAllEvents }) {
     try {
       const token = Cookies.get("token");
       const response = await axios.delete(
-        `${config.APIURI}/api/v1/events/${eventToDelete._id}`,
+        `${config.APIURI}/api/v${config.Version}/events/${eventToDelete._id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -102,7 +102,7 @@ export default function Manager({ allEvents, setAllEvents }) {
     e.preventDefault();
 
     const token = Cookies.get("token");
-    const apiUrl = `${config.APIURI}/api/v1/events`;
+    const apiUrl = `${config.APIURI}/api/v${config.Version}/events`;
     console.log(eventData);
     const errors = [];
 

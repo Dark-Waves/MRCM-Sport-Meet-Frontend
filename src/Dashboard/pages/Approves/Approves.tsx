@@ -86,7 +86,7 @@ export default function Approves() {
       try {
         const token = Cookies.get("token");
         const response = await axios.get(
-          `${config.APIURI}/api/v1/events/submitted`,
+          `${config.APIURI}/api/v${config.Version}/events/submitted`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -108,7 +108,7 @@ export default function Approves() {
       try {
         const token = Cookies.get("token");
         const response = await axios.get(
-          `${config.APIURI}/api/v1/events/approved`,
+          `${config.APIURI}/api/v${config.Version}/events/approved`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -130,7 +130,7 @@ export default function Approves() {
       const token = Cookies.get("token");
       console.log(token);
       const response = await axios.post(
-        `${config.APIURI}/api/v1/event/approve/${eventId}`,
+        `${config.APIURI}/api/v${config.Version}/event/approve/${eventId}`,
         {
           token: token,
         }
@@ -154,7 +154,7 @@ export default function Approves() {
       setRejecting(true);
       const token = Cookies.get("token");
       const response = await axios.post(
-        `${config.APIURI}/api/v1/event/reject/${eventId}`,
+        `${config.APIURI}/api/v${config.Version}/event/reject/${eventId}`,
         {
           token: token,
         }

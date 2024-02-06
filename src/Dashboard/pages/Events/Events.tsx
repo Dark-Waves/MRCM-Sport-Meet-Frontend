@@ -130,7 +130,7 @@ const Events: React.FC = () => {
       if (eventDataStatus !== "loading") return;
       try {
         const token = Cookies.get("token");
-        const { data } = await axios.get(`${config.APIURI}/api/v1/events`, {
+        const { data } = await axios.get(`${config.APIURI}/api/v${config.Version}/events`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         dispatch({ type: "setEventDataStatus", payload: "ready" });
@@ -148,7 +148,7 @@ const Events: React.FC = () => {
       try {
         const token = Cookies.get("token");
         const { data } = await axios.get(
-          `${config.APIURI}/api/v1/event-types`,
+          `${config.APIURI}/api/v${config.Version}/event-types`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

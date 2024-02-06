@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import "./Header.css";
 import { navLinks } from "../../data/landingNav";
-import { Button } from "@mui/material";
+import Button from "@mui/material/Button";
 
 export default function Header() {
   const [isNavVisible, setIsNavVisible] = useState(false);
@@ -36,7 +36,10 @@ export default function Header() {
     <header className="header w-full p-5 position-absolute">
       <div className="nav flex-row-bet">
         <h1 className="text-center">
-          <Link to="/" className="flex-row-center g-4"><img src="/logo/logo.png" alt="mrcm logo" width={50} height={50} /><span>MRCM SPORTS 2K24</span></Link>
+          <Link to="/" className="flex-row-center g-4">
+            <img src="/logo/logo.png" alt="mrcm logo" width={50} height={50} />
+            <span>MRCM SPORTS 2K24</span>
+          </Link>
         </h1>
         {isMobile && (
           <button className="menu-icon" onClick={toggleNav}>
@@ -78,8 +81,9 @@ export default function Header() {
       </div>
       {isMobile && (
         <div
-          className={`nav-links flex-col-center g-5  ${isNavVisible ? "visible " : "hidden"
-            } position-relative`}
+          className={`nav-links flex-col-center g-5  ${
+            isNavVisible ? "visible " : "hidden"
+          } position-relative`}
         >
           {navLinks.map((link, index) => (
             <Link to={link.url} key={index}>

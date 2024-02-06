@@ -88,7 +88,7 @@ const AddUsers: React.FC<AddUsersProps> = ({
       try {
         const token = jsCookie.get("token");
         const response = await axios.get(
-          `${config.APIURI}/api/v1/user/${userId}`,
+          `${config.APIURI}/api/v${config.Version}/user/${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -134,7 +134,7 @@ const AddUsers: React.FC<AddUsersProps> = ({
     try {
       const token = jsCookie.get("token");
       const response = await axios.delete(
-        `${config.APIURI}/api/v1/user/${userId}`,
+        `${config.APIURI}/api/v${config.Version}/user/${userId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -190,7 +190,7 @@ const AddUsers: React.FC<AddUsersProps> = ({
         });
 
         const { data } = await axios.put(
-          `${config.APIURI}/api/v1/user`,
+          `${config.APIURI}/api/v${config.Version}/user`,
           { signupData: updateUserData },
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -216,7 +216,7 @@ const AddUsers: React.FC<AddUsersProps> = ({
           loaderForValue: "",
         });
         const { data } = await axios.post(
-          `${config.APIURI}/api/v1/role/access`,
+          `${config.APIURI}/api/v${config.Version}/role/access`,
           { signupData: updateUserData },
           {
             headers: { Authorization: `Bearer ${token}` },

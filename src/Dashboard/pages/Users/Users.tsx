@@ -104,9 +104,12 @@ const Users: React.FC = () => {
       if (userDataStatus !== "loading") return;
       try {
         const token = Cookies.get("token");
-        const { data } = await axios.get(`${config.APIURI}/api/v1/role`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const { data } = await axios.get(
+          `${config.APIURI}/api/v${config.Version}/role`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         dispatch({ type: "setUserDataStatus", payload: "ready" });
         dispatch({ type: "setUserData", payload: data.lowerUsers });
       } catch (error) {
@@ -121,9 +124,12 @@ const Users: React.FC = () => {
       if (allUserDataStatus !== "loading") return;
       try {
         const token = Cookies.get("token");
-        const { data } = await axios.get(`${config.APIURI}/api/v1/user/@all`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const { data } = await axios.get(
+          `${config.APIURI}/api/v${config.Version}/user/@all`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         dispatch({ type: "setAllUserDataStatus", payload: "ready" });
         dispatch({
           type: "setAllUserData",
@@ -141,7 +147,7 @@ const Users: React.FC = () => {
       try {
         const token = Cookies.get("token");
         const { data } = await axios.get(
-          `${config.APIURI}/api/v1/role/access`,
+          `${config.APIURI}/api/v${config.Version}/role/access`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

@@ -1,9 +1,10 @@
 export const config = {
   SiteName: "MRCM SPORTS MEET",
   APIURI: "http://45.58.127.209:8080",
+  Version: 2,
   // APIURI: "http://localhost:8080",
 };
-// APIURI: "http://45.58.127.209:8080",
+
 export const images = {
   Banner: "/assets/img/Home/Main/banner.png",
   Logo: "/assets/logo/logo.png",
@@ -11,7 +12,28 @@ export const images = {
   ProfileBannner: "/assets/img/Dashboard/Profile/ProfileBannner.jpg",
   loginBG: "/assets/img/Login/LogginBG.jpg",
 };
+
 export const icons = {};
 
-const configJS = { config, images, icons };
+interface Config {
+  SiteName: string;
+  APIURI: string;
+  Version: number;
+}
+
+interface Images {
+  Banner: string;
+  Logo: string;
+  SubLogo: string;
+  ProfileBannner: string;
+  loginBG: string;
+}
+
+export interface ConfigJS {
+  config: Config;
+  images: Images;
+  icons: Record<string, never>;
+}
+
+const configJS: ConfigJS = { config, images, icons };
 export default configJS;

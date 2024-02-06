@@ -187,7 +187,7 @@ const AddMembers: React.FC<AddMembersProps> = ({
       console.log(membersData);
       const token = Cookies.get("token");
       const response = await axios.put(
-        `${config.APIURI}/api/v1/members/add`,
+        `${config.APIURI}/api/v${config.Version}/members/add`,
         { members: membersData },
         {
           headers: { Authorization: `Bearer ${token}` },

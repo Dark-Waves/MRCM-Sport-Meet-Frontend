@@ -88,7 +88,7 @@ const Members: React.FC = () => {
       try {
         const token = Cookies.get("token");
         const { data } = await axios.get<{ membersData: MemberData[] }>(
-          `${config.APIURI}/api/v1/members`,
+          `${config.APIURI}/api/v${config.Version}/members`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -117,7 +117,9 @@ const Members: React.FC = () => {
       if (houseDataStatus !== "loading") return;
 
       try {
-        const response = await axios.get(`${config.APIURI}/api/v1/houses`);
+        const response = await axios.get(
+          `${config.APIURI}/api/v${config.Version}/houses`
+        );
         if (response.data && response.data.HouseData) {
           dispatch({
             type: "setHouseData",

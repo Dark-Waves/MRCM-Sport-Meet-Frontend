@@ -63,7 +63,7 @@ const editMembers: React.FC<EditMembersProps> = function ({
       }
       const token = Cookies.get("token");
       const response = await axios.patch(
-        `${config.APIURI}/api/v1/member/${updatedMemberData.MemberID}`,
+        `${config.APIURI}/api/v${config.Version}/member/${updatedMemberData.MemberID}`,
         { updatedMemberData },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -93,7 +93,7 @@ const editMembers: React.FC<EditMembersProps> = function ({
     try {
       const token = Cookies.get("token");
       const response = await axios.delete(
-        `${config.APIURI}/api/v1/member/${memId}`,
+        `${config.APIURI}/api/v${config.Version}/member/${memId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

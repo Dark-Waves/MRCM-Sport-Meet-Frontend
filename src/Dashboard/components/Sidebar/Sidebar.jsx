@@ -1,4 +1,3 @@
-import { personsImgs } from "../../utils/images";
 import "./Sidebar.css";
 import { useContext, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom"; // Import useLocation

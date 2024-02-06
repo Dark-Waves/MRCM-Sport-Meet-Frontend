@@ -178,9 +178,12 @@ const Submits: React.FC = () => {
     const getData = async () => {
       try {
         const token = Cookies.get("token");
-        const { data } = await axios.get(`${config.APIURI}/api/v1/events`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const { data } = await axios.get(
+          `${config.APIURI}/api/v${config.Version}/events`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setEvents(data.events);
       } catch (error) {
         console.log(error);
@@ -194,7 +197,9 @@ const Submits: React.FC = () => {
   useEffect(() => {
     const fetchHouses = async () => {
       try {
-        const response = await axios.get(`${config.APIURI}/api/v1/houses`);
+        const response = await axios.get(
+          `${config.APIURI}/api/v${config.Version}/houses`
+        );
         if (response.data && response.data.HouseData) {
           setHouses(response.data.HouseData);
         }
@@ -267,7 +272,7 @@ const Submits: React.FC = () => {
       if (!selectedEvent) return;
       const token = Cookies.get("token");
       const response = await axios.post(
-        `${config.APIURI}/api/v1/event/${selectedEvent._id}`,
+        `${config.APIURI}/api/v${config.Version}/event/${selectedEvent._id}`,
         {
           submitdata: { places: admissionNumbers },
         },

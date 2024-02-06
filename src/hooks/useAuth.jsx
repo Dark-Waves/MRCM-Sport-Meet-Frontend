@@ -37,7 +37,7 @@ export default function useAuth() {
             return;
           }
 
-          await axios.get(`${config.APIURI}/api/v1/user/@me`, {
+          await axios.get(`${config.APIURI}/api/v${config.Version}/user/@me`, {
             headers: { Authorization: `Bearer ${token}` },
           });
 

@@ -185,10 +185,12 @@ const Home: React.FC = () => {
       try {
         const [houseResponse, eventResponse, memberResponse, scoreResponse] =
           await Promise.all([
-            axios.get(`${config.APIURI}/api/v1/houses`),
-            axios.get(`${config.APIURI}/api/v1/events/public`),
-            axios.get(`${config.APIURI}/api/v1/members/public`),
-            axios.get(`${config.APIURI}/api/v1/public/data/scoreBoard`),
+            axios.get(`${config.APIURI}/api/v${config.Version}/houses`),
+            axios.get(`${config.APIURI}/api/v${config.Version}/events/public`),
+            axios.get(`${config.APIURI}/api/v${config.Version}/members/public`),
+            axios.get(
+              `${config.APIURI}/api/v${config.Version}/public/data/scoreBoard`
+            ),
           ]);
 
         if (houseResponse.data.message === "ok") {
@@ -236,7 +238,7 @@ const Home: React.FC = () => {
   );
 
   useEffect(() => {
-    const wasocket = socketio(`${APIURI}/v1/public`, {
+    const wasocket = socketio(`${APIURI}/v${config.Version}/public`, {
       transports: ["websocket"],
     });
     dispatch({ type: "setWs", payload: wasocket });

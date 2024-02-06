@@ -261,7 +261,7 @@ const Manager: React.FC<ManagerProps> = ({
       const submitData = async function () {
         if (saveStatus !== "loading") return;
         const token = Cookies.get("token");
-        const apiUrl = `${config.APIURI}/api/v1/events`;
+        const apiUrl = `${config.APIURI}/api/v${config.Version}/events`;
         // deleting event
         if (
           Object.values(tempeventData).every(

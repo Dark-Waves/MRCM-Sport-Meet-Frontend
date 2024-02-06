@@ -27,7 +27,7 @@ export default function Auth() {
     try {
       const token = Cookies.get("token");
       const response = await axios.post(
-        `${config.APIURI}/api/v1/user/auth`,
+        `${config.APIURI}/api/v${config.Version}/user/auth`,
         {
           loginData: { userName, password },
         },

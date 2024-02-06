@@ -133,7 +133,7 @@ const Types: React.FC<TypesProps> = ({
         options: eventOptions,
       };
       const response = await axios.put(
-        `${config.APIURI}/api/v1/event-types`,
+        `${config.APIURI}/api/v${config.Version}/event-types`,
         {
           eventTypes: cratingEventTypes,
         },
@@ -183,7 +183,7 @@ const Types: React.FC<TypesProps> = ({
       setProgress({ progressTo: "update", progress: true });
       const token = Cookies.get("token");
       const response = await axios.patch(
-        `${config.APIURI}/api/v1/event-types/${updatedData._id}`,
+        `${config.APIURI}/api/v${config.Version}/event-types/${updatedData._id}`,
         { updatedData },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -235,7 +235,7 @@ const Types: React.FC<TypesProps> = ({
     try {
       const token = Cookies.get("token");
       const response = await axios.delete(
-        `${config.APIURI}/api/v1/event-types/${eventID}`,
+        `${config.APIURI}/api/v${config.Version}/event-types/${eventID}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

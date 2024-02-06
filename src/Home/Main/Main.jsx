@@ -23,7 +23,7 @@ export default function Main() {
   // useEffect(() => {
   //   const getData = async () => {
   //     try {
-  //       const response = await axios.get(`${config.APIURI}/api/v1/houses`);
+  //       const response = await axios.get(`${config.APIURI}/api/v${config.Version}/houses`);
 
   //       if (response.data.message === "ok") {
   //         setHouseData(response.data.HouseData);

@@ -165,7 +165,7 @@ const Dashboard: React.FC = () => {
   }, [authenticated, wsShoketAuthenticated, profile, navigationLinks]);
 
   useEffect(() => {
-    const socket = socketio(`${APIURI}/v1/home`, {
+    const socket = socketio(`${APIURI}/v${config.Version}/home`, {
       transports: ["websocket"],
     });
     dispatch({ type: "setWs", payload: socket });
@@ -217,7 +217,7 @@ const Dashboard: React.FC = () => {
         try {
           const token = Cookies.get("token");
           const { data: userData } = await axios.get(
-            `${config.APIURI}/api/v1/user/@me`,
+            `${config.APIURI}/api/v${config.Version}/user/@me`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }
@@ -243,7 +243,7 @@ const Dashboard: React.FC = () => {
         try {
           const token = Cookies.get("token");
           const { data: navigationLinks } = await axios.get(
-            `${config.APIURI}/api/v1/dashboard/${profile.role}`,
+            `${config.APIURI}/api/v${config.Version}/dashboard/${profile.role}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }

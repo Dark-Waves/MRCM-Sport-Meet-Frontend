@@ -21,7 +21,7 @@ const Info: React.FC = () => {
     const getInfo = async () => {
       try {
         const { data } = await axios.get(
-          `${config.APIURI}/api/v1/public/data/info`
+          `${config.APIURI}/api/v${config.Version}/public/data/info`
         );
         if (data.payload && data.payload.info) {
           setInfo(data.payload.info);

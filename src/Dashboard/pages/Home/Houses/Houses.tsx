@@ -23,7 +23,7 @@ const Houses: React.FC = () => {
     if (!isLoading) return; // Skip fetching if data has been fetched or loading is false
     const getData = async () => {
       try {
-        const response = await axios.get(`${config.APIURI}/api/v1/houses`);
+        const response = await axios.get(`${config.APIURI}/api/v${config.Version}/houses`);
         if (response.data.message === "ok") {
           let dummyHouseData: HouseData[] = [];
           for (let house of response.data.HouseData) {

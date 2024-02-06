@@ -32,7 +32,7 @@ export default function Houses(): JSX.Element {
       try {
         const token = Cookies.get("token");
         const response = await axios.get<{ HouseData: House[] }>(
-          `${config.APIURI}/api/v1/houses`,
+          `${config.APIURI}/api/v${config.Version}/houses`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -94,7 +94,7 @@ export default function Houses(): JSX.Element {
     try {
       const token = Cookies.get("token");
       const response = await axios.put(
-        `${config.APIURI}/api/v1/house/add`,
+        `${config.APIURI}/api/v${config.Version}/house/add`,
         { houseData },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -118,7 +118,7 @@ export default function Houses(): JSX.Element {
     try {
       const token = Cookies.get("token");
       const response = await axios.patch(
-        `${config.APIURI}/api/v1/house/${updatedHouseData._id}`,
+        `${config.APIURI}/api/v/house/${updatedHouseData._id}`,
         { updatedHouseData },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -144,7 +144,7 @@ export default function Houses(): JSX.Element {
     try {
       const token = Cookies.get("token");
       const response = await axios.delete(
-        `${config.APIURI}/api/v1/house/${MemberID}`,
+        `${config.APIURI}/api/v${config.Version}/house/${MemberID}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -169,7 +169,7 @@ export default function Houses(): JSX.Element {
     try {
       const token = Cookies.get("token");
       const response = await axios.post(
-        `${config.APIURI}/api/v1/house/${MemberID}`,
+        `${config.APIURI}/api/v${config.Version}/house/${MemberID}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
