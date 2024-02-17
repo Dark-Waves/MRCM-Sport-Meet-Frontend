@@ -1,6 +1,6 @@
 export const config = {
   SiteName: "MRCM SPORTS MEET",
-  APIURI: "http://45.58.127.209:8080",
+  APIURI: "http://199.127.63.2:8080",
   Version: 2,
   // APIURI: "http://localhost:8080",
 };
