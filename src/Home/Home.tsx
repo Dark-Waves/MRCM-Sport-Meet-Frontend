@@ -167,7 +167,7 @@ const Home: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    console.log(status, houseData, eventData, memberData, socket, soketStatus);
+    // console.log(status, houseData, eventData, memberData, socket, soketStatus);
     const loading =
       status !== "loading" ||
       !houseData ||
@@ -254,9 +254,7 @@ const Home: React.FC = () => {
     if (!socket) return;
 
     const handleSocketMessage = (message: any) => {
-      console.log(message);
       if (message.type === "eventUpdate") {
-        console.log(scoreData);
         dispatch({
           type: "setScoreData",
           payload: {

@@ -164,6 +164,9 @@ const Submits: React.FC = () => {
           )
         );
       }
+      if (message.type === "eventCreated") {
+        setEvents((prev) => [...prev, message.payload]);
+      }
     };
 
     socket.on("server-message", handleSocketMessage);

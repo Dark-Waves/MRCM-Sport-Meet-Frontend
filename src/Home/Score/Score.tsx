@@ -15,41 +15,18 @@ import {
   Collapse,
   IconButton,
   Box,
-  Card,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { State } from "../Home";
 import HomeContext from "../../context/HomeContext";
 
-/**
- * Event Types Selections
- * 
- * @example     const updatedEventTypes = [...selectedEventTypes];
-    const index = updatedEventTypes.findIndex(
-      (item) => item.eventType === eventType
-    );
- */
 interface SelectedEventTypes {
-  option: string;
-  eventType: string;
+  option_id: string;
+  eventType_id: string;
 }
 
 interface ScoreData {
-  scoreBoard: {
-    eventName: string;
-    eventType: {
-      option: string;
-    }[];
-    inputType: string;
-    places: {
-      house: string;
-      score: number;
-      member: string;
-      MemberID: string;
-      place: number;
-    }[];
-  }[];
   eventTypes: {
     _id: string;
     name: string;
@@ -60,12 +37,28 @@ interface ScoreData {
   }[];
 }
 
+interface ScoreBoard {
+  eventName: string;
+  eventType: {
+    option: string;
+  }[];
+  inputType: string;
+  places: {
+    house: string;
+    score: number;
+    member: string;
+    MemberID: string;
+    place: number;
+  }[];
+}
+
 const Score: FC = () => {
   const { scoreData, houseData }: State = useContext(HomeContext);
   const [selectedEventTypes, setSelectedEventTypes] = useState<
     SelectedEventTypes[]
   >([]);
-  const [filteredScores, setFilteredScores] = useState<ScoreData["scoreBoard"]>(
+  console.log("selectedEventTypes: ", selectedEventTypes);
+  const [filteredScores, setFilteredScores] = useState<ScoreBoard[]>(
     scoreData?.scoreBoard || []
   );
 
@@ -82,27 +75,47 @@ const Score: FC = () => {
     event: SelectChangeEvent<string>,
     eventType: string
   ) => {
-    console.log("value ", event.target.value);
-    console.log("eventType ", eventType);
-    // Create a copy of selectedEventTypes array to avoid direct mutation
     const updatedEventTypes = [...selectedEventTypes];
-    console.log("selectedEventTypes ", selectedEventTypes);
-    // Find the index of the item with the provided eventType
-    // const index = updatedEventTypes.findIndex(
-    //   (item) => item.option === eventType
-    // );
-    console.log(updatedEventTypes);
-    // Check conditions for adding or removing items from the array
-    // if (index === -1 && event.target.value !== "") {
-    //   // Add a new object to updatedEventTypes if eventType doesn't exist and value is not empty
-    //   updatedEventTypes.push({ eventType, option: event.target.value });
-    // } else if (index !== -1 && event.target.value === "") {
-    //   // Remove the object from updatedEventTypes if eventType exists and value is empty
-    //   updatedEventTypes.splice(index, 1);
-    // }
-
-    // Update the selectedEventTypes state with the modified array
     setSelectedEventTypes(updatedEventTypes);
+  };
+
+  const handleTypeChange = (
+    e: SelectChangeEvent<string>,
+    eventType_id: string
+  ) => {
+    e.preventDefault();
+
+    const option_id = e.target.value;
+
+    // Check if option_id is provided
+    if (option_id) {
+      // Check if eventType_id already exists in selectedEventTypes
+      const index = selectedEventTypes.findIndex(
+        (type) => type.eventType_id === eventType_id
+      );
+
+      // If eventType_id exists, update the option_id
+      if (index !== -1) {
+        const updatedSelectedEventTypes = [...selectedEventTypes];
+        updatedSelectedEventTypes[index] = {
+          ...updatedSelectedEventTypes[index],
+          option_id,
+        };
+        setSelectedEventTypes(updatedSelectedEventTypes);
+      } else {
+        // If eventType_id doesn't exist, add a new entry to selectedEventTypes
+        setSelectedEventTypes([
+          ...selectedEventTypes,
+          { option_id, eventType_id },
+        ]);
+      }
+    } else {
+      // If no option_id is provided, remove the entry with matching eventType_id
+      const filteredEventTypes = selectedEventTypes.filter(
+        (type) => type.eventType_id !== eventType_id
+      );
+      setSelectedEventTypes(filteredEventTypes);
+    }
   };
 
   const toggleRowExpansion = (index: number) => {
@@ -120,10 +133,11 @@ const Score: FC = () => {
 
   useEffect(() => {
     if (!selectedEventTypes.length) {
+      console.log(scoreData?.scoreBoard);
       setFilteredScores(scoreData?.scoreBoard || []);
     } else {
       const selectedOptions = selectedEventTypes.flatMap(
-        (selected) => selected.option
+        (selected) => selected.option_id
       );
       const filtered = scoreData?.scoreBoard.filter((item) =>
         item.eventType.some((event) => selectedOptions.includes(event.option))
@@ -158,11 +172,10 @@ const Score: FC = () => {
   };
   return (
     <div className="m-t-8 p-t-7" style={{ zIndex: 1 }}>
-      {/* All data types */}
       <div className="flex-row g-5 m-5 bg-second p-3 rounded">
         {scoreData &&
-          scoreData.eventTypes?.map((data) => (
-            <div className="option_selection w-40">
+          scoreData.eventTypes?.map((data, index) => (
+            <div className="option_selection w-40" key={index}>
               <FormControl key={data._id} fullWidth>
                 <InputLabel id={`event-type-label-${data._id}`}>
                   {data.name}
@@ -172,15 +185,11 @@ const Score: FC = () => {
                   labelId={`event-type-label-${data._id}`}
                   id={`event-type-${data._id}`}
                   value={
-                    selectedEventTypes.some(
-                      (selected) => selected.eventType === data._id
-                    )
-                      ? selectedEventTypes.find(
-                          (selected) => selected.eventType === data._id
-                        )?.option || ""
-                      : ""
+                    selectedEventTypes.find(
+                      (selected) => selected.eventType_id === data._id
+                    )?.option_id || ""
                   }
-                  onChange={(event) => handleChange(event, data._id)}
+                  onChange={(e) => handleTypeChange(e, data._id)}
                 >
                   <MenuItem value="">None</MenuItem>
                   {data.options.map((eventType) => (
@@ -234,16 +243,24 @@ const Score: FC = () => {
                       </IconButton>
                     </TableCell>
                     {houseData?.map((data, dataIndex) => {
-                      const matchingPlace = row.places.find(
+                      const matchingPlaces = row.places.filter(
                         (place) => place.house === data.Name
                       );
 
                       return (
                         <TableCell key={dataIndex}>
-                          {matchingPlace
-                            ? `${getOrdinal(matchingPlace.place)} - ${
-                                matchingPlace.member
-                              }(${matchingPlace.MemberID})`
+                          {matchingPlaces.length > 0
+                            ? matchingPlaces.map((matchingPlace, index) => (
+                                <div key={index}>
+                                  {`${getOrdinal(matchingPlace.place)} - ${
+                                    matchingPlace.member
+                                  }${
+                                    row.inputType === "MemberID"
+                                      ? `(${matchingPlace.MemberID})`
+                                      : ""
+                                  }`}
+                                </div>
+                              ))
                             : "-"}
                         </TableCell>
                       );

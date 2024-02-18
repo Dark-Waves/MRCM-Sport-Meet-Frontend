@@ -52,15 +52,13 @@ export default function Houses(): JSX.Element {
   }, []);
 
   const handleInputChanges = (field: keyof House, value: string) => {
-    if (editedHouse) {
-      setEditedHouse(
-        (prev) =>
-          ({
-            ...prev,
-            [field]: value, // Error occurs here due to type inference
-          } as House)
-      ); // Type assertion to ensure the resulting object is of type House
-    }
+    setEditedHouse(
+      (prev) =>
+        ({
+          ...prev,
+          [field]: value, // Error occurs here due to type inference
+        } as House)
+    ); // Type assertion to ensure the resulting object is of type House
   };
 
   const handleEdit = (index: number) => {
@@ -118,7 +116,7 @@ export default function Houses(): JSX.Element {
     try {
       const token = Cookies.get("token");
       const response = await axios.patch(
-        `${config.APIURI}/api/v/house/${updatedHouseData._id}`,
+        `${config.APIURI}/api/v${config.Version}/house/${updatedHouseData._id}`,
         { updatedHouseData },
         {
           headers: { Authorization: `Bearer ${token}` },
