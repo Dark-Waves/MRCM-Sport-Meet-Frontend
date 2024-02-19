@@ -14,6 +14,7 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import { faBullhorn, faLock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loader from "../../../Components/Loader/Loader";
+import { decrypt } from "../../../utils/aes";
 
 interface Message {
   content: string;
@@ -52,7 +53,8 @@ const Broadcast: React.FC = () => {
         const response = await axios.get(`${config.APIURI}/api/v${config.Version}/broadcast/private`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setReceivedMessages(response.data.messages);
+        const data = decrypt(response.data)
+        setReceivedMessages(data.messages);
       } catch (error) {
         console.error(error);
       } finally {

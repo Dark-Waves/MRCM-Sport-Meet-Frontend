@@ -13,6 +13,7 @@ import jsCookie from "js-cookie";
 import axios from "axios";
 import { config } from "../../../../../config";
 import { Skeleton } from "@mui/material";
+import { decrypt } from "../../../../utils/aes";
 
 interface Message {
   content: string;
@@ -34,7 +35,8 @@ const Broadcast: React.FC = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        setReceivedMessages(response.data.messages);
+        const data = decrypt(response.data)
+        setReceivedMessages(data.messages);
       } catch (error) {
         console.error(error);
       } finally {

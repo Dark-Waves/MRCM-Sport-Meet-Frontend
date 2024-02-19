@@ -14,6 +14,7 @@ import Loader from "../Components/Loader/Loader";
 import HomeContext from "../context/HomeContext";
 import "./Home.css";
 import Score from "./Score/Score";
+import { decrypt } from "../utils/aes";
 
 const APIURI = config.APIURI;
 /**
@@ -167,7 +168,6 @@ const Home: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // console.log(status, houseData, eventData, memberData, socket, soketStatus);
     const loading =
       status !== "loading" ||
       !houseData ||
@@ -180,6 +180,8 @@ const Home: React.FC = () => {
       dispatch({ type: "setStatus", payload: "ready" });
     }
   }, [status, houseData, eventData, memberData, socket, soketStatus]);
+
+  // Public Api data extraction
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -193,50 +195,50 @@ const Home: React.FC = () => {
             ),
           ]);
 
-        if (houseResponse.data.message === "ok") {
+        const houseResponseData = decrypt(houseResponse.data);
+        if (houseResponseData.message === "ok") {
           dispatch({
             type: "setHouseData",
-            payload: houseResponse.data.HouseData,
+            payload: houseResponseData.HouseData,
           });
         }
 
-        if (eventResponse.data.message === "ok") {
+        const eventResponseData = decrypt(eventResponse.data);
+        if (eventResponseData.message === "ok") {
           dispatch({
             type: "setEventData",
-            payload: eventResponse.data.events,
+            payload: eventResponseData.events,
           });
         }
 
-        if (memberResponse.data.message === "ok") {
+        const memberResponseData = decrypt(memberResponse.data);
+        if (memberResponseData.message === "ok") {
           dispatch({
             type: "setMemberData",
-            payload: memberResponse.data.membersData,
+            payload: memberResponseData.membersData,
           });
         }
 
-        if (scoreResponse.data.message === "ok") {
-          console.log(scoreResponse);
+        const scoreResponseData = decrypt(scoreResponse.data);
+        if (scoreResponseData.message === "ok") {
+          console.log(scoreResponseData);
           dispatch({
             type: "setScoreData",
-            payload: scoreResponse.data.payload,
+            payload: scoreResponseData.payload,
           });
         }
 
         dispatch({ type: "setPublicDataStatus", payload: "ready" });
       } catch (error) {
+        console.log(error);
         dispatch({ type: "setStatus", payload: "error" });
       }
     };
 
     fetchData();
   }, []);
-  useEffect(
-    function () {
-      console.log(scoreData);
-    },
-    [scoreData]
-  );
 
+  // Public Socket connection
   useEffect(() => {
     const wasocket = socketio(`${APIURI}/v${config.Version}/public`, {
       transports: ["websocket"],
@@ -250,21 +252,52 @@ const Home: React.FC = () => {
     };
   }, []);
 
+  // Socket data extraction
   useEffect(() => {
     if (!socket) return;
 
-    const handleSocketMessage = (message: any) => {
-      if (message.type === "eventUpdate") {
+    const handleSocketMessage = (d: any) => {
+      const data: { type: string; payload: any } = decrypt(d);
+
+      if (data.type === "eventUpdate") {
         dispatch({
           type: "setScoreData",
           payload: {
             eventTypes: scoreData?.eventTypes || [], // Keep the existing eventTypes
             scoreBoard: [
               ...(scoreData?.scoreBoard || []), // Existing scoreBoard
-              message.payload.scoreBoard, // Add incoming scoreBoard
+              data.payload.scoreBoard, // Add incoming scoreBoard
             ],
           },
         });
+      }
+
+      if (data.type === "houseScoreUpdate") {
+        if (!houseData) return;
+        const updatedHouseData = data.payload.wsSendHouseData.map(
+          (updatedHouse) => {
+            const index = houseData.findIndex(
+              (house) => house._id === updatedHouse._id
+            );
+
+            if (index !== -1) {
+              return {
+                ...houseData[index],
+                houseScore: updatedHouse.houseScore,
+              };
+            }
+
+            return updatedHouse; // If not found, keep the original object
+          }
+        );
+        dispatch({
+          type: "setHouseData",
+          payload: updatedHouseData,
+        });
+      }
+
+      if (data.type === "message") {
+        console.log(data.payload);
       }
     };
 

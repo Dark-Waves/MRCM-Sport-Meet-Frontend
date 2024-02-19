@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { config } from "../../../../../config";
 import { Skeleton } from "@mui/material";
+import { decrypt } from "../../../../utils/aes";
 
 interface Info {
   id: number;
@@ -20,9 +21,10 @@ const Info: React.FC = () => {
   useEffect(() => {
     const getInfo = async () => {
       try {
-        const { data } = await axios.get(
+        const response = await axios.get(
           `${config.APIURI}/api/v${config.Version}/public/data/info`
         );
+        const data = decrypt(response.data);
         if (data.payload && data.payload.info) {
           setInfo(data.payload.info);
         } else {

@@ -42,6 +42,9 @@ export default function Auth() {
         Cookies.set("token", response.data.token, { expires: 7 });
         navigate("/dashboard");
       }
+      if (response.data.message === "You are already logged into the system") {
+        navigate("/dashboard");
+      }
     } catch (error) {
       console.error("Login failed:", error);
     } finally {

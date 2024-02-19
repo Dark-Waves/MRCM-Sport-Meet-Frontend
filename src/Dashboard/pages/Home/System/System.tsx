@@ -4,6 +4,7 @@ import { Skeleton } from "@mui/material";
 import "./System.css";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import DashboardContext from "../../../../context/DashboardContext";
+import { decrypt } from "../../../../utils/aes";
 
 export interface SystemData {
   id: number;
@@ -22,8 +23,9 @@ const System: React.FC = () => {
 
   useEffect(() => {
     const handleServerMessage = (args: any) => {
-      if (args.type === "systemInfo") {
-        setSystemData(args.payload);
+      const data = decrypt(args)
+      if (data.type === "systemInfo") {
+        setSystemData(data.payload);
       }
     };
 

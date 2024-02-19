@@ -9,6 +9,7 @@ import { TextField } from "@mui/material";
 import Button from "../../UI/Button/Button";
 import DashboardContext from "../../../context/DashboardContext";
 import { State } from "../../Dashboard";
+import { decrypt } from "../../../utils/aes";
 interface House {
   _id: string;
   Name: string;
@@ -31,15 +32,16 @@ export default function Houses(): JSX.Element {
     const getData = async () => {
       try {
         const token = Cookies.get("token");
-        const response = await axios.get<{ HouseData: House[] }>(
+        const response = await axios.get(
           `${config.APIURI}/api/v${config.Version}/houses`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        if (response.data) {
+        const data: { HouseData: House[] } = decrypt(response.data);
+        if (data) {
           setLoading(false);
-          setAllHousesData(response.data.HouseData);
+          setAllHousesData(data.HouseData);
         }
       } catch (error) {
         setLoading(false);

@@ -6,6 +6,7 @@ import DashboardContext from "../../../../context/DashboardContext";
 import axios from "axios";
 import { config } from "../../../../../config";
 import "./Houses.css";
+import { decrypt } from "../../../../utils/aes";
 
 interface HouseData {
   _id: number;
@@ -24,9 +25,10 @@ const Houses: React.FC = () => {
     const getData = async () => {
       try {
         const response = await axios.get(`${config.APIURI}/api/v${config.Version}/houses`);
-        if (response.data.message === "ok") {
+        const data = decrypt(response.data)
+        if (data.message === "ok") {
           let dummyHouseData: HouseData[] = [];
-          for (let house of response.data.HouseData) {
+          for (let house of data.HouseData) {
             dummyHouseData.push({
               _id: house._id,
               houseScore: house.houseScore,
@@ -36,7 +38,7 @@ const Houses: React.FC = () => {
           setHouseData(dummyHouseData);
           setIsLoading(false);
         }
-        console.log(response.data.HouseData);
+        console.log(data.HouseData);
       } catch (error) {
         console.log(error);
         setIsLoading(false);

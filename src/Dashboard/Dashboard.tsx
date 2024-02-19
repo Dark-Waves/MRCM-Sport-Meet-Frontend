@@ -22,8 +22,8 @@ import Approves from "./pages/Approves/Approves";
 import Submits from "./pages/Submits/Submits";
 import Members from "./pages/Members/Members";
 import Houses from "./pages/Houses/Houses";
-
 import "./Dashboard.css";
+import { decrypt } from "../utils/aes";
 
 const defaultLogo = siteImgs.Logo;
 const SiteName = config.SiteName;
@@ -111,9 +111,7 @@ const getPageComponent = (title: string): React.FC | null => {
     Submit: Submits,
     Members,
     Houses,
-    // ... map other titles to components
   };
-
   return pages[title] || null;
 };
 
@@ -121,10 +119,7 @@ const renderRoutes = (links: any): JSX.Element[] => {
   return links.map((link: any, index: number) => {
     const PageComponent = getPageComponent(link.title);
     if (!PageComponent) return <></>; // Skip if no matching component
-    return (
-      <Route key={index} path={link.path} element={<PageComponent />} />
-      // Note: If subMenu exists, you might want to handle nested routes here
-    );
+    return <Route key={index} path={link.path} element={<PageComponent />} />;
   });
 };
 
@@ -144,6 +139,7 @@ const Dashboard: React.FC = () => {
   const location = useLocation();
 
   useEffect(() => {
+    // When change the location loader status = loading
     dispatchAuth({ type: "setStatus", payload: "loading" });
   }, [dispatchAuth, location]);
 
@@ -152,11 +148,13 @@ const Dashboard: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    // If auth status error clear the cookies and then navigate to /auth
     if (authStatus === "error") Cookies.remove("token");
     if (authStatus === "error") navigate("/auth");
   }, [navigate, authStatus]);
 
   useEffect(() => {
+    // If all events ok then status = ready
     if (!authenticated) return;
     if (!wsShoketAuthenticated) return;
     if (!navigationLinks) return;
@@ -165,6 +163,7 @@ const Dashboard: React.FC = () => {
   }, [authenticated, wsShoketAuthenticated, profile, navigationLinks]);
 
   useEffect(() => {
+    // setup privet(home) socket with authentication
     const socket = socketio(`${APIURI}/v${config.Version}/home`, {
       transports: ["websocket"],
     });
@@ -178,53 +177,54 @@ const Dashboard: React.FC = () => {
     });
   }, []);
 
-  /**Event handler */
-  useEffect(
-    function () {
-      if (!socket) return;
-      const handleSocket = async function (args) {
-        const { type, payload } = args;
-        switch (type) {
-          case "auth": {
-            if (payload.success) dispatch({ type: "setWsAuth", payload: true });
-            else dispatch({ type: "setWsAuth", payload: false });
-            return;
-          }
-          case "preflight": {
-            socket.emit("client-message", {
-              type: "preflight",
-              payload: {
-                sToken: payload.sToken,
-                token: Cookies.get("token"),
-              },
-            });
-            return;
-          }
+  useEffect(() => {
+    // use socket and when clear cookies or any other security issues may handle with this.
+    if (!socket) return;
+    const handleSocket = async function (args) {
+      const { type, payload } = args;
+      switch (type) {
+        case "auth": {
+          if (payload.success) dispatch({ type: "setWsAuth", payload: true });
+          else dispatch({ type: "setWsAuth", payload: false });
+          return;
         }
-      };
-      socket.on("server-message", handleSocket);
-      return function () {
-        socket.removeEventListener("server-message", handleSocket);
-      };
-    },
-    [socket]
-  );
+        case "preflight": {
+          socket.emit("client-message", {
+            type: "preflight",
+            payload: {
+              sToken: payload.sToken,
+              token: Cookies.get("token"),
+            },
+          });
+          return;
+        }
+      }
+    };
+    socket.on("server-message", handleSocket);
+    return function () {
+      socket.removeEventListener("server-message", handleSocket);
+    };
+  }, [socket]);
 
   useEffect(
-    function () {
+    () => {
+      // after login get the user data.
       const getData = async function () {
         if (profileStatus !== "loading") return;
         try {
           const token = Cookies.get("token");
-          const { data: userData } = await axios.get(
+          const { data } = await axios.get(
             `${config.APIURI}/api/v${config.Version}/user/@me`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }
           );
-          dispatch({ type: "setProfile", payload: userData?.userData });
+          // console.log(decrypt(data?.userData));
+          const userData = decrypt(data);
+          dispatch({ type: "setProfile", payload: userData.userData });
           dispatch({ type: "setProfileStatus", payload: "ready" });
         } catch (error) {
+          console.log(error);
           dispatch({ type: "setProfileStatus", payload: "error" });
           Cookies.remove("token");
           navigate("/auth");
@@ -235,35 +235,34 @@ const Dashboard: React.FC = () => {
     [profileStatus] // Only trigger when profileStatus changes
   );
 
-  useEffect(
-    function () {
-      const getData = async function () {
-        if (navigationStatus !== "loading") return;
-        if (!profile) return;
-        try {
-          const token = Cookies.get("token");
-          const { data: navigationLinks } = await axios.get(
-            `${config.APIURI}/api/v${config.Version}/dashboard/${profile.role}`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
+  useEffect(() => {
+    // After get the user data(profile) then get the dashboard data according to the user role.
+    const getData = async function () {
+      if (navigationStatus !== "loading") return;
+      if (!profile) return;
+      try {
+        const token = Cookies.get("token");
+        const { data } = await axios.get(
+          `${config.APIURI}/api/v${config.Version}/dashboard/${profile.role}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const dashboardData = decrypt(data);
+        dispatch({
+          type: "setNavigationLinks",
+          payload: dashboardData.dashboardSchema,
+        });
 
-          dispatch({
-            type: "setNavigationLinks",
-            payload: navigationLinks?.data.navigationLinks,
-          });
+        dispatch({ type: "setNavigationStatus", payload: "ready" });
+      } catch (error) {
+        dispatch({ type: "setNavigationStatus", payload: "error" });
+      }
+    };
 
-          dispatch({ type: "setNavigationStatus", payload: "ready" });
-        } catch (error) {
-          dispatch({ type: "setNavigationStatus", payload: "error" });
-        }
-      };
+    getData();
+  }, [profile, navigationStatus]);
 
-      getData();
-    },
-    [profile, navigationStatus]
-  );
   return (
     <>
       {status === "loading" && (
@@ -282,8 +281,20 @@ const Dashboard: React.FC = () => {
               <ContentTop />
               <Routes>
                 {navigationLinks ? renderRoutes(navigationLinks) : ""}
-                <Route path="/" element={<Navigate to="/dashboard/home" />} />
-                <Route path="*" element={<ErrorPage code={404} />} />
+                <Route
+                  key={
+                    navigationLinks?.length ? navigationLinks?.length : 0 + 1
+                  }
+                  path="/"
+                  element={<Navigate to="/dashboard/home" />}
+                />
+                <Route
+                  key={
+                    navigationLinks?.length ? navigationLinks?.length : 0 + 2
+                  }
+                  path="*"
+                  element={<ErrorPage code={404} />}
+                />
               </Routes>
             </div>
           </SnackbarProvider>
