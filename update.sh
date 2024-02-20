@@ -39,25 +39,6 @@ if [[ -z $ID ]]; then
     exit 1
 fi
 
-# Determine directory path based on ID
-case $ID in
-    0)
-        DIRECTORY="/home/ninoko/Documents/MRCM-Sport-Meet-Backend"
-        Name="MRCM-SPORT-MEET-BACKEND"
-        ;;
-    1)
-        DIRECTORY="/home/ninoko/Documents/MRCM-Sport-Meet-Frontend"
-        Name="MRCM-SPORT-MEET-FRONTEND"
-        ;;
-    *)
-        echo "Invalid ID. Supported IDs are 0 (Backend) and 1 (Frontend)."
-        exit 1
-        ;;
-esac
-
-# Navigate to the git repository directory
-cd "$DIRECTORY" || { echo "Directory not found: $DIRECTORY"; exit 1; }
-
 # Display status message
 echo "Updating and building for ID $ID..."
 
@@ -84,4 +65,4 @@ npm run preview
 # Display a message indicating the update and build process is complete
 echo "Update and build process complete for ID $ID"
 
-# PM2 Command --> pm2 start "cd /home/vps3/MRCM-Sport-Meet-Frontend && ./update.sh --id 2" --name "MRCM-SPORT-MEET-FRONTEND"
+# PM2 Command --> pm2 start "cd /home/vps3/MRCM-Sport-Meet-Frontend && ./update.sh --id 1" --name "MRCM-SPORT-MEET-FRONTEND"
