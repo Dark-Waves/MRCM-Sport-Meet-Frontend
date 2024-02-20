@@ -34,4 +34,4 @@ npm run preview
 echo "Update and build process complete."
 
 # PM2 Command --> pm2 start "cd /home/vps3/MRCM-Sport-Meet-Frontend && ./update.sh" --name "MRCM-SPORT-MEET-FRONTEND"
-# pm2 start "cd /home/vps3/MRCM-Sport-Meet-Frontend && ./update.sh" --name "MRCM-SPORT-MEET-FRONTEND" --user vps3
+# pm2 start "./update.sh" --name "MRCM-SPORT-MEET-FRONTEND" --user vps3

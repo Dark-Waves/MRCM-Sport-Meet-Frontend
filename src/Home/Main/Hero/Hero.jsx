@@ -37,7 +37,7 @@ export default function Hero({ houseData }) {
           ))}
         </div>
         <h1 className="font-2xl font-weight-800">
-          Modernizing Sports Meet Of Mahinda Rajapaksha College Matara.
+          Modernizing Sports Meet Of Mahinda Rajapaksha College Matara 1234
         </h1>
         <div className="hero-buttons flex-row g-5 m-t-5">
           <Link to={"About"}>
