@@ -43,9 +43,11 @@ fi
 case $ID in
     0)
         DIRECTORY="/home/ninoko/Documents/MRCM-Sport-Meet-Backend"
+        Name="MRCM-SPORT-MEET-BACKEND"
         ;;
     1)
         DIRECTORY="/home/ninoko/Documents/MRCM-Sport-Meet-Frontend"
+        Name="MRCM-SPORT-MEET-FRONTEND"
         ;;
     *)
         echo "Invalid ID. Supported IDs are 0 (Backend) and 1 (Frontend)."
@@ -71,20 +73,15 @@ echo "Pulling latest changes..."
 npm install --force &>/dev/null
 echo "Installing npm packages..."
 
-# Stop the PM2 process with the specified ID
-pm2 stop "$ID" &>/dev/null
-echo "Stopping PM2 process..."
-
 # Remove the 'dist' directory if it exists
 rm -rf dist &>/dev/null
 echo "Removing 'dist' directory..."
 
-# Restart the PM2 process with the specified ID
-pm2 start "$ID" &>/dev/null
-echo "Restarting PM2 process..."
+# Build the project and start
+echo "Building project... and starting server..."
+npm run preview
 
 # Display a message indicating the update and build process is complete
 echo "Update and build process complete for ID $ID"
 
-# Log the PM2 for the ID
-pm2 log "$ID"
+# PM2 Command --> pm2 start "cd /home/vps3/MRCM-Sport-Meet-Frontend && ./update.sh --id 2" --name "MRCM-SPORT-MEET-FRONTEND"
