@@ -1,46 +1,7 @@
 #!/bin/bash
 
-# Function to display a progress bar
-progress_bar() {
-    local duration=$1
-    local max_blocks=50
-    local elapsed_blocks=0
-    local start_time=$(date +%s)
-    local end_time=$((start_time + duration))
-    local current_time=$start_time
-    local progress
-
-    while [[ $current_time -lt $end_time ]]; do
-        progress=$((100 * (current_time - start_time) / (end_time - start_time)))
-        local elapsed_blocks=$((progress * max_blocks / 100))
-        local remaining_blocks=$((max_blocks - elapsed_blocks))
-        printf "\r["
-        printf "%${elapsed_blocks}s" | tr ' ' '#'
-        printf "%${remaining_blocks}s" | tr ' ' '-'
-        printf "] %d%%" "$progress"
-        sleep 1
-        current_time=$(date +%s)
-    done
-    echo ""
-}
-
-# Parse command-line arguments
-while [[ "$#" -gt 0 ]]; do
-    case $1 in
-        -id|--id) ID="$2"; shift ;;
-        *) echo "Unknown parameter passed: $1"; exit 1 ;;
-    esac
-    shift
-done
-
-# Validate ID
-if [[ -z $ID ]]; then
-    echo "ID is required. Usage: ./update.sh --id <ID>"
-    exit 1
-fi
-
 # Display status message
-echo "Updating and building for ID $ID..."
+echo "Updating and building..."
 
 # Stash any changes
 git stash &>/dev/null
@@ -63,6 +24,6 @@ echo "Building project... and starting server..."
 npm run preview
 
 # Display a message indicating the update and build process is complete
-echo "Update and build process complete for ID $ID"
+echo "Update and build process complete."
 
-# PM2 Command --> pm2 start "cd /home/vps3/MRCM-Sport-Meet-Frontend && ./update.sh --id 1" --name "MRCM-SPORT-MEET-FRONTEND"
+# PM2 Command --> pm2 start "cd /home/vps3/MRCM-Sport-Meet-Frontend && ./update.sh" --name "MRCM-SPORT-MEET-FRONTEND"
