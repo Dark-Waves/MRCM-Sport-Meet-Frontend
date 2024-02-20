@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# login to the vps without password prompt
+sudo -n true
+if [ $? -ne 0 ]; then
+    echo "Passwordless sudo is not configured. Please configure passwordless sudo for the current user."
+    exit 1
+fi
+
 # Display status message
 echo "Updating and building..."
 
