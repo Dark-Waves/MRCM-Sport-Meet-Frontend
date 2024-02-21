@@ -67,7 +67,7 @@ const WebContent: React.FC<WebContentProps> = ({ dispatch, homeData }) => {
     const file = event.target.files[0];
     // Handle logo upload logic here
     const formData = new FormData();
-    formData.append("logo", file);
+    formData.append("file", file);
 
     if (image_id) {
       // Send Axios Data with Reaplce the Image
