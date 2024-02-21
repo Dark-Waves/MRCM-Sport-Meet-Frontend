@@ -1,20 +1,21 @@
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Hero from "./Hero/Hero";
 import Theme from "./Theme/Theme";
 import HomeContext from "../../context/HomeContext";
 import Houses from "./Houses/Houses";
 import "./Main.css";
+import { State } from "../Home";
 
-export default function Main() {
-  const { houseData } = useContext(HomeContext);
-
+const Main: React.FC = () => {
+  const { houseData, homeData }: State = useContext(HomeContext);
 
   return (
     <div className="home-content p-5">
-      <Hero houseData={houseData} />
+      <Hero />
       <Theme />
       {/* <About /> */}
-      <Houses houseData={houseData} />
+      <Houses />
     </div>
   );
-}
+};
+export default Main;

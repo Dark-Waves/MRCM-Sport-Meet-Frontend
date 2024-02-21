@@ -29,6 +29,7 @@ export type State = {
   eventData: EventData[] | null;
   memberData: MemberData[] | null;
   scoreData: ScoreData | null;
+  homeData: HomeData | null;
 };
 
 interface ScoreData {
@@ -54,6 +55,20 @@ interface ScoreData {
       option: string;
     }[];
   }[];
+}
+
+interface ImageData {
+  image_id?: string | null;
+  url?: string | null;
+}
+
+interface HomeData {
+  SiteName: string;
+  AboutText: string;
+  HeroImage: ImageData;
+  BackgroundImage: ImageData;
+  AboutImage: ImageData;
+  SiteLogo: ImageData;
 }
 
 interface MemberData {
@@ -106,7 +121,8 @@ type Action =
   | { type: "setEventData"; payload: any }
   | { type: "setMemberData"; payload: any }
   | { type: "setScoreData"; payload: any }
-  | { type: "setWs"; payload: any };
+  | { type: "setWs"; payload: any }
+  | { type: "setHomeData"; payload: any };
 
 const initialValue: State = {
   status: "loading",
@@ -117,6 +133,7 @@ const initialValue: State = {
   eventData: null,
   memberData: null,
   scoreData: null,
+  homeData: null,
 };
 
 const reducer = (state: State, action: Action): State => {
@@ -141,6 +158,9 @@ const reducer = (state: State, action: Action): State => {
     }
     case "setScoreData": {
       return { ...state, scoreData: action.payload };
+    }
+    case "setHomeData": {
+      return { ...state, homeData: action.payload };
     }
     case "setWs": {
       return { ...state, socket: action.payload };
@@ -185,15 +205,21 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [houseResponse, eventResponse, memberResponse, scoreResponse] =
-          await Promise.all([
-            axios.get(`${config.APIURI}/api/v${config.Version}/houses`),
-            axios.get(`${config.APIURI}/api/v${config.Version}/events/public`),
-            axios.get(`${config.APIURI}/api/v${config.Version}/members/public`),
-            axios.get(
-              `${config.APIURI}/api/v${config.Version}/public/data/scoreBoard`
-            ),
-          ]);
+        const [
+          houseResponse,
+          eventResponse,
+          memberResponse,
+          scoreResponse,
+          homeDataResponse,
+        ] = await Promise.all([
+          axios.get(`${config.APIURI}/api/v${config.Version}/houses`),
+          axios.get(`${config.APIURI}/api/v${config.Version}/events/public`),
+          axios.get(`${config.APIURI}/api/v${config.Version}/members/public`),
+          axios.get(
+            `${config.APIURI}/api/v${config.Version}/public/data/scoreBoard`
+          ),
+          axios.get(`${config.APIURI}/api/v${config.Version}/public/data/home`),
+        ]);
 
         const houseResponseData = decrypt(houseResponse.data);
         if (houseResponseData.message === "ok") {
@@ -225,6 +251,15 @@ const Home: React.FC = () => {
           dispatch({
             type: "setScoreData",
             payload: scoreResponseData.payload,
+          });
+        }
+
+        const homeResponseData = decrypt(homeDataResponse.data);
+        if (homeResponseData.message === "ok") {
+          console.log(homeResponseData);
+          dispatch({
+            type: "setHomeData",
+            payload: homeResponseData.payload,
           });
         }
 

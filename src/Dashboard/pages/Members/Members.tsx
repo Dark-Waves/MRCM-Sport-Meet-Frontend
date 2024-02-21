@@ -9,6 +9,7 @@ import Cookies from "js-cookie";
 import Loader from "../../../Components/Loader/Loader";
 import { Error } from "parse";
 import ErrorPage from "../../../Components/Error/Error";
+import { decrypt } from "../../../utils/aes";
 
 export interface MemberData {
   // Define your member data structure here
@@ -120,10 +121,11 @@ const Members: React.FC = () => {
         const response = await axios.get(
           `${config.APIURI}/api/v${config.Version}/houses`
         );
-        if (response.data && response.data.HouseData) {
+        const data = decrypt(response.data)
+        if (data && data.HouseData) {
           dispatch({
             type: "setHouseData",
-            payload: response.data.HouseData,
+            payload: data.HouseData,
           });
           dispatch({
             type: "setHouseDataStatus",

@@ -8,6 +8,8 @@ import { config } from "../../utils/config";
 import Loader from "../../../Components/Loader/Loader";
 import ErrorPage from "../../../Components/Error/Error";
 import React from "react";
+import { decrypt } from "../../../utils/aes";
+import Edit from "./Edit/Edit";
 
 export type RoleType = "Owner" | "Admin" | "Staff" | "";
 
@@ -18,10 +20,15 @@ export interface RolesData {
 export interface UserData {
   id: string;
   name: string;
-  role: string;
+  roles: {
+    roleType: string;
+    roleIndex: number;
+  };
   userName: string;
   // Define other properties as needed
 }
+
+export interface CurrentUser {}
 
 export interface State {
   status: "loading" | "error" | "ready";
@@ -31,6 +38,8 @@ export interface State {
   allUserDataStatus: "loading" | "error" | "ready";
   allRoles: RolesData[] | null;
   allRolesStatus: "loading" | "error" | "ready";
+  currentUser: CurrentUser | null;
+  currentUserStatus: "loading" | "error" | "ready";
 }
 
 export type Action =
@@ -40,7 +49,9 @@ export type Action =
   | { type: "setAllUserData"; payload: any[] }
   | { type: "setAllUserDataStatus"; payload: "loading" | "error" | "ready" }
   | { type: "setAllRoles"; payload: any[] }
-  | { type: "setAllRolesStatus"; payload: "loading" | "error" | "ready" };
+  | { type: "setAllRolesStatus"; payload: "loading" | "error" | "ready" }
+  | { type: "setCurrentUser"; payload: UserData }
+  | { type: "setCurrentUserStatus"; payload: "loading" | "error" | "ready" };
 
 const initialValue: State = {
   status: "loading",
@@ -50,6 +61,8 @@ const initialValue: State = {
   allUserDataStatus: "loading",
   allRoles: null,
   allRolesStatus: "loading",
+  currentUser: null,
+  currentUserStatus: "loading",
 };
 
 const reducer = function (state: State, action: Action): State {
@@ -68,6 +81,12 @@ const reducer = function (state: State, action: Action): State {
       return { ...state, allRoles: action.payload };
     case "setAllRolesStatus":
       return { ...state, allRolesStatus: action.payload };
+    case "setCurrentUser": {
+      return { ...state, currentUser: action.payload };
+    }
+    case "setCurrentUserStatus": {
+      return { ...state, currentUserStatus: action.payload };
+    }
     default:
       throw new Error("Method not found");
   }
@@ -83,6 +102,8 @@ const Users: React.FC = () => {
     allUserDataStatus,
     allRoles,
     allRolesStatus,
+    currentUser,
+    currentUserStatus,
   } = state;
 
   useEffect(() => {
@@ -90,14 +111,25 @@ const Users: React.FC = () => {
       userDataStatus === "loading" ||
       allUserDataStatus === "loading" ||
       allRolesStatus === "loading" ||
+      currentUserStatus === "loading" ||
       !allUserData ||
       !userData ||
-      !allRoles
+      !allRoles ||
+      !currentUser
     ) {
       return;
     }
     dispatch({ type: "setStatus", payload: "ready" });
-  }, [userData, allUserData, allUserDataStatus, userDataStatus]);
+  }, [
+    userData,
+    allUserData,
+    allUserDataStatus,
+    userDataStatus,
+    allRolesStatus,
+    allRoles,
+    currentUserStatus,
+    currentUser,
+  ]);
 
   useEffect(() => {
     const getData = async () => {
@@ -124,12 +156,13 @@ const Users: React.FC = () => {
       if (allUserDataStatus !== "loading") return;
       try {
         const token = Cookies.get("token");
-        const { data } = await axios.get(
+        const response = await axios.get(
           `${config.APIURI}/api/v${config.Version}/user/@all`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
+        const data = decrypt(response.data);
         dispatch({ type: "setAllUserDataStatus", payload: "ready" });
         dispatch({
           type: "setAllUserData",
@@ -141,9 +174,10 @@ const Users: React.FC = () => {
     };
     getData();
   }, [allUserDataStatus]);
+
   useEffect(() => {
     const getData = async () => {
-      if (allUserDataStatus !== "loading") return;
+      if (allRolesStatus !== "loading") return;
       try {
         const token = Cookies.get("token");
         const { data } = await axios.get(
@@ -162,7 +196,31 @@ const Users: React.FC = () => {
       }
     };
     getData();
-  }, [allUserDataStatus]);
+  }, [allRolesStatus]);
+
+  useEffect(() => {
+    const getData = async () => {
+      if (currentUserStatus!== "loading") return;
+      try {
+        const token = Cookies.get("token");
+        const response = await axios.get(
+          `${config.APIURI}/api/v${config.Version}/user/@me`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const data = decrypt(response.data);
+        dispatch({ type: "setCurrentUserStatus", payload: "ready" });
+        dispatch({
+          type: "setCurrentUser",
+          payload: data.userData,
+        });
+      } catch (error) {
+        dispatch({ type: "setStatus", payload: "error" });
+      }
+    };
+    getData();
+  }, [currentUserStatus]);
   return (
     <div className="events main-content-holder position-relative h-full">
       {status === "loading" && <Loader />}
@@ -174,6 +232,10 @@ const Users: React.FC = () => {
             <Route
               path="/Add"
               element={<AddUsers {...state} dispatch={dispatch} />}
+            />
+            <Route
+              path="/Edit"
+              element={<Edit {...state} dispatch={dispatch} />}
             />
           </Routes>
         </div>

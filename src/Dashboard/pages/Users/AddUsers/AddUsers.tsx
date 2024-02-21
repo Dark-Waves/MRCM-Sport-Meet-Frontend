@@ -298,7 +298,7 @@ const AddUsers: React.FC<AddUsersProps> = ({
             <div className="grid-common" key={index}>
               <div className="details">
                 <h2>{user.name}</h2>
-                <p>Role: {user.role}</p>
+                <p>Role: {user.roles.roleType}</p>
               </div>
               <div className="buttons flex-row-aro m-t-4 w-full ">
                 <Button

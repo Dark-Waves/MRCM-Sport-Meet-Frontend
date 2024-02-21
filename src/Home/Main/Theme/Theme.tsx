@@ -1,6 +1,11 @@
+import React, { useContext } from "react";
 import "./Theme.css";
+import HomeContext from "../../../context/HomeContext";
+import { State } from "../../Home";
 
-export default function Theme() {
+const Theme: React.FC = () => {
+  const { houseData, homeData }: State = useContext(HomeContext);
+
   return (
     <div className="school-theme w-full m-t-8 p-t-8 flex-col-center">
       <h1 className="font-xl font-weight-700 text-center">
@@ -8,7 +13,15 @@ export default function Theme() {
         Sports Meet
       </h1>
       <div className="content">
-        <img src="/assets/theme.jpg" alt="theme" className="w-50 p-4" />
+        <img
+          src={
+            homeData?.AboutImage.url
+              ? homeData?.AboutImage.url
+              : "/assets/theme.jpg"
+          }
+          alt="theme"
+          className="w-50 p-4"
+        />
         <span className="des font-md m-auto text-center p-4 w-50">
           {`"Eclipsing Excellence" symbolizes our commitment to surpassing past
         achievements and reaching new heights in the sporting arena. As we
@@ -26,4 +39,5 @@ export default function Theme() {
       </div>
     </div>
   );
-}
+};
+export default Theme;

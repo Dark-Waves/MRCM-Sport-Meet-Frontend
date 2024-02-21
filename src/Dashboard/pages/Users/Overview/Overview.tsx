@@ -12,7 +12,7 @@ const overView: React.FC<overViewProps> = function ({ allUserData }) {
           allUserData.map((user, index) => (
             <div className="grid-common" key={index}>
               <h2>{user.name}</h2>
-              <p>Role: {user.role}</p>
+              <p>Role: {user.roles.roleType}</p>
             </div>
           ))}
       </div>

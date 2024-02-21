@@ -1,12 +1,17 @@
-import { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 // import img from "../../../../public/logo/logo.png"
 import "./Hero.css";
 import { Link } from "react-router-dom";
 import { Button } from "@mui/material";
+import { State } from "../../Home";
+import HomeContext from "../../../context/HomeContext";
 
-export default function Hero({ houseData }) {
+const Hero: React.FC = () => {
+  const { houseData, homeData }: State = useContext(HomeContext);
+
+  if (!houseData) return;
   const highestScore = Math.max(...houseData.map((data) => data.houseScore));
-  const getScoreHeight = function (score) {
+  const getScoreHeight = function (score: number) {
     const scorePercentage = (score / highestScore) * 100;
     return `${scorePercentage}%`;
   };
@@ -37,7 +42,7 @@ export default function Hero({ houseData }) {
           ))}
         </div>
         <h1 className="font-2xl font-weight-800">
-          Modernizing Sports Meet Of Mahinda Rajapaksha College Matara.
+          {homeData && homeData.SiteName}
         </h1>
         <div className="hero-buttons flex-row g-5 m-t-5">
           <Link to={"About"}>
@@ -70,11 +75,17 @@ export default function Hero({ houseData }) {
       </div>
       <div className="right-content flex-row">
         <img
-          src="/assets/hero/hero logo.svg"
+          src={
+            homeData?.HeroImage.url
+              ? homeData?.HeroImage.url
+              : "/assets/hero/hero logo.svg"
+          }
           alt="MRCM LOGO"
           className="w-90 m-auto"
         />
       </div>
     </div>
   );
-}
+};
+
+export default Hero;
