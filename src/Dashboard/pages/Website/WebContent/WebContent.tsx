@@ -1,41 +1,114 @@
 import React, { useState } from "react";
 import "./WebContent.css";
+import { Action, State } from "../Website";
+import { Button, styled } from "@mui/material";
+import { CloudUpload } from "@mui/icons-material";
 
-export default function WebContent() {
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import axios from "axios";
+import configJS from "../../../../../config";
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
+
+interface WebContentProps extends State {
+  dispatch: React.Dispatch<Action>;
+}
+
+const WebContent: React.FC<WebContentProps> = ({ dispatch, homeData }) => {
   // State for content settings
-  const [contentSettings, setContentSettings] = useState(
-    {
-      logo: "/assets/images/person_four.jpg", // Logo image URL
-      siteName: "Dark Waves", // Site name
-      bannerImage: "/assets/images/person_three.jpg", // Homepage banner image URL
-      bannerText: "Dark Waves Official", // Homepage banner text
-      textColor: "#333333",
-      headingFont: "Arial",
-      headingFontSize: 24,
-      paragraphFont: "Arial",
-      paragraphFontSize: 16,
-      showComments: true,
-      showSocialSharing: true,
-      icons: [{ id: 1, title: "darkwaves", icon: "dark" },{ id: 2, title: "icon 2", icon: "fa-solid" }],
-      footerText: "CopyRight Dark Waves", // Footer text content
-      // Add more content-related settings here
-    },
-    []
-  );
+  // const [contentSettings, setContentSettings] = useState(
+  //   {
+  //     logo: "/assets/images/person_four.jpg", // Logo image URL
+  //     siteName: "Dark Waves", // Site name
+  //     bannerImage: "/assets/images/person_three.jpg", // Homepage banner image URL
+  //     bannerText: "Dark Waves Official", // Homepage banner text
+  //     textColor: "#333333",
+  //     headingFont: "Arial",
+  //     headingFontSize: 24,
+  //     paragraphFont: "Arial",
+  //     paragraphFontSize: 16,
+  //     showComments: true,
+  //     showSocialSharing: true,
+  //     icons: [{ id: 1, title: "darkwaves", icon: "dark" },{ id: 2, title: "icon 2", icon: "fa-solid" }],
+  //     footerText: "CopyRight Dark Waves", // Footer text content
+  //     // Add more content-related settings here
+  //   },
+  //   []
+  // );
 
   // Function to update content settings
-  const handleContentSettingsChange = (event) => {
-    const { name, value } = event.target;
-    setContentSettings({
-      ...contentSettings,
-      [name]: value,
-    });
-  };
+  // const handleContentSettingsChange = (event) => {
+  //   const { name, value } = event.target;
+  //   setContentSettings({
+  //     ...contentSettings,
+  //     [name]: value,
+  //   });
+  // };
 
   // Function to handle logo upload
-  const handleLogoChange = (event) => {
-    console.log(event.target.value);
+  const handleLogoChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    image_id: string | null | undefined,
+    type: string
+  ) => {
+    if (!event.target.files) {
+      return console.log("please uplaod the image");
+    }
+    const file = event.target.files[0];
     // Handle logo upload logic here
+    const formData = new FormData();
+    formData.append("logo", file);
+
+    if (image_id) {
+      // Send Axios Data with Reaplce the Image
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      };
+      axios
+        .patch(
+          `${configJS.config.APIURI}/api/v${configJS.config.Version}/public/image/${type}`,
+          formData,
+          config
+        )
+        .then((res) => {
+          console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      };
+      axios
+        .post(
+          `${configJS.config.APIURI}/api/v${configJS.config.Version}/public/image/${type}`,
+          formData,
+          config
+        )
+        .then((res) => {
+          console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      // Create a CDN Path to the IMage
+    }
+    // Send formData to your API using Axios or fetch
   };
 
   // Function to handle banner image upload
@@ -59,31 +132,37 @@ export default function WebContent() {
 
       {/* Logo and Site Name */}
       <div className="logo-and-name">
-        <img src={contentSettings.logo} alt="Website Logo" className="logo" />
-        <div className="logo-upload">
-          <label htmlFor="logo-upload" className="upload-label">
-            Upload Logo
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleLogoChange}
-            id="logo-upload"
-            className="upload-input"
+        <h3>Site Logo Upload</h3>
+        {homeData?.SiteLogo.url ? (
+          <img
+            src={homeData?.SiteLogo.url}
+            alt="Website Logo"
+            className="logo"
           />
+        ) : (
+          "No Image Uplaoded"
+        )}
+        <div className="logo-upload">
+          <Button
+            component="label"
+            role={undefined}
+            variant="contained"
+            tabIndex={-1}
+            startIcon={<CloudUploadIcon />}
+          >
+            Upload file
+            <VisuallyHiddenInput
+              type="file"
+              accept="image/*"
+              onChange={(e) =>
+                handleLogoChange(e, homeData?.SiteLogo.image_id, "homeData")
+              }
+            />
+          </Button>
         </div>
-        <input
-          type="text"
-          placeholder="Site Name"
-          name="siteName"
-          value={contentSettings.siteName}
-          onChange={handleContentSettingsChange}
-          className="site-name-input"
-        />
       </div>
 
-      {/* Homepage Banner */}
-      <div className="banner-section">
+      {/* <div className="banner-section">
         <h4>Homepage Banner</h4>
         <img
           src={contentSettings.bannerImage}
@@ -112,7 +191,6 @@ export default function WebContent() {
         />
       </div>
 
-      {/* Text and Typography Settings */}
       <div className="text-settings">
         <h4>Text and Typography Settings</h4>
         <label htmlFor="textColor">Text Color:</label>
@@ -133,7 +211,6 @@ export default function WebContent() {
           <option value="Arial">Arial</option>
           <option value="Helvetica">Helvetica</option>
           <option value="Times New Roman">Times New Roman</option>
-          {/* Add more font options */}
         </select>
         <label htmlFor="headingFontSize">Heading Font Size (px):</label>
         <input
@@ -153,7 +230,6 @@ export default function WebContent() {
           <option value="Arial">Arial</option>
           <option value="Helvetica">Helvetica</option>
           <option value="Times New Roman">Times New Roman</option>
-          {/* Add more font options */}
         </select>
         <label htmlFor="paragraphFontSize">Paragraph Font Size (px):</label>
         <input
@@ -165,7 +241,7 @@ export default function WebContent() {
         />
       </div>
 
-      {/* Icon Customization */}
+
       <div className="icon-customization">
         <h4>Icon Customization</h4>
         <div className="icon-list">
@@ -184,7 +260,7 @@ export default function WebContent() {
         </div>
       </div>
 
-      {/* Comments and Social Sharing */}
+
       <div className="comments-and-sharing">
         <h4>Comments and Social Sharing</h4>
         <label>
@@ -207,7 +283,7 @@ export default function WebContent() {
         </label>
       </div>
 
-      {/* Footer Content */}
+
       <div className="footer-content">
         <h4>Footer Content</h4>
         <label htmlFor="copyrightText">Copyright Text:</label>
@@ -236,8 +312,7 @@ export default function WebContent() {
 
       <div className="import-export">
         <h4>Content Import/Export</h4>
-        {/* Add import/export controls here */}
-      </div>
+      </div> */}
 
       {/* Other Content Settings */}
       {/* Include other content-related controls here */}
@@ -245,4 +320,5 @@ export default function WebContent() {
       <button onClick={saveContentSettings}>Save Content Settings</button>
     </div>
   );
-}
+};
+export default WebContent;
