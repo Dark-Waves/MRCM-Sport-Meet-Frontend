@@ -24,6 +24,7 @@ import Members from "./pages/Members/Members";
 import Houses from "./pages/Houses/Houses";
 import "./Dashboard.css";
 import { decrypt } from "../utils/aes";
+import System from "./pages/System/System"
 
 const defaultLogo = siteImgs.Logo;
 const SiteName = config.SiteName;
@@ -111,6 +112,7 @@ const getPageComponent = (title: string): React.FC | null => {
     Submit: Submits,
     Members,
     Houses,
+    System
   };
   return pages[title] || null;
 };
