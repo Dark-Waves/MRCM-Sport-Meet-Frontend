@@ -31,17 +31,27 @@ interface HomeImage {
   url?: string;
 }
 
-interface LoadingHomeImage {
+interface LoadingHomeContent {
   type: string;
   loading: boolean;
 }
 
+interface HomeContent {
+  type: string;
+  value?: string;
+}
+
 const WebContent: React.FC<WebContentProps> = ({ dispatch, homeData }) => {
   const [tempHomeImages, setTempHomeImages] = useState<HomeImage[]>([]);
-  const [imageUploadLoading, setImageUploadLoading] = useState<
-    LoadingHomeImage[]
-  >([]);
-  console.log(imageUploadLoading);
+  const [contentLoading, setContentLoading] = useState<LoadingHomeContent[]>(
+    []
+  );
+
+  const [tempHomeContent, setTempHomeContent] = useState<HomeContent[]>([]);
+
+  console.log(tempHomeContent);
+
+  // SetupImages
   useEffect(() => {
     if (!homeData) return;
     const convoArr: HomeImage[] = Object.entries(homeData)
@@ -52,7 +62,7 @@ const WebContent: React.FC<WebContentProps> = ({ dispatch, homeData }) => {
 
   useEffect(() => {
     if (!tempHomeImages) return;
-    setImageUploadLoading(
+    setContentLoading(
       tempHomeImages.map((data, index) => ({ type: data.type, loading: false }))
     );
   }, [tempHomeImages]);
@@ -63,7 +73,7 @@ const WebContent: React.FC<WebContentProps> = ({ dispatch, homeData }) => {
     type: string
   ) => {
     if (!homeData) return;
-    setImageUploadLoading((prev) =>
+    setContentLoading((prev) =>
       prev.map((item) =>
         item.type === type ? { ...item, loading: true } : item
       )
@@ -116,20 +126,30 @@ const WebContent: React.FC<WebContentProps> = ({ dispatch, homeData }) => {
         );
       }
       console.log(response.data);
-      setImageUploadLoading((prev) =>
+      setContentLoading((prev) =>
         prev.map((item) =>
           item.type === type ? { ...item, loading: false } : item
         )
       );
     } catch (error) {
       console.log(error);
-      setImageUploadLoading((prev) =>
+      setContentLoading((prev) =>
         prev.map((item) =>
           item.type === type ? { ...item, loading: false } : item
         )
       );
     }
   };
+
+  // Setup Contents
+  useEffect(() => {
+    if (!homeData) return;
+    const convoArr: HomeContent[] = Object.entries(homeData)
+      .filter(([key, value]) => typeof value == "string" || value === null)
+      .map(([key, value]) => ({ type: key, value: value }));
+    console.log(convoArr);
+    setTempHomeContent(convoArr);
+  }, [homeData]);
 
   return (
     <div className="web-content-section grid-common">
@@ -156,7 +176,7 @@ const WebContent: React.FC<WebContentProps> = ({ dispatch, homeData }) => {
               tabIndex={-1}
               startIcon={<CloudUploadIcon />}
               loading={
-                imageUploadLoading.find((item) => item.type === data.type)
+                contentLoading.find((item) => item.type === data.type)
                   ?.loading || false
               }
             >
