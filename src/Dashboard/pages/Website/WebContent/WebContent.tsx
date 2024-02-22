@@ -3,10 +3,10 @@ import "./WebContent.css";
 import { Action, State } from "../Website";
 import { Button, styled } from "@mui/material";
 import { CloudUpload } from "@mui/icons-material";
-
+import Cookies from "js-cookie";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import axios from "axios";
-import configJS from "../../../../../config";
+import axios, { Axios, AxiosResponse } from "axios";
+import configJS, { config } from "../../../../../config";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -25,38 +25,7 @@ interface WebContentProps extends State {
 }
 
 const WebContent: React.FC<WebContentProps> = ({ dispatch, homeData }) => {
-  // State for content settings
-  // const [contentSettings, setContentSettings] = useState(
-  //   {
-  //     logo: "/assets/images/person_four.jpg", // Logo image URL
-  //     siteName: "Dark Waves", // Site name
-  //     bannerImage: "/assets/images/person_three.jpg", // Homepage banner image URL
-  //     bannerText: "Dark Waves Official", // Homepage banner text
-  //     textColor: "#333333",
-  //     headingFont: "Arial",
-  //     headingFontSize: 24,
-  //     paragraphFont: "Arial",
-  //     paragraphFontSize: 16,
-  //     showComments: true,
-  //     showSocialSharing: true,
-  //     icons: [{ id: 1, title: "darkwaves", icon: "dark" },{ id: 2, title: "icon 2", icon: "fa-solid" }],
-  //     footerText: "CopyRight Dark Waves", // Footer text content
-  //     // Add more content-related settings here
-  //   },
-  //   []
-  // );
-
-  // Function to update content settings
-  // const handleContentSettingsChange = (event) => {
-  //   const { name, value } = event.target;
-  //   setContentSettings({
-  //     ...contentSettings,
-  //     [name]: value,
-  //   });
-  // };
-
-  // Function to handle logo upload
-  const handleLogoChange = (
+  const handleLogoChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
     image_id: string | null | undefined,
     type: string
@@ -69,57 +38,39 @@ const WebContent: React.FC<WebContentProps> = ({ dispatch, homeData }) => {
     const formData = new FormData();
     formData.append("file", file);
 
-    if (image_id) {
-      // Send Axios Data with Reaplce the Image
-      const config = {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      };
-      axios
-        .patch(
-          `${configJS.config.APIURI}/api/v${configJS.config.Version}/public/image/${type}`,
+    try {
+      let response: AxiosResponse;
+      const token = Cookies.get("token");
+      if (!image_id) {
+        response = await axios.post(
+          `${config.APIURI}/api/v${config.Version}/public/image/${type}`,
           formData,
-          config
-        )
-        .then((res) => {
-          console.log(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } else {
-      const config = {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      };
-      axios
-        .post(
-          `${configJS.config.APIURI}/api/v${configJS.config.Version}/public/image/${type}`,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else {
+        response = await axios.patch(
+          `${config.APIURI}/api/v${config.Version}/public/image/${type}`,
           formData,
-          config
-        )
-        .then((res) => {
-          console.log(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      // Create a CDN Path to the IMage
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
     }
-    // Send formData to your API using Axios or fetch
   };
 
-  // Function to handle banner image upload
-  const handleBannerImageChange = (event) => {
-    // Handle banner image upload logic here
-  };
-
-  // Function to handle icon upload
-  const handleIconChange = (event, index) => {
-    // Handle icon upload logic here
-  };
 
   // Function to save content settings
   const saveContentSettings = () => {
@@ -155,7 +106,7 @@ const WebContent: React.FC<WebContentProps> = ({ dispatch, homeData }) => {
               type="file"
               accept="image/*"
               onChange={(e) =>
-                handleLogoChange(e, homeData?.SiteLogo.image_id, "homeData")
+                handleLogoChange(e, homeData?.SiteLogo.image_id, "SiteLogo")
               }
             />
           </Button>
