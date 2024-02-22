@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@mui/material";
 import { State } from "../../Home";
 import HomeContext from "../../../context/HomeContext";
+import { config } from "../../../../config";
 
 const Hero: React.FC = () => {
   const { houseData, homeData }: State = useContext(HomeContext);
@@ -42,8 +43,9 @@ const Hero: React.FC = () => {
           ))}
         </div>
         <h1 className="font-2xl font-weight-800">
-          {homeData &&
-            homeData.find((data) => data.type === "HeroTitle")?.value.contnet}
+          {homeData?.find((data) => data.type === "HeroTitle")?.value.contnet
+            ? homeData?.find((data) => data.type === "HeroTitle")?.value.contnet
+            : config.SiteName}
         </h1>
         <div className="hero-buttons flex-row g-5 m-t-5">
           <Link to={"About"}>
