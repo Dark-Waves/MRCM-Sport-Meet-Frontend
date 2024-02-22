@@ -15,15 +15,17 @@ const Theme: React.FC = () => {
       <div className="content">
         <img
           src={
-            homeData?.AboutImage.url
-              ? homeData?.AboutImage.url
+            homeData?.find((data) => data.type === "ThemeImage")?.value.url
+              ? homeData?.find((data) => data.type === "ThemeImage")?.value.url
               : "/assets/theme.jpg"
           }
           alt="theme"
           className="w-50 p-4"
         />
         <span className="des font-md m-auto text-center p-4 w-50">
-          {`"Eclipsing Excellence" symbolizes our commitment to surpassing past
+          {homeData?.find((data) => data.type === "ThemeText")?.value.contnet
+            ? homeData?.find((data) => data.type === "ThemeText")?.value.contnet
+            : `"Eclipsing Excellence" symbolizes our commitment to surpassing past
         achievements and reaching new heights in the sporting arena. As we
         embark on the journey of 'Modernizing Mahinda Rajapaksha College Matara
         Sports Meet,' our focus is on innovation, inclusivity, and embracing the

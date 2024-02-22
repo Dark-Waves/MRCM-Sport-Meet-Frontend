@@ -29,7 +29,7 @@ export type State = {
   eventData: EventData[] | null;
   memberData: MemberData[] | null;
   scoreData: ScoreData | null;
-  homeData: HomeData | null;
+  homeData: HomeData[] | null;
 };
 
 interface ScoreData {
@@ -57,18 +57,14 @@ interface ScoreData {
   }[];
 }
 
-interface ImageData {
-  image_id?: string | null;
-  url?: string | null;
-}
-
 interface HomeData {
-  SiteName: string;
-  AboutText: string;
-  HeroImage: ImageData;
-  BackgroundImage: ImageData;
-  AboutImage: ImageData;
-  SiteLogo: ImageData;
+  type: string;
+  value: {
+    dataType: "image" | "content";
+    contnet?: string;
+    image_id?: string;
+    url?: string;
+  };
 }
 
 interface MemberData {

@@ -42,7 +42,8 @@ const Hero: React.FC = () => {
           ))}
         </div>
         <h1 className="font-2xl font-weight-800">
-          {homeData && homeData.SiteName}
+          {homeData &&
+            homeData.find((data) => data.type === "HeroTitle")?.value.contnet}
         </h1>
         <div className="hero-buttons flex-row g-5 m-t-5">
           <Link to={"About"}>
@@ -76,8 +77,8 @@ const Hero: React.FC = () => {
       <div className="right-content flex-row">
         <img
           src={
-            homeData?.HeroImage.url
-              ? homeData?.HeroImage.url
+            homeData?.find((data) => data.type === "HeroImage")?.value.url
+              ? homeData?.find((data) => data.type === "HeroImage")?.value.url
               : "/assets/hero/hero logo.svg"
           }
           alt="MRCM LOGO"
