@@ -20,7 +20,7 @@ interface ImageData {
   url?: string | null;
 }
 
-interface HomeData {
+export interface HomeData {
   SiteName: string;
   AboutText: string;
   HeroImage: ImageData;
@@ -32,7 +32,7 @@ interface HomeData {
 export type Action =
   | { type: "setStatus"; payload: string }
   | { type: "setPublicDataStatus"; payload: string }
-  | { type: "setHomeData"; payload: any };
+  | { type: "setHomeData"; payload: HomeData };
 
 const initialValue: State = {
   status: "loading",

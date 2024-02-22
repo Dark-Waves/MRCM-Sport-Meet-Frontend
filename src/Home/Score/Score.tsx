@@ -132,6 +132,7 @@ const Score: FC = () => {
   };
 
   useEffect(() => {
+    // console.log(selectedEventTypes, scoreData);
     if (!selectedEventTypes.length) {
       console.log(scoreData?.scoreBoard);
       setFilteredScores(scoreData?.scoreBoard || []);
@@ -139,11 +140,14 @@ const Score: FC = () => {
       const selectedOptions = selectedEventTypes.flatMap(
         (selected) => selected.option_id
       );
-      const filtered = scoreData?.scoreBoard.filter((item) =>
-        item.eventType.some((event) => selectedOptions.includes(event.option))
-      );
+      console.log(selectedOptions);
+      const filteredEvents = scoreData?.scoreBoard.filter((event) => {
+        return selectedOptions.every((item) =>
+          event.eventType.find(({ option }) => option === item)
+        );
+      });
 
-      setFilteredScores(filtered || []);
+      setFilteredScores(filteredEvents || []);
     }
   }, [scoreData, selectedEventTypes]);
 
