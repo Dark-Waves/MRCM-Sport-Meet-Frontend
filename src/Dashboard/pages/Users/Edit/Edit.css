@@ -1,0 +1,20 @@
+/* For screens smaller than 700px */
+@media screen and (max-width: 768px){
+    .grid-common.grid-span-2 {
+      grid-column: auto; /* Reset grid-column to default */
+    }
+    .grid-common.grid-span-3 {
+      grid-column: auto; /* Reset grid-column to default */
+    }
+  }
+  
+  /* For screens larger than or equal to 700px */
+  @media screen and (min-width: 768px) {
+    .grid-common.grid-span-2 {
+      grid-column: 2 / span 2; /* Occupy two columns starting from the first column */
+    }
+    .grid-common.grid-span-3 {
+      grid-column: 1 / span 3; /* Occupy three columns starting from the first column */
+    }
+  }
+  

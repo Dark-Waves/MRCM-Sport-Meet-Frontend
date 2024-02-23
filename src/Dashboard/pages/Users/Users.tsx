@@ -11,7 +11,7 @@ import React from "react";
 import { decrypt } from "../../../utils/aes";
 import Edit from "./Edit/Edit";
 
-export type RoleType = "Owner" | "Admin" | "Staff" | "";
+export type RoleType = "owner" | "admin" | "staff" | "";
 
 export interface RolesData {
   roleIndex: 1 | 2 | 3;
@@ -28,11 +28,27 @@ export interface UserData {
   // Define other properties as needed
 }
 
-export interface CurrentUser {}
+interface CurrentUserData {
+  id: string;
+  name: string;
+  role: string;
+  userName: string;
+}
+
+export interface CurrentUser {
+  email: string
+  name: string;
+  profilePicture: {
+    image_id: string;
+    url: string;
+  };
+  role: string;
+  userName: string
+}
 
 export interface State {
   status: "loading" | "error" | "ready";
-  userData: UserData[] | null;
+  userData: CurrentUserData[] | null;
   userDataStatus: "loading" | "error" | "ready";
   allUserData: UserData[] | null;
   allUserDataStatus: "loading" | "error" | "ready";
@@ -50,7 +66,7 @@ export type Action =
   | { type: "setAllUserDataStatus"; payload: "loading" | "error" | "ready" }
   | { type: "setAllRoles"; payload: any[] }
   | { type: "setAllRolesStatus"; payload: "loading" | "error" | "ready" }
-  | { type: "setCurrentUser"; payload: UserData }
+  | { type: "setCurrentUser"; payload: any }
   | { type: "setCurrentUserStatus"; payload: "loading" | "error" | "ready" };
 
 const initialValue: State = {
@@ -200,7 +216,7 @@ const Users: React.FC = () => {
 
   useEffect(() => {
     const getData = async () => {
-      if (currentUserStatus!== "loading") return;
+      if (currentUserStatus !== "loading") return;
       try {
         const token = Cookies.get("token");
         const response = await axios.get(

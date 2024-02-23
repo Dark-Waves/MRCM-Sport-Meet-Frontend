@@ -12,7 +12,7 @@ import { decrypt } from "../../../utils/aes";
 export type State = {
   status: string;
   publicDataStatus: string;
-  homeData: HomeData | null;
+  homeData: HomeData[] | null;
 };
 
 interface ImageData {
@@ -21,18 +21,20 @@ interface ImageData {
 }
 
 export interface HomeData {
-  SiteName: string;
-  AboutText: string;
-  HeroImage: ImageData;
-  BackgroundImage: ImageData;
-  AboutImage: ImageData;
-  SiteLogo: ImageData;
+  type: string;
+  value: {
+    dataType: "image" | "content";
+    contnet?: string;
+    image_id?: string;
+    url?: string;
+  };
 }
+
 
 export type Action =
   | { type: "setStatus"; payload: string }
   | { type: "setPublicDataStatus"; payload: string }
-  | { type: "setHomeData"; payload: HomeData };
+  | { type: "setHomeData"; payload: any };
 
 const initialValue: State = {
   status: "loading",

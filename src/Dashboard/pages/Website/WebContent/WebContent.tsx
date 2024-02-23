@@ -25,52 +25,30 @@ interface WebContentProps extends State {
   dispatch: React.Dispatch<Action>;
 }
 
-interface HomeImage {
-  type: string;
-  image_id?: string;
-  url?: string;
-}
-
 interface LoadingHomeContent {
   type: string;
   loading: boolean;
 }
 
-interface HomeContent {
-  type: string;
-  value?: string;
-}
-
 const WebContent: React.FC<WebContentProps> = ({ dispatch, homeData }) => {
-  const [tempHomeImages, setTempHomeImages] = useState<HomeImage[]>([]);
   const [contentLoading, setContentLoading] = useState<LoadingHomeContent[]>(
     []
   );
 
-  const [tempHomeContent, setTempHomeContent] = useState<HomeContent[]>([]);
-
-  console.log(tempHomeContent);
-
   // SetupImages
+
   useEffect(() => {
     if (!homeData) return;
-    const convoArr: HomeImage[] = Object.entries(homeData)
-      .filter(([key, value]) => typeof value === "object" && value !== null)
-      .map(([key, value]) => ({ type: key, ...value }));
-    setTempHomeImages(convoArr);
-  }, [homeData]);
-
-  useEffect(() => {
-    if (!tempHomeImages) return;
     setContentLoading(
-      tempHomeImages.map((data, index) => ({ type: data.type, loading: false }))
+      homeData.map((data, index) => ({ type: data.type, loading: false }))
     );
-  }, [tempHomeImages]);
+  }, [homeData]);
 
   const handleLogoChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
     image_id: string | null | undefined,
-    type: string
+    type: string,
+    dataType: string
   ) => {
     if (!homeData) return;
     setContentLoading((prev) =>
@@ -88,44 +66,51 @@ const WebContent: React.FC<WebContentProps> = ({ dispatch, homeData }) => {
 
     try {
       const token = Cookies.get("token");
-      let response: AxiosResponse;
-      if (!image_id) {
-        response = await axios.post(
-          `${config.APIURI}/api/v${config.Version}/public/image/${type}`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${token}`,
-            },
+      switch (dataType) {
+        case "image":
+          if (!image_id) {
+            const response = await axios.post(
+              `${config.APIURI}/api/v${config.Version}/public/${dataType}/${type}`,
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+            const newHomeData: HomeData[] = homeData.map((data) =>
+              data.type === type
+                ? {
+                    ...data,
+                    value: {
+                      ...data.value,
+                      image_id: response.data.image_id,
+                      url: response.data.url,
+                    },
+                  }
+                : data
+            );
+
+            dispatch({ type: "setHomeData", payload: newHomeData });
+          } else {
+            const response = await axios.patch(
+              `${config.APIURI}/api/v${config.Version}/public/image/${type}`,
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
           }
-        );
-        const newHomeData: HomeData = {
-          SiteName: homeData?.SiteName,
-          AboutText: homeData?.AboutText,
-          HeroImage: type === "HeroImage" ? response.data : homeData.HeroImage,
-          BackgroundImage:
-            type === "BackgroundImage"
-              ? response.data
-              : homeData.BackgroundImage,
-          AboutImage:
-            type === "AboutImage" ? response.data : homeData.AboutImage,
-          SiteLogo: type === "SiteLogo" ? response.data : homeData.SiteLogo,
-        };
-        dispatch({ type: "setHomeData", payload: newHomeData });
-      } else {
-        response = await axios.patch(
-          `${config.APIURI}/api/v${config.Version}/public/image/${type}`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+          break;
+        case "content":
+          break;
+        default:
+          break;
       }
-      console.log(response.data);
       setContentLoading((prev) =>
         prev.map((item) =>
           item.type === type ? { ...item, loading: false } : item
@@ -141,55 +126,57 @@ const WebContent: React.FC<WebContentProps> = ({ dispatch, homeData }) => {
     }
   };
 
-  // Setup Contents
-  useEffect(() => {
-    if (!homeData) return;
-    const convoArr: HomeContent[] = Object.entries(homeData)
-      .filter(([key, value]) => typeof value == "string" || value === null)
-      .map(([key, value]) => ({ type: key, value: value }));
-    console.log(convoArr);
-    setTempHomeContent(convoArr);
-  }, [homeData]);
-
   return (
     <div className="web-content-section grid-common">
       <h1>Website Images Upload Section</h1>
 
-      {tempHomeImages.map((data, index) => (
-        <div className="logo-and-name p-4" key={index}>
-          <h3>{data.type} Upload</h3>
-          {data.url ? (
-            <img
-              src={`${data.url}?${new Date().getTime()}`}
-              alt={`${data.type} Logo`}
-              className="logo"
-              width={400}
-            />
+      {homeData &&
+        homeData.map((data, index) =>
+          data.value.dataType === "image" ? (
+            <div className="logo-and-name p-4" key={index}>
+              <h3>{data.type} Upload</h3>
+              {data.value.url ? (
+                <img
+                  src={`${data.value.url}?${new Date().getTime()}`}
+                  alt={`${data.type} Logo`}
+                  className="logo"
+                  width={400}
+                />
+              ) : (
+                "No Image Uploaded"
+              )}
+              <div className="logo-upload">
+                <LoadingButton
+                  component="label"
+                  role={undefined}
+                  variant="contained"
+                  tabIndex={-1}
+                  startIcon={<CloudUploadIcon />}
+                  loading={
+                    contentLoading.find((item) => item.type === data.type)
+                      ?.loading || false
+                  }
+                >
+                  Upload file
+                  <VisuallyHiddenInput
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) =>
+                      handleLogoChange(
+                        e,
+                        data.value.image_id,
+                        data.type,
+                        data.value.dataType
+                      )
+                    }
+                  />
+                </LoadingButton>
+              </div>
+            </div>
           ) : (
-            "No Image Uploaded"
-          )}
-          <div className="logo-upload">
-            <LoadingButton
-              component="label"
-              role={undefined}
-              variant="contained"
-              tabIndex={-1}
-              startIcon={<CloudUploadIcon />}
-              loading={
-                contentLoading.find((item) => item.type === data.type)
-                  ?.loading || false
-              }
-            >
-              Upload file
-              <VisuallyHiddenInput
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleLogoChange(e, data.image_id, data.type)}
-              />
-            </LoadingButton>
-          </div>
-        </div>
-      ))}
+            "method not dound"
+          )
+        )}
     </div>
   );
 };
