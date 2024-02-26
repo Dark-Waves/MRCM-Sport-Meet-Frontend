@@ -29,6 +29,7 @@ interface overViewProps extends MainState {
 interface EditingCurrentEditUser {
   loading: boolean;
   value: string;
+  ready: boolean;
 }
 
 const Edit: React.FC<overViewProps> = function ({ dispatch, currentUser }) {
@@ -36,19 +37,26 @@ const Edit: React.FC<overViewProps> = function ({ dispatch, currentUser }) {
     email: EditingCurrentEditUser;
     name: EditingCurrentEditUser;
     userName: EditingCurrentEditUser;
+    newPassword: EditingCurrentEditUser;
   }>({
-    email: { loading: false, value: "" },
-    name: { loading: false, value: "" },
-    userName: { loading: false, value: "" },
+    email: { loading: false, value: "", ready: false },
+    name: { loading: false, value: "", ready: false },
+    userName: { loading: false, value: "", ready: false },
+    newPassword: { loading: false, value: "", ready: false },
   });
   const [imageUploading, setImageUploading] = useState<boolean>(false);
 
   useEffect(() => {
     if (!currentUser) return;
     setEditedUser({
-      email: { loading: false, value: currentUser.email },
-      name: { loading: false, value: currentUser.name },
-      userName: { loading: false, value: currentUser.userName },
+      email: { loading: false, value: currentUser.email, ready: false },
+      name: { loading: false, value: currentUser.name, ready: false },
+      userName: { loading: false, value: currentUser.userName, ready: false },
+      newPassword: {
+        loading: false,
+        value: "",
+        ready: false,
+      },
     });
   }, [currentUser]);
 
@@ -56,7 +64,19 @@ const Edit: React.FC<overViewProps> = function ({ dispatch, currentUser }) {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     type: string
   ) => {
+    if (!currentUser) return;
     const { value } = e.target;
+    if (currentUser[type] !== value) {
+      setEditedUser((prevUser) => ({
+        ...prevUser,
+        [type]: { loading: false, value: value, ready: true },
+      }));
+    } else if (currentUser[type] === value) {
+      setEditedUser((prevUser) => ({
+        ...prevUser,
+        [type]: { loading: false, value: value, ready: false },
+      }));
+    }
     setEditedUser((prevUser) => ({
       ...prevUser,
       [type]: { ...prevUser[type], value: value },
@@ -64,17 +84,52 @@ const Edit: React.FC<overViewProps> = function ({ dispatch, currentUser }) {
   };
 
   const updateUser = async (type: string) => {
+    setEditedUser((prev) => ({
+      ...prev,
+      [type]: { ...prev[type], loading: true },
+    }));
     try {
       const token = Cookies.get("token");
+      let value: string = "";
+      if (type === "email") {
+        value = editedUser.email.value;
+      }
+      if (type === "name") {
+        value = editedUser.name.value;
+      }
+      if (type === "userName") {
+        value = editedUser.userName.value;
+      }
+      if (type === "newPassword") {
+        const response = await axios.post(
+          `${config.APIURI}/api/v${config.Version}/users/reset-password`,
+          {
+            newPassword: editedUser.newPassword.value,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        console.log(response);
+      }
+      if (!value) return;
       const response = await axios.post(
-        `${config.APIURI}/api/v${config.Version}/user/data/${type}/content`,
-        { [type]: editedUser[type].value },
+        `${config.APIURI}/api/v${config.Version}/user/data`,
+        { [type]: value },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+      setEditedUser((prev) => ({
+        ...prev,
+        [type]: { ...prev[type], loading: false, ready: false },
+      }));
       console.log(response.data);
     } catch (error) {
+      setEditedUser((prev) => ({
+        ...prev,
+        [type]: { ...prev[type], loading: false },
+      }));
       console.error("Error updating user:", error);
     }
   };
@@ -90,19 +145,44 @@ const Edit: React.FC<overViewProps> = function ({ dispatch, currentUser }) {
 
       const token = Cookies.get("token");
       setImageUploading(true);
-      const response = await axios.put(
-        `${config.APIURI}/api/v${config.Version}/user/profile-pic`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
+      if (currentUser?.profilePicture.image_id) {
+        const response = await axios.post(
+          `${config.APIURI}/api/v${config.Version}/user/data/profile-pic`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        console.log(response.data);
+      } else {
+        const response = await axios.put(
+          `${config.APIURI}/api/v${config.Version}/user/profile-pic`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        console.log(response.data);
+        dispatch({
+          type: "setCurrentUser",
+          payload: {
+            ...currentUser,
+            profilePicture: {
+              image_id: response.data.image_id,
+              url: response.data.url,
+            },
           },
-        }
-      );
+        });
+      }
       setImageUploading(false);
-      console.log(response.data);
     } catch (error) {
+      setImageUploading(false);
       console.error("Error updating profile picture:", error);
     }
   };
@@ -175,6 +255,7 @@ const Edit: React.FC<overViewProps> = function ({ dispatch, currentUser }) {
                   className="w-20"
                   loading={data.loading}
                   onClick={() => updateUser(type)}
+                  disabled={data.value === "" || !data.ready}
                 >
                   Save
                 </Button>
@@ -185,18 +266,28 @@ const Edit: React.FC<overViewProps> = function ({ dispatch, currentUser }) {
         <div className="grid-common grid-span-3">
           <div className="details">
             <span className="font-md font-weight-600 m-auto text-center flex-row-center">
-              Your Profile Details
+              Reset Your Password
             </span>
-            <div className="text-container flex-row-center m-auto"></div>
-            <TextField
-              id="outlined-basic"
-              label="Outlined"
-              variant="outlined"
-            />
+            <div className="text-container flex-row-center m-auto">
+              <TextField
+                id="new-password"
+                label="New Password"
+                variant="outlined"
+                fullWidth
+                type="password"
+                value={editedUser.newPassword}
+                onChange={(e) => handleChange(e, "newPassword")}
+              />
+            </div>
           </div>
-          <div className="buttons flex-row-aro m-t-4 w-full ">
-            <Button variant="contained" color="primary" loading={false}>
-              Edit
+          <div className="buttons flex-row-aro m-t-4 w-full">
+            <Button
+              variant="contained"
+              color="primary"
+              loading={editedUser.newPassword.loading}
+              onClick={() => updateUser("newPassword")}
+            >
+              Reset Password
             </Button>
           </div>
         </div>
