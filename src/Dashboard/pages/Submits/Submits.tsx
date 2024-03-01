@@ -78,11 +78,17 @@ interface Place {
   name: string;
 }
 
+interface EventOptions {
+  option: string;
+  selection: string;
+  _id: string;
+}
+
 interface Event {
   _id: string;
   name: string;
   description: string;
-  types: string[];
+  types: EventOptions[];
   places: Place[];
   state: string;
   inputType?: string;
@@ -123,7 +129,19 @@ const Submits: React.FC = () => {
   const [progress, setProgress] = useState<boolean>(false);
   const [houses, setHouses] = useState<House[]>([]);
 
-  const allStates = [...new Set(events.map((event) => event.state))];
+  // const allStates = [...new Set(events.map((event) => event.state))];
+  const allStates = [
+    ...new Set(events.map((event) => event.state)),
+    ...events.reduce((acc: string[], curr) => {
+      // Explicitly specify the type of acc as string[]
+      curr.types.forEach((type) => {
+        if (!acc.includes(type.selection)) {
+          acc.push(type.selection);
+        }
+      });
+      return acc;
+    }, []),
+  ];
 
   useEffect(() => {
     const handleSocketMessage = (message) => {
@@ -316,12 +334,23 @@ const Submits: React.FC = () => {
     event.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredEvents =
-    selectedStates.length > 0
-      ? searchFilteredEvents.filter((event) =>
-          selectedStates.includes(event.state)
-        )
-      : searchFilteredEvents;
+  // const filteredEvents =
+  //   selectedStates.length > 0
+  //     ? searchFilteredEvents.filter(
+  //         (event) =>
+  //           selectedStates.includes(event.state) ||
+  //           event.types.some((type) => selectedStates.includes(type.selection))
+  //       )
+  //     : searchFilteredEvents;
+
+  const filteredEvents = selectedStates.length > 0
+  ? searchFilteredEvents.filter((event) =>
+      selectedStates.every(state =>
+        event.state === state || event.types.some(type => type.selection === state)
+      )
+    )
+  : searchFilteredEvents;
+
 
   return (
     <div className="event-submits position-relative h-full">
@@ -372,6 +401,7 @@ const Submits: React.FC = () => {
                       {...params}
                       label="Filter by State"
                       placeholder="Select States"
+                      onChange={(e) => setSearchQuery(e.target.value)}
                     />
                   )}
                 />
@@ -394,6 +424,17 @@ const Submits: React.FC = () => {
                       <span className="font-weight-600">
                         {data.description}
                       </span>
+                    </div>
+                  )}
+
+                  {data.types && (
+                    <div className="event-types m-b-4 font-weight-500 font-md">
+                      Event Types:{" "}
+                      {data.types.map((type, index) => (
+                        <span className="font-weight-600 p-3">
+                          {type.selection}
+                        </span>
+                      ))}
                     </div>
                   )}
 

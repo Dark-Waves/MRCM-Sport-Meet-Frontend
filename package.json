@@ -28,7 +28,9 @@
     "papaparse": "^5.4.1",
     "parse": "^4.3.1",
     "react": "^18.2.0",
+    "react-avatar-editor": "^13.0.2",
     "react-dom": "^18.2.0",
+    "react-dropzone": "^14.2.3",
     "react-router-dom": "^6.20.0",
     "socket.io-client": "^4.7.2",
     "xlsx": "^0.18.5"
@@ -38,6 +40,7 @@
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^20.11.19",
     "@types/react": "^18.0.37",
+    "@types/react-avatar-editor": "^13.0.2",
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react": "^4.0.0",
     "eslint": "^8.38.0",

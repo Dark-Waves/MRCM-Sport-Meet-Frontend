@@ -56,7 +56,7 @@ const Types: React.FC<TypesProps> = ({
         if (value === "") {
           updatedOptions.splice(index, 1); // Remove the option at the specified index
         } else {
-          updatedOptions[index] = { option: value, _id: "" };
+          updatedOptions[index] = { ...updatedOptions[index], option: value };
         }
 
         return {
