@@ -1,6 +1,6 @@
 export const config = {
   SiteName: "MRCM SPORTS MEET",
-  APIURI: "https://sport-api.noerror.studio:443",
+  APIURI: "https://sport-api.noerror.studio",
   Version: 2,
   encrypt: true,
   encryptKey: "34234ca3HU7hdfhasdaskdf%@jnbdfuck",
