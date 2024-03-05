@@ -189,7 +189,9 @@ export default function Approves() {
                     className="incoming_submit grid-common p-4 m-3"
                   >
                     <div className="event_name text-center font-weight-600 font-md">
-                      {data.name}
+                      {data.name +
+                        " - " +
+                        data.types.map((type) => type.selection).join(" - ")}
                     </div>
                     <div className="event_places table-responsive">
                       <table>
