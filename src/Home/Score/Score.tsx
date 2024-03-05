@@ -42,6 +42,7 @@ interface ScoreBoard {
   eventType: {
     option: string;
   }[];
+  state: string;
   inputType: string;
   places: {
     house: string;

@@ -32,6 +32,7 @@ export type State = {
 interface ScoreData {
   scoreBoard: {
     eventName: string;
+    state: string;
     eventType: {
       option: string;
     }[];
