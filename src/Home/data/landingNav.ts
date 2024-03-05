@@ -4,19 +4,11 @@ export const navLinks: { name: string, url: string }[] = [
     url: "/",
   },
   {
-    name: "Live",
-    url: "/live",
-  },
-  {
     name: "Events",
     url: "/events",
   },
   {
     name: "Score Board",
     url: "/score",
-  },
-  {
-    name: "Houses",
-    url: "/houses",
   },
 ];

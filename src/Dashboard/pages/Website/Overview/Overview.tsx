@@ -8,8 +8,7 @@ interface OverviewProps extends State {
 }
 
 const Overview: React.FC<OverviewProps> = ({ dispatch }) => {
-  // URL of the website you want to display
-  const websiteUrl = "http://sport-meet.us.to:81";
+
 
   // Handler for preventing click events on the iframe
   const preventClick = (
@@ -21,17 +20,6 @@ const Overview: React.FC<OverviewProps> = ({ dispatch }) => {
   return (
     <div className="overview-container">
       <h2>Overview Page</h2>
-      {/* Transparent div overlay to prevent clicks on the iframe */}
-        {/* Using iframe to display the content of the website */}
-        <iframe
-          title="Website Content"
-          src={websiteUrl}
-          width="100%"
-          height="500px"
-          frameBorder="0"
-          onClick={preventClick}
-        />
-
       <p>
         <Link to="/">Go back to home</Link>
       </p>

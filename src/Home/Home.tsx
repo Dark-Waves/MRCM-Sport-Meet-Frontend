@@ -1,11 +1,8 @@
 import React, { useEffect, useReducer } from "react";
 import { Route, Routes } from "react-router-dom";
 import Header from "./Common/Header/Header";
-import Footer from "./Common/Footer/Footer";
 import Main from "./Main/Main";
-import Live from "./Live/Live";
 import Events from "./Events/Events";
-import Houses from "./Houses/Houses";
 import ErrorPage from "../Components/Error/Error";
 import { config } from "../../config";
 import socketio from "socket.io-client";
@@ -352,13 +349,10 @@ const Home: React.FC = () => {
               <Header />
               <Routes>
                 <Route path="/" element={<Main />} />
-                <Route path="/live" element={<Live />} />
                 <Route path="/events" element={<Events />} />
-                <Route path="/houses" element={<Houses />} />
                 <Route path="/score" element={<Score />} />
                 <Route path={"*"} element={<ErrorPage code={404} />} />
               </Routes>
-              <Footer />
             </HomeContext.Provider>
           </>
         )
