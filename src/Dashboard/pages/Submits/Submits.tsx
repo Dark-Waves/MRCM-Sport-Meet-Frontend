@@ -26,6 +26,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import Loader from "../../../Components/Loader/Loader";
+import { decrypt } from "../../../utils/aes";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -222,7 +223,7 @@ console.log(houses)
           `${config.APIURI}/api/v${config.Version}/houses`
         );
         if (response.data && response.data.HouseData) {
-          setHouses(response.data.HouseData);
+          setHouses(decrypt(response.data.HouseData));
         }
       } catch (error) {
         console.log(error);
