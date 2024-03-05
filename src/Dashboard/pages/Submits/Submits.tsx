@@ -128,7 +128,7 @@ const Submits: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [progress, setProgress] = useState<boolean>(false);
   const [houses, setHouses] = useState<House[]>([]);
-
+console.log(houses)
   // const allStates = [...new Set(events.map((event) => event.state))];
   const allStates = [
     ...new Set(events.map((event) => event.state)),
