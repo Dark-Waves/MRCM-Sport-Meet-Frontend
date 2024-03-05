@@ -47,34 +47,7 @@ const Hero: React.FC = () => {
             ? homeData?.find((data) => data.type === "HeroTitle")?.value.contnet
             : config.SiteName}
         </h1>
-        <div className="hero-buttons flex-row g-5 m-t-5">
-          <Link to={"About"}>
-            <Button
-              variant="contained"
-              color="error"
-              sx={{
-                textTransform: "capitalize",
-                fontWeight: 600,
-                fontSize: 17,
-              }}
-            >
-              About
-            </Button>
-          </Link>
-          <Link to={"Live"}>
-            <Button
-              sx={{
-                textTransform: "capitalize",
-                fontWeight: 600,
-                fontSize: 17,
-              }}
-              variant="text"
-              color="inherit"
-            >
-              Live
-            </Button>
-          </Link>
-        </div>
+
       </div>
       <div className="right-content flex-row">
         <img
