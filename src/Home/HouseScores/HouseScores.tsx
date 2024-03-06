@@ -23,7 +23,16 @@ const HouseScores: React.FC = () => {
     >
       <div
         className="house-overview m-b-4 bg-white color-white"
-        style={{ width: "100%" }}
+        style={{
+          width: "100%",
+          padding: "4rem",
+          zIndex: 1111,
+          background: "#93908dc4",
+          backdropFilter: "blur(113px)",
+          margin: "auto",
+          borderRadius: "3rem",
+          maxWidth: "94%",
+        }}
       >
         {houseData.map((data, index) => (
           <div className="House__Container w-full" key={index}>
