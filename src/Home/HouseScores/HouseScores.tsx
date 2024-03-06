@@ -17,7 +17,7 @@ const HouseScores: React.FC = () => {
     return `${scorePercentage}%`;
   };
   return (
-    <div className="house-scores p-t-8 m-t-8 flex flex-col g-5">
+    <div className="house-scores p-t-8 m-t-8 flex flex-col g-5" style={{height:"10rem"}}>
         <div className="house-overview m-b-4 bg-white color-white">
           {houseData.map((data, index) => (
             <div className="House__Container w-full" key={index}>
