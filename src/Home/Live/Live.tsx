@@ -31,16 +31,20 @@ const Live: React.FC = () => {
   }, [socket]);
   return (
     <div className="house-scores p-t-8 m-t-8 flex fex-col g-5">
-      <iframe
-        width="560"
-        height="315"
-        src="https://www.youtube.com/embed/LIVESTREAM_VIDEO_ID"
-        title="YouTube video player"
-        frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-      ></iframe>
-      <span className="font-weight-700 font-2xl">{message}</span>
+      <div className="youtube-live flex flex-col g-5 flex-center" style={{ zIndex: 111111 }}>
+        <iframe
+          width="560"
+          height="315"
+          src="https://www.youtube.com/embed/LIVESTREAM_VIDEO_ID"
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+        <div className="message-container text-center flex-center align-center" style={{maxWidth:"500px"}}>
+          <span className="font-weight-700 font-2xl">{message}</span>
+        </div>
+      </div>
     </div>
   );
 };
