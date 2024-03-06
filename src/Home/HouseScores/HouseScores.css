@@ -1,15 +1,6 @@
 .house-scores {
   display: flex;
-  flex-direction: row;
   align-items: center;
-}
-
-.house-scores .left-content {
-  width: 50%;
-}
-
-.house-scores .right-content {
-  width: 50%;
 }
 
 @media (max-width: 850px) {
