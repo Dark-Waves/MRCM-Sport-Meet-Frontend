@@ -11,4 +11,8 @@ export const navLinks: { name: string, url: string }[] = [
     name: "Score Board",
     url: "/score",
   },
+  {
+    name: "Live",
+    url: "/live",
+  },
 ];
