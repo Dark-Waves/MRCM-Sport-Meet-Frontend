@@ -6,7 +6,6 @@
 @media (max-width: 850px) {
   .house-scores {
     display: flex;
-    flex-direction: column-reverse;
     align-items: center;
   }
 

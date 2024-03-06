@@ -17,31 +17,39 @@ const HouseScores: React.FC = () => {
     return `${scorePercentage}%`;
   };
   return (
-    <div className="house-scores p-t-8 m-t-8 flex flex-col g-5" style={{height:"10rem"}}>
-        <div className="house-overview m-b-4 bg-white color-white">
-          {houseData.map((data, index) => (
-            <div className="House__Container w-full" key={index}>
-              <div style={{height: "100px"}} className="House_Chart__Container flex-col-center flex-start">
-                <div
-                  className={`House_Chart__Bar houseType-${index}`}
-                  style={{
-                    height: getScoreHeight(data.houseScore),
-                  }}
-                ></div>
-              </div>
-
-              <div className={`House__box flex-col-center`}>
-                <h3 className="House__Name font-lg font-weight-600">
-                  {data.Name}
-                </h3>
-                <span className="House__Score font-xl font-weight-700">
-                  {data.houseScore}
-                </span>
-              </div>
+    <div
+      className="house-scores p-t-8 m-t-8 flex flex-col g-5"
+      style={{ height: "10rem" }}
+    >
+      <div
+        className="house-overview m-b-4 bg-white color-white"
+        style={{ width: "100%" }}
+      >
+        {houseData.map((data, index) => (
+          <div className="House__Container w-full" key={index}>
+            <div
+              style={{ height: "100%" }}
+              className="House_Chart__Container flex-col-center flex-start"
+            >
+              <div
+                className={`House_Chart__Bar houseType-${index}`}
+                style={{
+                  height: getScoreHeight(data.houseScore),
+                }}
+              ></div>
             </div>
-          ))}
-        </div>
-        
+
+            <div className={`House__box flex-col-center`}>
+              <h3 className="House__Name font-lg font-weight-600">
+                {data.Name}
+              </h3>
+              <span className="House__Score font-xl font-weight-700">
+                {data.houseScore}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
