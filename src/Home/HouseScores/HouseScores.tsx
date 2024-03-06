@@ -21,7 +21,7 @@ const HouseScores: React.FC = () => {
         <div className="house-overview m-b-4 bg-white color-white">
           {houseData.map((data, index) => (
             <div className="House__Container w-full" key={index}>
-              <div className="House_Chart__Container flex-col-center flex-start">
+              <div style={{height: "100px"}} className="House_Chart__Container flex-col-center flex-start">
                 <div
                   className={`House_Chart__Bar houseType-${index}`}
                   style={{
