@@ -12,6 +12,7 @@ import HomeContext from "../context/HomeContext";
 import "./Home.css";
 import Score from "./Score/Score";
 import { decrypt } from "../utils/aes";
+import HouseScores from "./HouseScores/HouseScores";
 
 const APIURI = config.APIURI;
 /**
@@ -352,6 +353,7 @@ const Home: React.FC = () => {
                 <Route path="/" element={<Main />} />
                 <Route path="/events" element={<Events />} />
                 <Route path="/score" element={<Score />} />
+                <Route path="/housescores" element={<HouseScores />} />
                 <Route path={"*"} element={<ErrorPage code={404} />} />
               </Routes>
             </HomeContext.Provider>

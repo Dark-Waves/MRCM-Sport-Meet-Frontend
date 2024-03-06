@@ -1,0 +1,20 @@
+
+.hero .House_Chart__Bar.houseType-0 {
+    /* background: #ffff00; */
+    background: #009933;
+  }
+  
+  .hero .House_Chart__Bar.houseType-1 {
+    background: #ffff00;
+    /* background: #6600cc; */
+  }
+  
+  .hero .House_Chart__Bar.houseType-2 {
+    background: #6600cc;
+    /* background: #009933; */
+  }
+  
+  .hero .House_Chart__Bar.houseType-3 {
+    background: #cc0000;
+    /* background: #cc0000; */
+  }
