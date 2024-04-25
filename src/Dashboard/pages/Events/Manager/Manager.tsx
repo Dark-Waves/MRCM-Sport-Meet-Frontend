@@ -210,7 +210,6 @@ const Manager: React.FC<ManagerProps> = ({
     }
   };
 
-
   const handleAddPlaces = async function () {
     let updatedPlaces: Places[] = [];
 
@@ -261,11 +260,9 @@ const Manager: React.FC<ManagerProps> = ({
     });
   };
 
-  const handleRemovePlace = async function (
-    id: string
-  ) {
+  const handleRemovePlace = async function (indexNumber: number) {
     const updatedPlaces = [...tempeventData.places];
-    updatedPlaces.filter(p => p._id === id)
+    updatedPlaces.splice(indexNumber, 1); // Remove the place at indexNumber
     // updatedPlaces[index].minimumMarks = parseInt(e.target.value, 10); // Convert to number if needed
 
     dispatch({
@@ -593,7 +590,12 @@ const Manager: React.FC<ManagerProps> = ({
                         }
                         className="w-85"
                       />
-                      <Button onClick={() => handleRemovePlace(place._id)} type="button" className="m-r-2 W-15" color={"warning"}>
+                      <Button
+                        onClick={() => handleRemovePlace(index)}
+                        type="button"
+                        className="m-r-2 W-15"
+                        color={"warning"}
+                      >
                         <FontAwesomeIcon className="w-15" icon={faDeleteLeft} />
                       </Button>
                     </div>
