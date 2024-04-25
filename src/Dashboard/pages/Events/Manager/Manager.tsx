@@ -575,7 +575,7 @@ const Manager: React.FC<ManagerProps> = ({
                   {tempeventData.places.map((place, index) => (
                     <div
                       key={index}
-                      className="flex-row-bet m-3 text-center position-relative"
+                      className="flex-row-bet m-3 text-center position-relative w-full g-3"
                     >
                       <TextField
                         required
@@ -593,10 +593,10 @@ const Manager: React.FC<ManagerProps> = ({
                       <Button
                         onClick={() => handleRemovePlace(index)}
                         type="button"
-                        className="m-r-2 W-15"
+                        className="m-r-2 w-15"
                         color={"warning"}
                       >
-                        <FontAwesomeIcon className="w-15" icon={faDeleteLeft} />
+                        <FontAwesomeIcon icon={faDeleteLeft} />
                       </Button>
                     </div>
                   ))}
