@@ -11,7 +11,10 @@ import Select from "@mui/material/Select";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { InputLabel, TextField } from "@mui/material";
 import { Action as MainAction, State as MainState } from "../Events";
-import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+import {
+  faDeleteLeft,
+  faTriangleExclamation,
+} from "@fortawesome/free-solid-svg-icons";
 import { useSnackbar } from "notistack";
 
 interface Places {
@@ -207,6 +210,7 @@ const Manager: React.FC<ManagerProps> = ({
     }
   };
 
+
   const handleAddPlaces = async function () {
     let updatedPlaces: Places[] = [];
 
@@ -247,6 +251,22 @@ const Manager: React.FC<ManagerProps> = ({
     e.preventDefault();
     const updatedPlaces = [...tempeventData.places];
     updatedPlaces[index].minimumMarks = parseInt(e.target.value, 10); // Convert to number if needed
+
+    dispatch({
+      type: "setEventData",
+      payload: {
+        ...tempeventData,
+        places: updatedPlaces,
+      },
+    });
+  };
+
+  const handleRemovePlace = async function (
+    id: string
+  ) {
+    const updatedPlaces = [...tempeventData.places];
+    updatedPlaces.filter(p => p._id === id)
+    // updatedPlaces[index].minimumMarks = parseInt(e.target.value, 10); // Convert to number if needed
 
     dispatch({
       type: "setEventData",
@@ -573,7 +593,9 @@ const Manager: React.FC<ManagerProps> = ({
                         }
                         className="w-85"
                       />
-                      {/* <FontAwesomeIcon icon="fa-solid fa-triangle-exclamation" /> */}
+                      <Button onClick={() => handleRemovePlace(place._id)} type="button" className="m-r-2 W-15" color={"warning"}>
+                        <FontAwesomeIcon className="w-15" icon={faDeleteLeft} />
+                      </Button>
                     </div>
                   ))}
                 </>
