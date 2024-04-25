@@ -309,6 +309,7 @@ const Score: FC = () => {
                             <TableHead>
                               <TableRow>
                                 <TableCell>Palce</TableCell>
+                                <TableCell>Palce Score</TableCell>
                                 <TableCell>Winner Name</TableCell>
                                 <TableCell>Winner ID</TableCell>
                                 <TableCell>Winner House</TableCell>
@@ -318,6 +319,7 @@ const Score: FC = () => {
                               {row.places.map((data, index) => (
                                 <TableRow>
                                   <TableCell>{data.place}</TableCell>
+                                  <TableCell>{data.score}</TableCell>
                                   <TableCell>{data.member}</TableCell>
                                   <TableCell>{data.MemberID}</TableCell>
                                   <TableCell>{data.house}</TableCell>

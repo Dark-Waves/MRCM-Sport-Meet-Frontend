@@ -129,7 +129,7 @@ const Submits: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [progress, setProgress] = useState<boolean>(false);
   const [houses, setHouses] = useState<House[]>([]);
-console.log(houses)
+  console.log(houses);
   // const allStates = [...new Set(events.map((event) => event.state))];
   const allStates = [
     ...new Set(events.map((event) => event.state)),
@@ -344,14 +344,16 @@ console.log(houses)
   //       )
   //     : searchFilteredEvents;
 
-  const filteredEvents = selectedStates.length > 0
-  ? searchFilteredEvents.filter((event) =>
-      selectedStates.every(state =>
-        event.state === state || event.types.some(type => type.selection === state)
-      )
-    )
-  : searchFilteredEvents;
-
+  const filteredEvents =
+    selectedStates.length > 0
+      ? searchFilteredEvents.filter((event) =>
+          selectedStates.every(
+            (state) =>
+              event.state === state ||
+              event.types.some((type) => type.selection === state)
+          )
+        )
+      : searchFilteredEvents;
 
   return (
     <div className="event-submits position-relative h-full">
@@ -610,7 +612,9 @@ console.log(houses)
               ) : submitedEvent ? (
                 <>
                   <div className="submitted_content">
-                    <h2 className="m-b-4">{submitedEvent.name}</h2>
+                    <h2 className="m-b-4">
+                      {submitedEvent.description}
+                    </h2>
                     <table>
                       <tbody>
                         <tr>
