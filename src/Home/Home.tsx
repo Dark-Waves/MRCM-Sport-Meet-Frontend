@@ -8,7 +8,7 @@ import { config } from "../../config";
 import socketio from "socket.io-client";
 import axios from "axios";
 import Loader from "../Components/Loader/Loader";
-import HomeContext from "../context/HomeContext";
+import HomeContext, { State, Action } from "../context/HomeContext";
 import "./Home.css";
 import Score from "./Score/Score";
 import { decrypt } from "../utils/aes";
@@ -16,109 +16,6 @@ import HouseScores from "./HouseScores/HouseScores";
 import Live from "./Live/Live";
 
 const APIURI = config.APIURI;
-/**
- * Public Home data Main state
- */
-export type State = {
-  status: string;
-  publicDataStatus: string;
-  socket: any;
-  soketStatus: string;
-  houseData: HouseData[] | null;
-  eventData: EventData[] | null;
-  memberData: MemberData[] | null;
-  scoreData: ScoreData | null;
-  homeData: HomeData[] | null;
-};
-
-interface ScoreData {
-  scoreBoard: {
-    eventName: string;
-    state: string;
-    eventType: {
-      option: string;
-    }[];
-    inputType: string;
-    places: {
-      house: string;
-      score: number;
-      member: string;
-      MemberID: string;
-      place: number;
-    }[];
-  }[];
-  eventTypes: {
-    _id: string;
-    name: string;
-    options: {
-      _id: string;
-      option: string;
-    }[];
-  }[];
-}
-
-interface HomeData {
-  type: string;
-  value: {
-    dataType: "image" | "content";
-    contnet?: string;
-    image_id?: string;
-    url?: string;
-  };
-}
-
-interface MemberData {
-  _id: string;
-  Name: string;
-  House: string;
-  Grade: string;
-  MemberID: number;
-}
-
-interface EventData {
-  _id: string;
-  name: string;
-  description: string;
-  types: {
-    _id: string;
-    option: string;
-    selection: string;
-  }[];
-  state: string;
-  places: any[];
-}
-
-interface HouseData {
-  _id: string;
-  houseScore: number;
-  members: {
-    _id: string;
-    admissionID: number;
-  }[];
-  eventData: {
-    _id: string;
-    eventId: string;
-    participants: {
-      marks: number;
-      place: number;
-      userAdmissionId: string;
-      userName: string;
-    }[];
-  }[];
-  Name: string;
-  description: string;
-}
-
-type Action =
-  | { type: "setStatus"; payload: string }
-  | { type: "setPublicDataStatus"; payload: string }
-  | { type: "setSoketStatus"; payload: string }
-  | { type: "setHouseData"; payload: any }
-  | { type: "setEventData"; payload: any }
-  | { type: "setMemberData"; payload: any }
-  | { type: "setScoreData"; payload: any }
-  | { type: "setWs"; payload: any }
-  | { type: "setHomeData"; payload: any };
 
 const initialValue: State = {
   status: "loading",
@@ -134,41 +31,32 @@ const initialValue: State = {
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
-    case "setStatus": {
+    case "setStatus":
       return { ...state, status: action.payload };
-    }
-    case "setPublicDataStatus": {
+    case "setPublicDataStatus":
       return { ...state, publicDataStatus: action.payload };
-    }
-    case "setSoketStatus": {
+    case "setSoketStatus":
       return { ...state, soketStatus: action.payload };
-    }
-    case "setHouseData": {
+    case "setHouseData":
       return { ...state, houseData: action.payload };
-    }
-    case "setEventData": {
+    case "setEventData":
       return { ...state, eventData: action.payload };
-    }
-    case "setMemberData": {
+    case "setMemberData":
       return { ...state, memberData: action.payload };
-    }
-    case "setScoreData": {
+    case "setScoreData":
       return { ...state, scoreData: action.payload };
-    }
-    case "setHomeData": {
+    case "setHomeData":
       return { ...state, homeData: action.payload };
-    }
-    case "setWs": {
+    case "setWs":
       return { ...state, socket: action.payload };
-    }
-    default: {
-      throw new Error("Method not found");
-    }
+    default:
+      throw new Error("Unknown action type");
   }
 };
 
 const Home: React.FC = () => {
   const [state, dispatch] = useReducer(reducer, initialValue);
+
   const {
     status,
     socket,
@@ -177,6 +65,7 @@ const Home: React.FC = () => {
     eventData,
     memberData,
     scoreData,
+    publicDataStatus,
   } = state;
 
   useEffect(() => {
@@ -184,20 +73,23 @@ const Home: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const loading =
-      status !== "loading" ||
-      !houseData ||
-      !eventData ||
-      !memberData ||
-      !socket ||
-      !soketStatus;
-
-    if (!loading) {
+    console.log(
+      status !== "loading" &&
+        houseData &&
+        eventData &&
+        memberData &&
+        socket &&
+        soketStatus === "ready"
+    );
+    if (
+      status === "loading" &&
+      soketStatus === "ready" &&
+      publicDataStatus === "ready"
+    ) {
       dispatch({ type: "setStatus", payload: "ready" });
     }
   }, [status, houseData, eventData, memberData, socket, soketStatus]);
 
-  // Public Api data extraction
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -227,10 +119,7 @@ const Home: React.FC = () => {
 
         const eventResponseData = decrypt(eventResponse.data);
         if (eventResponseData.message === "ok") {
-          dispatch({
-            type: "setEventData",
-            payload: eventResponseData.events,
-          });
+          dispatch({ type: "setEventData", payload: eventResponseData.events });
         }
 
         const memberResponseData = decrypt(memberResponse.data);
@@ -243,7 +132,6 @@ const Home: React.FC = () => {
 
         const scoreResponseData = decrypt(scoreResponse.data);
         if (scoreResponseData.message === "ok") {
-          console.log(scoreResponseData);
           dispatch({
             type: "setScoreData",
             payload: scoreResponseData.payload,
@@ -252,16 +140,12 @@ const Home: React.FC = () => {
 
         const homeResponseData = decrypt(homeDataResponse.data);
         if (homeResponseData.message === "ok") {
-          console.log(homeResponseData);
-          dispatch({
-            type: "setHomeData",
-            payload: homeResponseData.payload,
-          });
+          dispatch({ type: "setHomeData", payload: homeResponseData.payload });
         }
 
         dispatch({ type: "setPublicDataStatus", payload: "ready" });
       } catch (error) {
-        console.log(error);
+        console.error(error);
         dispatch({ type: "setStatus", payload: "error" });
       }
     };
@@ -269,66 +153,69 @@ const Home: React.FC = () => {
     fetchData();
   }, []);
 
-  // Public Socket connection
   useEffect(() => {
     const wasocket = socketio(`${APIURI}/v${config.Version}/public`, {
       transports: ["websocket"],
     });
-    dispatch({ type: "setWs", payload: wasocket });
+
     wasocket.on("connect", () => {
       dispatch({ type: "setSoketStatus", payload: "ready" });
     });
+
+    dispatch({ type: "setWs", payload: wasocket });
+
     return () => {
       wasocket.close();
     };
   }, []);
 
-  // Socket data extraction
   useEffect(() => {
     if (!socket) return;
 
     const handleSocketMessage = (d: any) => {
       const data: { type: string; payload: any } = decrypt(d);
 
-      if (data.type === "eventUpdate") {
-        dispatch({
-          type: "setScoreData",
-          payload: {
-            eventTypes: scoreData?.eventTypes || [], // Keep the existing eventTypes
-            scoreBoard: [
-              ...(scoreData?.scoreBoard || []), // Existing scoreBoard
-              data.payload.scoreBoard, // Add incoming scoreBoard
-            ],
-          },
-        });
-      }
+      switch (data.type) {
+        case "eventUpdate":
+          dispatch({
+            type: "setScoreData",
+            payload: {
+              eventTypes: scoreData?.eventTypes || [],
+              scoreBoard: [
+                ...(scoreData?.scoreBoard || []),
+                data.payload.scoreBoard,
+              ],
+            },
+          });
+          break;
 
-      if (data.type === "houseScoreUpdate") {
-        if (!houseData) return;
-        const updatedHouseData = data.payload.wsSendHouseData.map(
-          (updatedHouse) => {
-            const index = houseData.findIndex(
-              (house) => house._id === updatedHouse._id
-            );
+        case "houseScoreUpdate":
+          if (!houseData) return;
+          const updatedHouseData = data.payload.wsSendHouseData.map(
+            (updatedHouse) => {
+              const index = houseData.findIndex(
+                (house) => house._id === updatedHouse._id
+              );
 
-            if (index !== -1) {
-              return {
-                ...houseData[index],
-                houseScore: updatedHouse.houseScore,
-              };
+              if (index !== -1) {
+                return {
+                  ...houseData[index],
+                  houseScore: updatedHouse.houseScore,
+                };
+              }
+
+              return updatedHouse;
             }
+          );
+          dispatch({ type: "setHouseData", payload: updatedHouseData });
+          break;
 
-            return updatedHouse; // If not found, keep the original object
-          }
-        );
-        dispatch({
-          type: "setHouseData",
-          payload: updatedHouseData,
-        });
-      }
+        case "message":
+          console.log(data.payload);
+          break;
 
-      if (data.type === "message") {
-        console.log(data.payload);
+        default:
+          console.warn("Unknown socket message type:", data.type);
       }
     };
 
@@ -337,7 +224,7 @@ const Home: React.FC = () => {
     return () => {
       socket.off("server-message", handleSocketMessage);
     };
-  }, [socket, scoreData]);
+  }, [socket, scoreData, houseData]);
 
   return (
     <div className="flex-col landing-page position-relative">
@@ -345,23 +232,19 @@ const Home: React.FC = () => {
         <Loader />
       ) : status === "error" ? (
         <ErrorPage code={400} />
-      ) : (
-        status === "ready" && (
-          <>
-            <HomeContext.Provider value={{ ...state, dispatch }}>
-              <Header />
-              <Routes>
-                <Route path="/" element={<Main />} />
-                <Route path="/events" element={<Events />} />
-                <Route path="/score" element={<Score />} />
-                <Route path="/housescores" element={<HouseScores />} />
-                <Route path="/live" element={<Live />} />
-                <Route path={"*"} element={<ErrorPage code={404} />} />
-              </Routes>
-            </HomeContext.Provider>
-          </>
-        )
-      )}
+      ) : status === "ready" ? (
+        <HomeContext.Provider value={{ state, dispatch }}>
+          <Header />
+          <Routes>
+            <Route path="/" element={<Main />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/score" element={<Score />} />
+            <Route path="/housescores" element={<HouseScores />} />
+            <Route path="/live" element={<Live />} />
+            <Route path="*" element={<ErrorPage code={404} />} />
+          </Routes>
+        </HomeContext.Provider>
+      ) : null}
     </div>
   );
 };

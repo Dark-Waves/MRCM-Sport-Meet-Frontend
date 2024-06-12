@@ -24,7 +24,7 @@ export interface HomeData {
   type: string;
   value: {
     dataType: "image" | "content";
-    contnet?: string;
+    content?: string;
     image_id?: string;
     url?: string;
   };

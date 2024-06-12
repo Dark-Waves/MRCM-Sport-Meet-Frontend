@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import HomeContext from "../../context/HomeContext";
-import { State } from "../Home";
 import { Box } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
@@ -18,8 +17,8 @@ interface EventData {
 }
 
 const Events: React.FC = () => {
-  const { eventData }: State = useContext(HomeContext);
-  console.log(eventData);
+  const { state } = useContext(HomeContext);
+  console.log(state.eventData);
   const columns: GridColDef[] = [
     { field: "id", headerName: "House ID", width: 150, type: "number" },
     { field: "name", headerName: "Name", width: 200 },
@@ -27,8 +26,8 @@ const Events: React.FC = () => {
   ];
 
   // Transform memberData to match the DataGrid's expected format
-  const rows = eventData
-    ? eventData.map((data: EventData, index) => ({ id: index, ...data }))
+  const rows = state.eventData
+    ? state.eventData.map((data: EventData, index) => ({ id: index, ...data }))
     : [];
 
   return (

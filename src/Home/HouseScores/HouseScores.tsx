@@ -1,17 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-// import img from "../../../../public/logo/logo.png"
 import "./HouseScores.css";
-import { Link } from "react-router-dom";
-import { Button } from "@mui/material";
-import { State } from "../Home";
 import HomeContext from "../../context/HomeContext";
-import { config } from "../../../config";
 
 const HouseScores: React.FC = () => {
-  const { houseData, homeData }: State = useContext(HomeContext);
+  const { state } = useContext(HomeContext);
 
-  if (!houseData) return;
-  const highestScore = Math.max(...houseData.map((data) => data.houseScore));
+  if (!state.houseData) return;
+  const highestScore = Math.max(...state.houseData.map((data) => data.houseScore));
   const getScoreHeight = function (score: number) {
     const scorePercentage = (score / highestScore) * 100;
     return `${scorePercentage}%`;
@@ -34,7 +29,7 @@ const HouseScores: React.FC = () => {
           maxWidth: "94%",
         }}
       >
-        {houseData.map((data, index) => (
+        {state.houseData.map((data, index) => (
           <div className="House__Container w-full" key={index}>
             <div
               style={{ height: "100%" }}

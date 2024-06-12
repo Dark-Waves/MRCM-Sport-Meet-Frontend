@@ -3,15 +3,14 @@ import React, { useContext, useEffect, useState } from "react";
 import "./Hero.css";
 import { Link } from "react-router-dom";
 import { Button } from "@mui/material";
-import { State } from "../../Home";
 import HomeContext from "../../../context/HomeContext";
 import { config } from "../../../../config";
 
 const Hero: React.FC = () => {
-  const { houseData, homeData }: State = useContext(HomeContext);
+  const { state } = useContext(HomeContext);
 
-  if (!houseData) return;
-  const highestScore = Math.max(...houseData.map((data) => data.houseScore));
+  if (!state.houseData) return;
+  const highestScore = Math.max(...state.houseData.map((data) => data.houseScore));
   const getScoreHeight = function (score: number) {
     const scorePercentage = (score / highestScore) * 100;
     return `${scorePercentage}%`;
@@ -20,7 +19,7 @@ const Hero: React.FC = () => {
     <div className="hero p-t-8 m-t-8">
       <div className="left-content">
         <div className="house-overview m-b-4">
-          {houseData.map((data, index) => (
+          {state.houseData.map((data, index) => (
             <div className="House__Container w-full" key={index}>
               <div className="House_Chart__Container flex-col-center flex-start">
                 <div
@@ -43,8 +42,8 @@ const Hero: React.FC = () => {
           ))}
         </div>
         <h1 className="font-2xl font-weight-800">
-          {homeData?.find((data) => data.type === "HeroTitle")?.value.contnet
-            ? homeData?.find((data) => data.type === "HeroTitle")?.value.contnet
+          {state.homeData?.find((data) => data.type === "HeroTitle")?.value.content
+            ? state.homeData?.find((data) => data.type === "HeroTitle")?.value.content
             : config.SiteName}
         </h1>
 
@@ -52,8 +51,8 @@ const Hero: React.FC = () => {
       <div className="right-content flex-row">
         <img
           src={
-            homeData?.find((data) => data.type === "HeroImage")?.value.url
-              ? homeData?.find((data) => data.type === "HeroImage")?.value.url
+            state.homeData?.find((data) => data.type === "HeroImage")?.value.url
+              ? state.homeData?.find((data) => data.type === "HeroImage")?.value.url
               : "/assets/hero/hero logo.svg"
           }
           alt="MRCM LOGO"

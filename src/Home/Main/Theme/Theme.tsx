@@ -1,10 +1,8 @@
 import React, { useContext } from "react";
 import "./Theme.css";
 import HomeContext from "../../../context/HomeContext";
-import { State } from "../../Home";
-
 const Theme: React.FC = () => {
-  const { houseData, homeData }: State = useContext(HomeContext);
+  const { state } = useContext(HomeContext);
 
   return (
     <div className="school-theme w-full m-t-8 p-t-8 flex-col-center">
@@ -15,16 +13,16 @@ const Theme: React.FC = () => {
       <div className="content">
         <img
           src={
-            homeData?.find((data) => data.type === "ThemeImage")?.value.url
-              ? homeData?.find((data) => data.type === "ThemeImage")?.value.url
+            state.homeData?.find((data) => data.type === "ThemeImage")?.value.url
+              ? state.homeData?.find((data) => data.type === "ThemeImage")?.value.url
               : "/assets/theme.jpg"
           }
           alt="theme"
           className="w-50 p-4"
         />
         <span className="des font-md m-auto text-center p-4 w-50">
-          {homeData?.find((data) => data.type === "ThemeText")?.value.contnet
-            ? homeData?.find((data) => data.type === "ThemeText")?.value.contnet
+          {state.homeData?.find((data) => data.type === "ThemeText")?.value.content
+            ? state.homeData?.find((data) => data.type === "ThemeText")?.value.content
             : `"Eclipsing Excellence" symbolizes our commitment to surpassing past
         achievements and reaching new heights in the sporting arena. As we
         embark on the journey of 'Modernizing Mahinda Rajapaksha College Matara

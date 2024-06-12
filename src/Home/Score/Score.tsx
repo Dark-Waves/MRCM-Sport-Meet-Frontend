@@ -18,7 +18,6 @@ import {
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { State } from "../Home";
 import HomeContext from "../../context/HomeContext";
 
 interface SelectedEventTypes {
@@ -54,13 +53,13 @@ interface ScoreBoard {
 }
 
 const Score: FC = () => {
-  const { scoreData, houseData }: State = useContext(HomeContext);
+  const { state } = useContext(HomeContext);
   const [selectedEventTypes, setSelectedEventTypes] = useState<
     SelectedEventTypes[]
   >([]);
   console.log("selectedEventTypes: ", selectedEventTypes);
   const [filteredScores, setFilteredScores] = useState<ScoreBoard[]>(
-    scoreData?.scoreBoard || []
+    state.scoreData?.scoreBoard || []
   );
 
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
@@ -133,16 +132,16 @@ const Score: FC = () => {
   };
 
   useEffect(() => {
-    // console.log(selectedEventTypes, scoreData);
+    // console.log(selectedEventTypes, state.scoreData);
     if (!selectedEventTypes.length) {
-      console.log(scoreData?.scoreBoard);
-      setFilteredScores(scoreData?.scoreBoard || []);
+      console.log(state.scoreData?.scoreBoard);
+      setFilteredScores(state.scoreData?.scoreBoard || []);
     } else {
       const selectedOptions = selectedEventTypes.flatMap(
         (selected) => selected.option_id
       );
       console.log(selectedOptions);
-      const filteredEvents = scoreData?.scoreBoard.filter((event) => {
+      const filteredEvents = state.scoreData?.scoreBoard.filter((event) => {
         return selectedOptions.every((item) =>
           event.eventType.find(({ option }) => option === item)
         );
@@ -150,7 +149,7 @@ const Score: FC = () => {
 
       setFilteredScores(filteredEvents || []);
     }
-  }, [scoreData, selectedEventTypes]);
+  }, [state.scoreData, selectedEventTypes]);
 
   /**
    * Get Ordinal Function
@@ -178,8 +177,8 @@ const Score: FC = () => {
   return (
     <div className="m-t-8 p-t-7" style={{ zIndex: 1 }}>
       <div className="flex-row g-5 m-5 bg-second p-3 rounded">
-        {scoreData &&
-          scoreData.eventTypes?.map((data, index) => (
+        {state.scoreData &&
+          state.scoreData.eventTypes?.map((data, index) => (
             <div className="option_selection w-40" key={index}>
               <FormControl key={data._id} fullWidth>
                 <InputLabel id={`event-type-label-${data._id}`}>
@@ -218,13 +217,13 @@ const Score: FC = () => {
                     {column.headerName}
                   </TableCell>
                 ))}
-                <TableCell align="center" colSpan={houseData?.length}>
+                <TableCell align="center" colSpan={state.houseData?.length}>
                   Houses
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell colSpan={columns.length}></TableCell>
-                {houseData?.map((house, index) => (
+                {state.houseData?.map((house, index) => (
                   <TableCell key={index}>{house.Name}</TableCell>
                 ))}
               </TableRow>
@@ -247,7 +246,7 @@ const Score: FC = () => {
                         )}
                       </IconButton>
                     </TableCell>
-                    {houseData?.map((data, dataIndex) => {
+                    {state.houseData?.map((data, dataIndex) => {
                       const matchingPlaces = row.places.filter(
                         (place) => place.house === data.Name
                       );
@@ -293,8 +292,8 @@ const Score: FC = () => {
                           <div className="flex-row g-3 font-md font-weight-500 m-b-4 m-t-4">
                             {row.eventType.map((data) => {
                               const optionName =
-                                scoreData &&
-                                scoreData.eventTypes
+                                state.scoreData &&
+                                state.scoreData.eventTypes
                                   .flatMap((event) => event.options)
                                   .find((option) => option._id === data.option)
                                   ?.option;

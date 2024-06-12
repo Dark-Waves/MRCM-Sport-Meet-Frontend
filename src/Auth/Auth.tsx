@@ -72,7 +72,7 @@ export default function Auth() {
                 <div className="input-wrap">
                   <TextField
                     type="text"
-                    minLength={4}
+                    minRows={4}
                     className="input-field"
                     autoComplete="off"
                     required
@@ -85,7 +85,7 @@ export default function Auth() {
                 <div className="input-wrap">
                   <TextField
                     type="password"
-                    minLength={4}
+                    minRows={4}
                     className="input-field"
                     autoComplete="off"
                     required
@@ -97,7 +97,7 @@ export default function Auth() {
                 </div>
                 <Button
                   type="submit"
-                  defaultValue="Sign In"
+                  
                   className="sign-btn"
                   loading={loading}
                 >

@@ -7,10 +7,9 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import HomeContext from "../../../context/HomeContext";
 import React, { useContext } from "react";
-import { State } from "../../Home";
 
 export default function Houses(): JSX.Element {
-  const { houseData, homeData }: State = useContext(HomeContext);
+  const { state } = useContext(HomeContext);
 
   const calculateFirst = function () {};
 
@@ -18,8 +17,8 @@ export default function Houses(): JSX.Element {
     <div className="main__Houses m-t-5">
       <h2 className="title font-xl font-weight-700 m-b-4">Houses</h2>
       <Grid container spacing={3} className="grid-houses">
-        {houseData &&
-          houseData.map((data, index) => (
+        {state.houseData &&
+          state.houseData.map((data, index) => (
             <Grid item xs={11} sm={5} md={3} key={index}>
               <Card sx={{ minWidth: 275 }}>
                 <CardContent>

@@ -2,17 +2,16 @@ import React, { useContext, useEffect, useState } from "react";
 import "./Live.css";
 import { Link } from "react-router-dom";
 import { Button } from "@mui/material";
-import { State } from "../Home";
 import HomeContext from "../../context/HomeContext";
 import { config } from "../../../config";
 import { decrypt } from "../../utils/aes";
 
 const Live: React.FC = () => {
-  const { houseData, homeData, socket }: State = useContext(HomeContext);
+  const { state } = useContext(HomeContext);
   const [message, setMessage] = useState("");
   // Socket data extraction
   useEffect(() => {
-    if (!socket) return;
+    if (!state.socket) return;
 
     const handleSocketMessage = (d: any) => {
       const data: { type: string; payload: any } = decrypt(d);
@@ -23,12 +22,13 @@ const Live: React.FC = () => {
       }
     };
 
-    socket.on("server-message", handleSocketMessage);
+    state.socket.on("server-message", handleSocketMessage);
 
     return () => {
-      socket.off("server-message", handleSocketMessage);
+      if (!state.socket) return
+      state.socket.off("server-message", handleSocketMessage);
     };
-  }, [socket]);
+  }, [state.socket]);
   return (
     <div className="house-scores p-t-8 m-t-8 flex fex-col g-5">
       <div className="youtube-live flex flex-col g-5 flex-center" style={{ zIndex: 111111 }}>
