@@ -440,6 +440,30 @@ const Manager: React.FC<ManagerProps> = ({
     [saveStatus, selectedEvent, tempeventData, dispatchEvent]
   );
 
+  const searchFilteredEvents = eventData && eventData.filter((event) =>
+    event.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // const filteredEvents =
+  //   selectedStates.length > 0
+  //     ? searchFilteredEvents.filter(
+  //         (event) =>
+  //           selectedStates.includes(event.state) ||
+  //           event.types.some((type) => selectedStates.includes(type.selection))
+  //       )
+  //     : searchFilteredEvents;
+
+  const filteredEvents =
+    selectedStates.length > 0 && searchFilteredEvents
+      ? searchFilteredEvents.filter((event) =>
+        selectedStates.every(
+          (state) =>
+            event.state === state ||
+            event.types.some((type) => type.selection === state)
+        )
+      )
+      : searchFilteredEvents;
+
   return (
     <div className="event-manager">
       <div className="content_top w-full m-b-4 flex-row-bet">
@@ -499,9 +523,9 @@ const Manager: React.FC<ManagerProps> = ({
           </div>
         </div>
       </div>
-      {eventData && (
+      {filteredEvents && (
         <div className="content-grid-one flex-col g-4 w-full">
-          {eventData.map((event, index) => (
+          {filteredEvents.map((event, index) => (
             <div className="grid-common" key={index}>
               <div className="flex-col-center g-4 m-t-4">
                 {event.name && (
