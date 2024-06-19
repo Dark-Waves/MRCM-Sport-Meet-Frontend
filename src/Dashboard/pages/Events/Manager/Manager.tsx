@@ -562,6 +562,9 @@ const Manager: React.FC<ManagerProps> = ({
                 <Button
                   variant="contained"
                   onClick={() => handleEdit(event._id)}
+                  disabled={
+                    event.state === "pending" || event.state === "approved"
+                  }
                 >
                   Edit
                 </Button>
@@ -569,6 +572,9 @@ const Manager: React.FC<ManagerProps> = ({
                   color="error"
                   variant="outlined"
                   onClick={() => handleDelete(event._id)}
+                  disabled={
+                    event.state === "pending" || event.state === "approved"
+                  }
                 >
                   Delete
                 </Button>
