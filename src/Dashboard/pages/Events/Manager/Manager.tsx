@@ -86,6 +86,7 @@ interface State {
   popUpModal: boolean;
   tempeventData: {
     name: string;
+    state: string
     description: string;
     inputType: string;
     places: Places[];
@@ -114,6 +115,7 @@ const initialValue: State = {
     inputType: "",
     places: [],
     types: [],
+    state: ""
   },
   selectedEvent: {},
   saveStatus: "none",
@@ -251,7 +253,7 @@ const Manager: React.FC<ManagerProps> = ({
     dispatch({ type: "setSelectedEvent", payload: event });
     dispatch({
       type: "setEventData",
-      payload: { name: "", description: "", places: [], types: [] },
+      payload: { name: "", description: "", places: [], types: [], state: "" },
     });
     handleSubmit(false);
   };
@@ -562,9 +564,9 @@ const Manager: React.FC<ManagerProps> = ({
                 <Button
                   variant="contained"
                   onClick={() => handleEdit(event._id)}
-                  disabled={
-                    event.state === "pending" || event.state === "approved"
-                  }
+                // disabled={
+                //   event.state === "pending" || event.state === "approved"
+                // }
                 >
                   Edit
                 </Button>
@@ -633,6 +635,9 @@ const Manager: React.FC<ManagerProps> = ({
                 Submit Input Type
               </InputLabel>
               <Select
+                disabled={
+                  tempeventData.state === "pending" || tempeventData.state === "approved"
+                }
                 required
                 labelId="event-type-select-label"
                 id="event-type-select"
@@ -723,6 +728,9 @@ const Manager: React.FC<ManagerProps> = ({
                       className="flex-row-bet m-3 text-center position-relative w-full g-3"
                     >
                       <TextField
+                        disabled={
+                          tempeventData.state === "pending" || tempeventData.state === "approved"
+                        }
                         required
                         label={getOrdinal(place.place)}
                         type="number"
