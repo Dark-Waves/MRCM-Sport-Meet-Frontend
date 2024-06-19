@@ -32,7 +32,7 @@ export default function Approves() {
   const [approveLoaded, setApproveLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [approoving, setApprooving] = useState(false);
-  const [rejecting, setRejecting] = useState(false);
+  const [rejecting, setRejecting] = useState({ state: false, place: "" });
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
@@ -151,7 +151,7 @@ export default function Approves() {
   };
   const rejectEvent = async function (eventId) {
     try {
-      setRejecting(true);
+      setRejecting({ state: true, place: eventId });
       const token = Cookies.get("token");
       const response = await axios.post(
         `${config.APIURI}/api/v${config.Version}/event/reject/${eventId}`,
@@ -164,15 +164,45 @@ export default function Approves() {
         variant: "success",
       });
     } catch (error) {
-      setRejecting(false);
+      setRejecting({ state: false, place: eventId });
       enqueueSnackbar("Event Reject Error.", {
         variant: "error",
       });
       console.log(error);
     } finally {
-      setRejecting(false);
+      setRejecting({ state: false, place: eventId });
     }
   };
+
+  const rejectAllEvents = async function () {
+    const userConfirmed = window.confirm("Are you sure you want to proceed?");
+    if (userConfirmed) {
+
+      try {
+        setRejecting({ state: true, place: "all" });
+        const token = Cookies.get("token");
+        const response = await axios.post(
+          `${config.APIURI}/api/v${config.Version}/event/reject/all`,
+          {
+            token: token,
+          }
+        );
+        console.log(response.data);
+        enqueueSnackbar(`Event Reaject successful.`, {
+          variant: "success",
+        });
+      } catch (error) {
+        setRejecting({ state: false, place: "all" });
+        enqueueSnackbar("Event Reject Error.", {
+          variant: "error",
+        });
+        console.log(error);
+      } finally {
+        setRejecting({ state: false, place: "all" });
+      }
+    } else return
+
+  }
   return (
     <div className="approve__submits position-relative h-full">
       {loading ? (
@@ -181,6 +211,9 @@ export default function Approves() {
         <div className="flex-col">
           {incomingSubmits.length ? (
             <div className="incoming_submits">
+              <Button loading={rejecting.state && rejecting.place === "all"} disabled={rejecting.state && rejecting.place === "all"} onClick={rejectAllEvents}>
+                rejectAllEvents
+              </Button>
               <h1 className="font-weight-600 font-lg">Incoming Submits</h1>
               <div className="incoming_submits__container">
                 {incomingSubmits.map((data, index) => (
@@ -233,6 +266,7 @@ export default function Approves() {
                     </div>
                     <div className="buttons flex-row-center g-4">
                       <Button
+                        disabled={approoving}
                         loading={approoving}
                         variant="contained"
                         onClick={() => {
@@ -243,7 +277,8 @@ export default function Approves() {
                         Approve
                       </Button>
                       <Button
-                        loading={rejecting}
+                        disabled={rejecting.state && rejecting.place === data._id}
+                        loading={rejecting.state && rejecting.place === data._id}
                         variant="outlined"
                         color="error"
                         onClick={() => {
