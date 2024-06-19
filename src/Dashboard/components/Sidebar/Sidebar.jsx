@@ -8,7 +8,7 @@ import HomeContext from "../../../context/HomeContext";
 
 const Sidebar = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const { socket,homeData } = useContext(DashboardContext);
+  const { socket, homeData } = useContext(DashboardContext);
   const { sidebarOpen, navigationLinks } = useContext(DashboardContext);
   // Get the current location using useLocation
   const location = useLocation();
@@ -56,13 +56,13 @@ const Sidebar = () => {
         <div className="info-img img-fit-cover">
           <img
             src={
-              homeData?.find((data) => data.type === "SiteLogo")?.value
-                .url ?? "/logo/logo.png"
+              homeData?.find((data) => data.type === "SiteLogo")?.value.url ??
+              "/logo/logo.png"
             }
             alt="profile image"
           />
         </div>
-        <span className="info-name">Dark </span>
+        <span className="info-name">Dark Waves Management</span>
       </div>
       <nav className="navigation">
         <ul className="nav-list">
