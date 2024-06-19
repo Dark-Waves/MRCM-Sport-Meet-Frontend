@@ -8,12 +8,10 @@ import HomeContext from "../../../context/HomeContext";
 
 const Sidebar = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const { socket } = useContext(DashboardContext);
-  const { state } = useContext(HomeContext);
+  const { socket,homeData } = useContext(DashboardContext);
   const { sidebarOpen, navigationLinks } = useContext(DashboardContext);
   // Get the current location using useLocation
   const location = useLocation();
-  console.log(location.pathname);
 
   useEffect(() => {
     if (!socket) return;
@@ -52,20 +50,19 @@ const Sidebar = () => {
       </ul>
     );
   };
-
   return (
     <div className={`sidebar ${sidebarOpen ? "" : "sidebar-change"}`}>
       <div className="user-info">
         <div className="info-img img-fit-cover">
           <img
             src={
-              state.homeData?.find((data) => data.type === "SiteLogo")?.value
+              homeData?.find((data) => data.type === "SiteLogo")?.value
                 .url ?? "/logo/logo.png"
             }
             alt="profile image"
           />
         </div>
-        <span className="info-name">Dark Waves</span>
+        <span className="info-name">Dark </span>
       </div>
       <nav className="navigation">
         <ul className="nav-list">

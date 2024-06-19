@@ -26,6 +26,7 @@ export interface DashboardState {
   sidebarOpen: boolean;
   wsShoketAuthenticated: boolean | null;
   socket: any;
+  homeData: HomeData[] | null;
 }
 
 export type DashboardAction =
@@ -36,6 +37,7 @@ export type DashboardAction =
   | { type: "setNavigationStatus"; payload: "loading" | "error" | "ready" }
   | { type: "setNavigationLinks"; payload: NavigationLink[] }
   | { type: "setWsAuth"; payload: boolean }
+  | { type: "setHomeData"; payload: HomeData[] }
   | { type: "setWs"; payload: any };
 
 interface DashboardContextProps extends DashboardState {
@@ -43,7 +45,15 @@ interface DashboardContextProps extends DashboardState {
   defaultLogo: string;
   SiteName: string;
 }
-
+interface HomeData {
+  type: string;
+  value: {
+    dataType: "image" | "content";
+    content?: string;
+    image_id?: string;
+    url?: string;
+  };
+}
 export const initialState: DashboardState = {
   status: "loading",
   navigationLinks: null,
@@ -53,8 +63,14 @@ export const initialState: DashboardState = {
   sidebarOpen: true,
   wsShoketAuthenticated: null,
   socket: null,
+  homeData: null,
 };
 
-const DashboardContext = createContext<DashboardContextProps>({ ...initialState, defaultLogo: "", SiteName: "", dispatch: () => null });
+const DashboardContext = createContext<DashboardContextProps>({
+  ...initialState,
+  defaultLogo: "",
+  SiteName: "",
+  dispatch: () => null,
+});
 
 export default DashboardContext;
