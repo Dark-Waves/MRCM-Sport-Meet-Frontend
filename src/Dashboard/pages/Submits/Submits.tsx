@@ -114,7 +114,7 @@ interface House {
 
 const Submits: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const { socket } = useContext(DashboardContext);
+  const { socket }: { socket: any | null } = useContext(DashboardContext);
 
   const [events, setEvents] = useState<Event[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -347,12 +347,12 @@ const Submits: React.FC = () => {
   const filteredEvents =
     selectedStates.length > 0
       ? searchFilteredEvents.filter((event) =>
-          selectedStates.every(
-            (state) =>
-              event.state === state ||
-              event.types.some((type) => type.selection === state)
-          )
+        selectedStates.every(
+          (state) =>
+            event.state === state ||
+            event.types.some((type) => type.selection === state)
         )
+      )
       : searchFilteredEvents;
 
   return (
@@ -449,7 +449,7 @@ const Submits: React.FC = () => {
                       }
                       onClick={
                         data.state === "rejected" ||
-                        data.state === "notSubmitted"
+                          data.state === "notSubmitted"
                           ? () => handlePopup(data)
                           : undefined
                       }
@@ -457,10 +457,10 @@ const Submits: React.FC = () => {
                       {data.state === "approved"
                         ? "Approved"
                         : data.state === "rejected"
-                        ? "Try again"
-                        : data.state === "pending"
-                        ? "Submitted"
-                        : "Enter Event Winners Data"}
+                          ? "Try again"
+                          : data.state === "pending"
+                            ? "Submitted"
+                            : "Enter Event Winners Data"}
                     </Button>
                   </div>
                 </div>
@@ -475,51 +475,51 @@ const Submits: React.FC = () => {
                   <form onSubmit={handleSubmit} className="p-t-3">
                     {selectedEvent.inputType === "MemberID"
                       ? selectedEvent.places &&
-                        selectedEvent.places.map((place, index) => (
-                          <div
-                            className="m-t-4 score__submit flex-row-aro position-relative"
-                            key={index}
-                          >
-                            <TextField
-                              type="number"
-                              label={`${place.place} Place`}
-                              placeholder="House Member ID"
-                              value={admissionNumbers[index]?.inputID || ""}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  index,
-                                  e.target.value,
-                                  place.place,
-                                  selectedEvent.inputType
-                                )
-                              }
-                              error={
-                                error.find((err) => err.place === place.place)
-                                  ? true
-                                  : false
-                              }
-                            />
+                      selectedEvent.places.map((place, index) => (
+                        <div
+                          className="m-t-4 score__submit flex-row-aro position-relative"
+                          key={index}
+                        >
+                          <TextField
+                            type="number"
+                            label={`${place.place} Place`}
+                            placeholder="House Member ID"
+                            value={admissionNumbers[index]?.inputID || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                index,
+                                e.target.value,
+                                place.place,
+                                selectedEvent.inputType
+                              )
+                            }
+                            error={
+                              error.find((err) => err.place === place.place)
+                                ? true
+                                : false
+                            }
+                          />
 
-                            {error &&
+                          {error &&
                             error.find((err) => err.place === place.place) ? (
-                              <span
-                                title={
-                                  error &&
-                                  error.find((err) => err.place === place.place)
-                                    ?.message // Added '?'
-                                }
-                                className="position-absolute"
-                                style={{ right: 0 }}
-                              >
-                                <FontAwesomeIcon icon={faCircleExclamation} />
-                              </span>
-                            ) : (
-                              ""
-                            )}
-                          </div>
-                        ))
+                            <span
+                              title={
+                                error &&
+                                error.find((err) => err.place === place.place)
+                                  ?.message // Added '?'
+                              }
+                              className="position-absolute"
+                              style={{ right: 0 }}
+                            >
+                              <FontAwesomeIcon icon={faCircleExclamation} />
+                            </span>
+                          ) : (
+                            ""
+                          )}
+                        </div>
+                      ))
                       : selectedEvent.inputType === "HouseName"
-                      ? selectedEvent.places &&
+                        ? selectedEvent.places &&
                         selectedEvent.places.map((place, index) => (
                           <div
                             className="m-t-4 score__submit flex-row-aro position-relative"
@@ -578,7 +578,7 @@ const Submits: React.FC = () => {
                             </FormControl>
 
                             {error &&
-                            error.find((err) => err.place === place.place) ? (
+                              error.find((err) => err.place === place.place) ? (
                               <span
                                 title={
                                   error &&
@@ -595,7 +595,7 @@ const Submits: React.FC = () => {
                             )}
                           </div>
                         ))
-                      : "Submit Type Not Found"}
+                        : "Submit Type Not Found"}
 
                     <div className="buttons flex-row-eve g-3 m-4">
                       <Button
@@ -612,9 +612,7 @@ const Submits: React.FC = () => {
               ) : submitedEvent ? (
                 <>
                   <div className="submitted_content">
-                    <h2 className="m-b-4">
-                      {submitedEvent.description}
-                    </h2>
+                    <h2 className="m-b-4">{submitedEvent.description}</h2>
                     <table>
                       <tbody>
                         <tr>

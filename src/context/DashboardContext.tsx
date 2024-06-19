@@ -44,6 +44,17 @@ interface DashboardContextProps extends DashboardState {
   SiteName: string;
 }
 
-const DashboardContext = createContext<DashboardContextProps | null>(null);
+export const initialState: DashboardState = {
+  status: "loading",
+  navigationLinks: null,
+  navigationStatus: "loading",
+  profileStatus: "loading",
+  profile: null,
+  sidebarOpen: true,
+  wsShoketAuthenticated: null,
+  socket: null,
+};
+
+const DashboardContext = createContext<DashboardContextProps>({ ...initialState, defaultLogo: "", SiteName: "", dispatch: () => null });
 
 export default DashboardContext;

@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { config } from "../../../utils/config";
@@ -11,12 +11,65 @@ import Select from "@mui/material/Select";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { InputLabel, TextField } from "@mui/material";
 import { Action as MainAction, State as MainState } from "../Events";
+import SearchIcon from "@mui/icons-material/Search";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import {
   faDeleteLeft,
   faTriangleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
 import { useSnackbar } from "notistack";
+import {
+  InputBase,
+  styled,
+  alpha,
+  Autocomplete,
+  Checkbox,
+  CircularProgress,
+} from "@mui/material";
 
+
+const Search = styled("div")(({ theme }) => ({
+  position: "relative",
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.black, 0.15),
+  "&:hover": {
+    backgroundColor: alpha(theme.palette.common.black, 0.25),
+  },
+  marginLeft: 0,
+  width: "100%",
+  [theme.breakpoints.up("sm")]: {
+    marginLeft: theme.spacing(1),
+    width: "auto",
+  },
+}));
+
+const SearchIconWrapper = styled("div")(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: "100%",
+  position: "absolute",
+  pointerEvents: "none",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: "inherit",
+  "& .MuiInputBase-input": {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create("width"),
+    width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      width: "12ch",
+      "&:focus": {
+        width: "20ch",
+      },
+    },
+  },
+}));
 interface Places {
   minimumMarks: number;
   place: number;
@@ -114,6 +167,20 @@ const Manager: React.FC<ManagerProps> = ({
   const { popUpModal, tempeventData, selectedEvent, saveStatus, submitErrors } =
     state;
   const { enqueueSnackbar } = useSnackbar();
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedStates, setSelectedStates] = useState<string[]>([]);
+  const allStates = [
+    ...new Set(eventData && eventData.map((event) => event.state)),
+    ...eventData!.reduce((acc: string[], curr) => {
+      // Explicitly specify the type of acc as string[]
+      curr.types.forEach((type) => {
+        if (!acc.includes(type.selection)) {
+          acc.push(type.selection);
+        }
+      });
+      return acc;
+    }, []),
+  ];
 
   console.log(tempeventData);
   const handleSubmit = async function (force: any) {
@@ -375,7 +442,7 @@ const Manager: React.FC<ManagerProps> = ({
 
   return (
     <div className="event-manager">
-      <div className="content_top w-full m-b-4">
+      <div className="content_top w-full m-b-4 flex-row-bet">
         <Button
           className="create-event-button"
           variant="outlined"
@@ -383,6 +450,54 @@ const Manager: React.FC<ManagerProps> = ({
         >
           Create New Event
         </Button>
+
+        <div className="searchbar flex-row-bet g-3">
+          <div className="searc">
+            <Search>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                color="primary"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search…"
+                inputProps={{ "aria-label": "search" }}
+              />
+            </Search>
+          </div>
+          <div className="filter w-50">
+            <Autocomplete
+              style={{ minWidth: "200px", width: "100%" }}
+              multiple
+              id="checkboxes-tags-demo"
+              options={allStates}
+              disableCloseOnSelect
+              value={selectedStates}
+              onChange={(event, newValue) => setSelectedStates(newValue)}
+              getOptionLabel={(option) => option}
+              renderOption={(props, option, { selected }) => (
+                <li {...props}>
+                  <Checkbox
+                    icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+                    checkedIcon={<CheckBoxIcon fontSize="small" />}
+                    style={{ marginRight: 8 }}
+                    checked={selected}
+                  />
+                  {option}
+                </li>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Filter by State"
+                  placeholder="Select States"
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              )}
+            />
+          </div>
+        </div>
       </div>
       {eventData && (
         <div className="content-grid-one flex-col g-4 w-full">

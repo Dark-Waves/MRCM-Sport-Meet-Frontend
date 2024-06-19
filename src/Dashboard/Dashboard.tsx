@@ -11,7 +11,7 @@ import Sidebar from "./components/Sidebar/Sidebar";
 import ContentTop from "./components/ContentTop/ContentTop";
 import ErrorPage from "../Components/Error/Error";
 import Loader from "../Components/Loader/Loader";
-import DashboardContext, { DashboardState, DashboardAction } from "../context/DashboardContext";
+import DashboardContext, { DashboardState, DashboardAction, initialState } from "../context/DashboardContext";
 import { decrypt } from "../utils/aes";
 
 import Home from "./pages/Home/Home";
@@ -30,16 +30,7 @@ import "./Dashboard.css";
 const { APIURI, SiteName } = config;
 const defaultLogo = siteImgs.Logo;
 
-const initialState: DashboardState = {
-  status: "loading",
-  navigationLinks: null,
-  navigationStatus: "loading",
-  profileStatus: "loading",
-  profile: null,
-  sidebarOpen: true,
-  wsShoketAuthenticated: null,
-  socket: null,
-};
+
 
 const reducer = (state: DashboardState, action: DashboardAction): DashboardState => {
   switch (action.type) {
