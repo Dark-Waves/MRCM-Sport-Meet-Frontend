@@ -307,8 +307,8 @@ const Score: FC = () => {
                           <Table size="small" aria-label="purchases">
                             <TableHead>
                               <TableRow>
-                                <TableCell>Palce</TableCell>
-                                <TableCell>Palce Score</TableCell>
+                                <TableCell>Place</TableCell>
+                                <TableCell>Place Score</TableCell>
                                 <TableCell>Winner Name</TableCell>
                                 <TableCell>Winner ID</TableCell>
                                 <TableCell>Winner House</TableCell>
