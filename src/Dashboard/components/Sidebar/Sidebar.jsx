@@ -4,15 +4,14 @@ import { NavLink, useLocation } from "react-router-dom"; // Import useLocation
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DashboardContext from "../../../context/DashboardContext";
 import { useSnackbar } from "notistack";
+import HomeContext from "../../../context/HomeContext";
 
 const Sidebar = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const { socket } = useContext(DashboardContext);
-
+  const { socket, homeData } = useContext(DashboardContext);
   const { sidebarOpen, navigationLinks } = useContext(DashboardContext);
   // Get the current location using useLocation
   const location = useLocation();
-  console.log(location.pathname);
 
   useEffect(() => {
     if (!socket) return;
@@ -51,12 +50,17 @@ const Sidebar = () => {
       </ul>
     );
   };
-
   return (
     <div className={`sidebar ${sidebarOpen ? "" : "sidebar-change"}`}>
       <div className="user-info">
         <div className="info-img img-fit-cover">
-          <img src={"/logo/logo.png"} alt="profile image" />
+          <img
+            src={
+              homeData?.find((data) => data.type === "SiteLogo")?.value.url ??
+              "/logo/logo.png"
+            }
+            alt="profile image"
+          />
         </div>
         <span className="info-name">Dark Waves</span>
       </div>

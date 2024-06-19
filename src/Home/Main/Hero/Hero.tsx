@@ -10,7 +10,9 @@ const Hero: React.FC = () => {
   const { state } = useContext(HomeContext);
 
   if (!state.houseData) return;
-  const highestScore = Math.max(...state.houseData.map((data) => data.houseScore));
+  const highestScore = Math.max(
+    ...state.houseData.map((data) => data.houseScore)
+  );
   const getScoreHeight = function (score: number) {
     const scorePercentage = (score / highestScore) * 100;
     return `${scorePercentage}%`;
@@ -42,18 +44,15 @@ const Hero: React.FC = () => {
           ))}
         </div>
         <h1 className="font-2xl font-weight-800">
-          {state.homeData?.find((data) => data.type === "HeroTitle")?.value.content
-            ? state.homeData?.find((data) => data.type === "HeroTitle")?.value.content
-            : config.SiteName}
+          {state.homeData?.find((data) => data.type === "HeroTitle")?.value
+            .content ?? config.SiteName}
         </h1>
-
       </div>
       <div className="right-content flex-row">
         <img
           src={
-            state.homeData?.find((data) => data.type === "HeroImage")?.value.url
-              ? state.homeData?.find((data) => data.type === "HeroImage")?.value.url
-              : "/assets/hero/hero logo.svg"
+            state.homeData?.find((data) => data.type === "HeroImage")?.value
+              .url ?? "/assets/hero/hero logo.svg"
           }
           alt="MRCM LOGO"
           className="w-90 m-auto"

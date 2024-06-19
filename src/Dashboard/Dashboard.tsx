@@ -1,5 +1,11 @@
 import React, { useEffect, useReducer } from "react";
-import { Routes, Route, useNavigate, Navigate, useLocation } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  useNavigate,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import { SnackbarProvider } from "notistack";
 import useAuth from "../hooks/useAuth";
 import socketio from "socket.io-client";
@@ -11,7 +17,11 @@ import Sidebar from "./components/Sidebar/Sidebar";
 import ContentTop from "./components/ContentTop/ContentTop";
 import ErrorPage from "../Components/Error/Error";
 import Loader from "../Components/Loader/Loader";
-import DashboardContext, { DashboardState, DashboardAction, initialState } from "../context/DashboardContext";
+import DashboardContext, {
+  DashboardState,
+  DashboardAction,
+  initialState,
+} from "../context/DashboardContext";
 import { decrypt } from "../utils/aes";
 
 import Home from "./pages/Home/Home";
@@ -30,9 +40,10 @@ import "./Dashboard.css";
 const { APIURI, SiteName } = config;
 const defaultLogo = siteImgs.Logo;
 
-
-
-const reducer = (state: DashboardState, action: DashboardAction): DashboardState => {
+const reducer = (
+  state: DashboardState,
+  action: DashboardAction
+): DashboardState => {
   switch (action.type) {
     case "setStatus":
       return { ...state, status: action.payload };
@@ -48,8 +59,11 @@ const reducer = (state: DashboardState, action: DashboardAction): DashboardState
       return { ...state, navigationLinks: action.payload };
     case "setWsAuth":
       return { ...state, wsShoketAuthenticated: action.payload };
+    case "setHomeData":
+      return { ...state, homeData: action.payload };
     case "setWs":
       return { ...state, socket: action.payload };
+
     default:
       throw new Error("Unknown action type");
   }
@@ -76,7 +90,9 @@ const renderRoutes = (links: any[]): JSX.Element[] => {
     const PageComponent = getPageComponent(link.title);
     return PageComponent ? (
       <Route key={index} path={link.path} element={<PageComponent />} />
-    ) : <></>;
+    ) : (
+      <></>
+    );
   });
 };
 
@@ -90,6 +106,7 @@ const Dashboard: React.FC = () => {
     socket,
     navigationLinks,
     navigationStatus,
+    homeData,
   } = state;
   const [{ authenticated, status: authStatus }, dispatchAuth] = useAuth();
   const navigate = useNavigate();
@@ -109,9 +126,30 @@ const Dashboard: React.FC = () => {
       navigate("/auth");
     }
   }, [navigate, authStatus]);
-
   useEffect(() => {
-    if (authenticated && wsShoketAuthenticated && navigationLinks && profile) {
+    const fetchData = async () => {
+      try {
+        const [homeDataResponse] = await Promise.all([
+          axios.get(`${config.APIURI}/api/v${config.Version}/public/data/home`),
+        ]);
+
+        const homeResponseData = decrypt(homeDataResponse.data);
+        if (homeResponseData.message === "ok") {
+          dispatch({ type: "setHomeData", payload: homeResponseData.payload });
+        }
+      } catch (error) {}
+    };
+
+    fetchData();
+  }, []);
+  useEffect(() => {
+    if (
+      authenticated &&
+      wsShoketAuthenticated &&
+      navigationLinks &&
+      profile &&
+      homeData
+    ) {
       dispatch({ type: "setStatus", payload: "ready" });
     }
   }, [authenticated, wsShoketAuthenticated, profile, navigationLinks]);
@@ -137,7 +175,13 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     if (!socket) return;
 
-    const handleSocket = async ({ type, payload }: { type: string; payload: any }) => {
+    const handleSocket = async ({
+      type,
+      payload,
+    }: {
+      type: string;
+      payload: any;
+    }) => {
       switch (type) {
         case "auth":
           dispatch({ type: "setWsAuth", payload: payload.success });
@@ -192,7 +236,10 @@ const Dashboard: React.FC = () => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const dashboardData = decrypt(data);
-        dispatch({ type: "setNavigationLinks", payload: dashboardData.dashboardSchema });
+        dispatch({
+          type: "setNavigationLinks",
+          payload: dashboardData.dashboardSchema,
+        });
         dispatch({ type: "setNavigationStatus", payload: "ready" });
       } catch (error) {
         dispatch({ type: "setNavigationStatus", payload: "error" });
@@ -206,7 +253,9 @@ const Dashboard: React.FC = () => {
       {status === "loading" && <Loader />}
       {status === "error" && <ErrorPage code={400} />}
       {status === "ready" && (
-        <DashboardContext.Provider value={{ ...state, dispatch, defaultLogo, SiteName }}>
+        <DashboardContext.Provider
+          value={{ ...state, dispatch, defaultLogo, SiteName }}
+        >
           <SnackbarProvider maxSnack={3}>
             <Sidebar />
             <div className="Dashboard main-content">

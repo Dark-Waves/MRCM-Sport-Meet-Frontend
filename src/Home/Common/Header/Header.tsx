@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import "./Header.css";
 import { navLinks } from "../../data/landingNav";
 import Button from "@mui/material/Button";
-
+import HomeContext from "../../../context/HomeContext";
 export default function Header() {
   const [isNavVisible, setIsNavVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const { state } = useContext(HomeContext);
 
   const handleResize = () => {
     if (window.innerWidth < 768) {
@@ -31,13 +32,21 @@ export default function Header() {
   const toggleNav = () => {
     setIsNavVisible(!isNavVisible);
   };
-
+  console.log();
   return (
     <header className="header w-full p-5 position-absolute">
       <div className="nav flex-row-bet">
         <h1 className="text-center">
           <Link to="/" className="flex-row-center g-4">
-            <img src="/logo/logo.png" alt="mrcm logo" width={50} height={50} />
+            <img
+              src={
+                state.homeData?.find((data) => data.type === "SiteLogo")?.value
+                  .url ?? "/logo/logo.png"
+              }
+              alt="mrcm logo"
+              width={50}
+              height={50}
+            />
             <span>MRCM SPORTS 2K24</span>
           </Link>
         </h1>
