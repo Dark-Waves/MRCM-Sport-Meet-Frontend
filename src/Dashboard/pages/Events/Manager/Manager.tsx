@@ -747,6 +747,9 @@ const Manager: React.FC<ManagerProps> = ({
                         onClick={() => handleRemovePlace(index)}
                         type="button"
                         className="m-r-2 w-15"
+                        disabled={
+                          tempeventData.state === "pending" || tempeventData.state === "approved"
+                        }
                         color={"warning"}
                       >
                         <FontAwesomeIcon icon={faDeleteLeft} />
