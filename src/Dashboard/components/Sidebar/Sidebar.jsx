@@ -62,7 +62,7 @@ const Sidebar = () => {
             alt="profile image"
           />
         </div>
-        <span className="info-name">Dark Waves Management</span>
+        <span className="info-name">Dark Waves</span>
       </div>
       <nav className="navigation">
         <ul className="nav-list">
