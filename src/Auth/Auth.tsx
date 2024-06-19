@@ -7,10 +7,11 @@ import Loader from "../Components/Loader/Loader";
 import { config } from "../../config";
 import { TextField } from "@mui/material";
 import Button from "../Dashboard/UI/Button/Button";
+import HomeContext from "../context/HomeContext";
 
 export default function Auth() {
   const navigate = useNavigate();
-
+  const { state } = useContext(HomeContext);
   useEffect(() => {
     const token = Cookies.get("token");
     if (token) {
@@ -66,7 +67,14 @@ export default function Auth() {
                 <h4>MRCM Sport Meet Admin</h4>
               </div>
               <div className="heading flex-col-center">
-                <img src="/logo/logo.png" alt="mrcmlogo" className="w-50" />
+                <img
+                  src={
+                    state.homeData?.find((data) => data.type === "SiteLogo")
+                      ?.value.url ?? "/logo/logo.png"
+                  }
+                  alt="mrcmlogo"
+                  className="w-50"
+                />
               </div>
               <div className="actual-form">
                 <div className="input-wrap">
@@ -95,12 +103,7 @@ export default function Auth() {
                     onChange={(e) => setPassword(e.target.value)} // Update state on change
                   />
                 </div>
-                <Button
-                  type="submit"
-                  
-                  className="sign-btn"
-                  loading={loading}
-                >
+                <Button type="submit" className="sign-btn" loading={loading}>
                   Login
                 </Button>
                 <p className="text text-center">You must be a Admin or Staff</p>
