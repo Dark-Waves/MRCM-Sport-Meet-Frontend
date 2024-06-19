@@ -769,6 +769,9 @@ const Manager: React.FC<ManagerProps> = ({
                     ""
                   )
                 }
+                disabled={
+                  tempeventData.state === "pending" || tempeventData.state === "approved"
+                }
                 onClick={handleAddPlaces}
               >
                 Add Place
